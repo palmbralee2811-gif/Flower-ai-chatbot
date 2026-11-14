@@ -12,8 +12,8 @@ const CONFIG = {
   // โหมดการค้นหา: 'local' (เทียบข้อความในเบราว์เซอร์) หรือ 'vector' (เทียบเวกเตอร์ความหมาย)
   SEARCH_MODE: "local",
 
-  // โมเดล AI จาก OpenRouter สำหรับเรียบเรียงคำตอบ (เช่น google/gemini-2.5-flash, openai/gpt-4o-mini)
-  MODEL: "google/gemini-2.5-flash",
+  // โมเดล AI จาก OpenRouter สำหรับเรียบเรียงคำตอบและออกแบบภาพ (ใช้ตระกูล OpenAI GPT: openai/gpt-4o-mini)
+  MODEL: "openai/gpt-4o-mini",
 
   // โมเดล AI สำหรับแปลงข้อความเป็นเวกเตอร์ (ใช้ใน build-vectors.html และ vector search)
   EMBED_MODEL: "text-embedding-3-small",

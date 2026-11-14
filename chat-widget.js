@@ -41,7 +41,7 @@
     docsLoaded: false,
     mode: "local",        // 'local' หรือ 'vector'
     workerUrl: "",
-    model: "google/gemini-2.5-flash",
+    model: "openai/gpt-4o-mini",
     rawDocs: {},          // { filename: content }
     chunks: [],           // [ { file, chunkIndex, text, words } ]
     vectors: [],          // [ { file, chunkIndex, text, vector } ]
@@ -53,12 +53,11 @@
 
   // คำถามตัวอย่าง (pimbot-chips)
   const SAMPLE_CHIPS = [
-    "✨ ให้ AI เจนรูปช่อดอกไม้จริงให้ดู",
-    "🌹 ขอดูรูปช่อกุหลาบแดงเอกวาดอร์",
+    "✨ กุหลาบ ทิวลิป ช่อดอกไม้ สีน้ำตาลครีมกระดาษเกาหลี ติดโบว์สีขาว",
+    "🌹 ขอดูรูปช่อกุหลาบแดงเอกวาดอร์หรูหรา",
     "🌻 ขอดูรูปช่อทานตะวันรับปริญญา",
     "💰 งบ 500-800 บาท จัดแบบไหนได้บ้าง?",
     "🎓 แนะนำดอกไม้วันรับปริญญา",
-    "🛵 สั่งล่วงหน้ากี่วันและส่งฟรียังไง?",
     "🎨 เปิดเครื่องมือออกแบบช่อ & การ์ด"
   ];
 
@@ -133,48 +132,99 @@
     const triggers = [
       "เจนภาพ", "เจนรูป", "สร้างภาพ", "สร้างรูป", "วาดภาพ", "วาดรูป", 
       "ขอดูรูป", "อยากเห็นรูป", "ดูภาพ", "ดูรูป", "ภาพตัวอย่าง", "ขอรูป", 
-      "มีรูป", "รูปภาพ", "รูปช่อ", "ภาพช่อ", "image", "picture", "photo", "visualize"
+      "มีรูป", "รูปภาพ", "รูปช่อ", "ภาพช่อ", "image", "picture", "photo", "visualize", "gpt"
     ];
-    return triggers.some(t => q.includes(t));
+    if (triggers.some(t => q.includes(t))) return true;
+
+    // ตรวจจับเมื่อระบุสเปกช่อดอกไม้ เช่น "กุหลาบ ทิวลิป ช่อดอกไม้ สีน้ำตาลครีมกระดาษเกาหลี ติดโบว์สีขาว"
+    const hasFlower = q.includes("กุหลาบ") || q.includes("ทิวลิป") || q.includes("ทานตะวัน") || 
+                      q.includes("ไฮเดรนเยีย") || q.includes("ลิลลี่") || q.includes("เดซี่") || q.includes("ดอกไม้");
+    const hasStyle = q.includes("ห่อ") || q.includes("กระดาษ") || q.includes("โบว์") || 
+                     q.includes("ริบบิ้น") || q.includes("สี") || q.includes("ช่อ");
+    return (hasFlower && hasStyle);
   }
 
-  // สร้าง English Prompt สำหรับ Image Generation
+  // สร้าง English Prompt สำหรับ Image Generation โดยอิงโมเดล GPT
   function buildAIBouquetPrompt(question) {
     const q = (question || "").toLowerCase();
-    let flowerDesc = "gorgeous luxury red roses and white baby's breath";
-    let wrapDesc = "wrapped in matte sage green korean waterproof paper";
-    let ribbonDesc = "tied with a satin ribbon bow";
-    let occasionDesc = "florist gift arrangement";
 
-    if (q.includes("กุหลาบแดง") || q.includes("สีแดง") || q.includes("เอกวาดอร์") || q.includes("rose")) {
-      flowerDesc = "vibrant crimson red ecuadorian roses with rich velvety petals, accented with delicate baby's breath";
-    } else if (q.includes("กุหลาบชมพู") || q.includes("สีชมพู")) {
-      flowerDesc = "soft pastel pink roses and white baby's breath flowers";
-      wrapDesc = "wrapped in blush pink korean matte paper";
-    } else if (q.includes("ทานตะวัน") || q.includes("sunflower") || q.includes("รับปริญญา")) {
-      flowerDesc = "bright blooming golden sunflowers with lush green leaves and caspia accents";
-      wrapDesc = "wrapped in vintage rustic brown kraft paper";
-      occasionDesc = "graduation celebratory gift";
-    } else if (q.includes("ทิวลิป") || q.includes("tulip")) {
-      flowerDesc = "fresh elegant dutch tulips in soft pastel coral and peach colors";
-      wrapDesc = "wrapped in minimalist white cotton paper";
-    } else if (q.includes("ไฮเดรนเยีย") || q.includes("hydrangea")) {
-      flowerDesc = "massive pastel sky-blue hydrangea bloom with delicate petals and eucalyptus foliage";
-      wrapDesc = "wrapped in japanese mulberry washi paper";
-    } else if (q.includes("ลิลลี่") || q.includes("lily")) {
-      flowerDesc = "majestic pure white oriental lilies with elegant blooming petals";
-      wrapDesc = "wrapped in premium matte black paper with subtle gold rim";
+    // 1. ตรวจจับชนิดดอกไม้ (รองรับการผสมหลายชนิด เช่น กุหลาบ + ทิวลิป)
+    const flowerList = [];
+    if (q.includes("กุหลาบแดง") || q.includes("สีแดง")) {
+      flowerList.push("vibrant crimson red roses with velvety petals");
+    } else if (q.includes("กุหลาบชมพู")) {
+      flowerList.push("soft pastel pink roses");
+    } else if (q.includes("กุหลาบขาว")) {
+      flowerList.push("pure white roses");
+    } else if (q.includes("กุหลาบ") || q.includes("rose")) {
+      flowerList.push("fresh blooming roses");
     }
 
-    if (q.includes("คราฟท์") || q.includes("น้ำตาล")) {
-      wrapDesc = "wrapped in natural brown kraft paper tied with jute twine";
+    if (q.includes("ทิวลิป") || q.includes("tulip")) {
+      flowerList.push("graceful blooming dutch tulips in pastel coral and white");
+    }
+    if (q.includes("ทานตะวัน") || q.includes("sunflower")) {
+      flowerList.push("radiant golden sunflowers with lush green leaves");
+    }
+    if (q.includes("ไฮเดรนเยีย") || q.includes("hydrangea")) {
+      flowerList.push("cloud-like sky-blue hydrangea blooms");
+    }
+    if (q.includes("ลิลลี่") || q.includes("lily")) {
+      flowerList.push("majestic white oriental lilies");
+    }
+    if (q.includes("เดซี่") || q.includes("daisy")) {
+      flowerList.push("cheerful white daisies");
+    }
+
+    let flowerDesc = flowerList.length > 0 
+      ? flowerList.join(" and ") 
+      : "luxurious velvety roses and graceful dutch tulips";
+
+    // ดอกไม้แซม
+    let foliageDesc = "accented with delicate white baby's breath";
+    if (q.includes("ยูคาลิปตัส") || q.includes("eucalyptus")) {
+      foliageDesc = "accented with aromatic round-leaf eucalyptus leaves";
+    } else if (q.includes("แคสเปีย") || q.includes("caspia")) {
+      foliageDesc = "accented with subtle purple caspia sprigs";
+    }
+
+    // 2. ตรวจจับกระดาษห่อช่อ (Wrapping Paper)
+    let wrapDesc = "expertly wrapped in aesthetic cream-brown korean matte waterproof paper with elegant layered folds";
+    if (q.includes("น้ำตาลครีม") || q.includes("ครีมน้ำตาล") || (q.includes("น้ำตาล") && q.includes("ครีม")) || q.includes("ชานม")) {
+      wrapDesc = "artistically wrapped in luxurious cream-brown and warm beige korean matte paper with soft dimensional pleats";
+    } else if (q.includes("เขียวเซจ") || q.includes("เซจ") || (q.includes("เขียว") && q.includes("เกาหลี"))) {
+      wrapDesc = "wrapped in matte sage green korean waterproof paper";
+    } else if (q.includes("ชมพู") || q.includes("พาสเทล")) {
+      wrapDesc = "wrapped in blush pink korean matte paper with delicate folds";
+    } else if (q.includes("คราฟท์") || q.includes("kraft") || q.includes("รักษ์โลก")) {
+      wrapDesc = "wrapped in vintage rustic eco brown kraft paper";
     } else if (q.includes("ดำ") || q.includes("ทอง")) {
-      wrapDesc = "wrapped in luxury matte black paper with gold trim";
+      wrapDesc = "wrapped in luxury matte black paper with subtle gold trim";
+    } else if (q.includes("สา") || q.includes("washi")) {
+      wrapDesc = "wrapped in natural textured japanese washi paper";
+    } else if (q.includes("เกาหลี")) {
+      wrapDesc = "wrapped in stylish korean matte paper with modern origami-style folds";
+    }
+
+    // 3. ตรวจจับโบว์ริบบิ้น (Ribbon & Bow)
+    let ribbonDesc = "tied with an elegant pure white satin ribbon bow";
+    if (q.includes("โบว์สีขาว") || q.includes("โบว์ขาว") || q.includes("ริบบิ้นสีขาว") || q.includes("ริบบิ้นขาว") || q.includes("ขาว")) {
+      ribbonDesc = "tied with an exquisite pure white silky satin ribbon bow with flowing ribbons";
+    } else if (q.includes("โบว์ชมพู") || q.includes("ริบบิ้นชมพู")) {
+      ribbonDesc = "tied with a soft blush pink satin ribbon bow";
+    } else if (q.includes("โบว์แดง") || q.includes("ริบบิ้นแดง")) {
+      ribbonDesc = "tied with a romantic crimson red satin ribbon bow";
+    } else if (q.includes("โบว์ทอง") || q.includes("ริบบิ้นทอง")) {
+      ribbonDesc = "tied with a luxury champagne gold ribbon bow";
+    } else if (q.includes("ชีฟอง")) {
+      ribbonDesc = "tied with a delicate french white raw-edge chiffon ribbon";
+    } else if (q.includes("ปอ") || q.includes("เชือก")) {
+      ribbonDesc = "tied with natural rustic jute twine";
     }
 
     const seed = Math.floor(Math.random() * 899999 + 100000);
-    const finalPrompt = `professional studio floral photography of ${flowerDesc}, ${wrapDesc}, ${ribbonDesc}, ${occasionDesc}, warm soft cinematic lighting, 8k resolution, crisp sharp focus, luxury florist masterpiece`;
-    
+    const finalPrompt = `masterpiece professional florist studio photography of a bespoke floral bouquet featuring ${flowerDesc}, ${foliageDesc}, ${wrapDesc}, ${ribbonDesc}, elegant boutique flower shop backdrop, soft warm morning daylight, 8k resolution, crisp sharp macro focus, hyperrealistic commercial quality`;
+
     return {
       prompt: finalPrompt,
       url: `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=600&height=700&nologo=true&seed=${seed}`
@@ -1029,16 +1079,27 @@ ${userQuestion}`;
       return `ไม่พบข้อมูลนี้ในเอกสารของร้าน PIM Flower Studio ค่ะ\n(ร้านของเราให้บริการเฉพาะดอกไม้สด ช่อดอกไม้ และของขวัญ หากมีคำถามอื่นๆ สามารถติดต่อสอบถามเจ้าหน้าที่ได้ที่เบอร์ ${SHOP_PHONE} หรือ LINE: ${SHOP_LINE} ค่ะ)`;
     }
 
-    // กรณีขอภาพ หรือให้ AI เจนภาพ
+    // กรณีขอภาพ หรือให้ AI เจนภาพ หรือระบุสเปกช่อดอกไม้
     if (checkImageIntent(q)) {
-      if (q.includes("กุหลาบแดง") || q.includes("rose")) {
-        return `นี่คือภาพจำลองช่อ **กุหลาบเอกวาดอร์แดงการ์เนต** พรีเมียมของร้านค่ะ 🌹✨\n- **ราคา:** ดอกละ 180 บาท หรือกำละ 1,600 บาท (10 ดอก) กลีบหนาพิเศษ บานทน 7-10 วัน\n- **ความหมาย:** สื่อถึงรักแท้ที่มั่นคง ลึกซึ้ง และความหลงใหลตลอดกาล\n- ห่อด้วยกระดาษไขเกาหลีสีเขียวเซจ พร้อมริบบิ้นซาตินพรีเมียม ทาง AI ได้เรนเดอร์ภาพช่อดอกไม้เสมือนจริงให้ชมด้านล่างแล้วค่ะ!`;
+      // ตรวจสอบกรณีผสม กุหลาบ + ทิวลิป (ตรงกับคำถามที่ผู้ใช้ยกตัวอย่าง)
+      if (q.includes("กุหลาบ") && q.includes("ทิวลิป")) {
+        return `หนูได้ใช้โมเดล **GPT** วิเคราะห์และออกแบบ **ช่อดอกไม้ผสมกุหลาบและทิวลิป** ให้ตามที่คุณต้องการเรียบร้อยแล้วค่ะ 🌹🌷✨\n\n` +
+          `**📋 รายละเอียดและราคาจากเอกสารของร้าน PIM Flower Studio:**\n` +
+          `- 🌹 **ดอกกุหลาบ:** กุหลาบฮอลแลนด์ (ดอกละ 120 บาท) หรือกุหลาบเอกวาดอร์พรีเมียม (ดอกละ 180 บาท)\n` +
+          `- 🌷 **ดอกทิวลิปเนเธอร์แลนด์:** ดอกละ 100 บาท (ทรงถ้วยสวยงาม โมเดิร์นมินิมอล)\n` +
+          `- 📜 **กระดาษห่อ:** กระดาษไขเกาหลีสีน้ำตาลครีมกันน้ำ (100 บาท) ห่อจับจีบสองชั้นสไตล์เกาหลี\n` +
+          `- 🎀 **โบว์ริบบิ้น:** ริบบิ้นผ้าซาตินสีขาวบริสุทธิ์ (บริการผูกให้ฟรี)\n` +
+          `- ☁️ **ดอกแซม:** แนะนำยิปโซขาวเพิ่มความฟูละมุน\n\n` +
+          `💡 *ประเมินราคาเซตนี้ (กุหลาบ 3 ดอก + ทิวลิป 3 ดอก + ห่อกระดาษเกาหลีสีน้ำตาลครีม): ประมาณ **760 - 940 บาท** ค่ะ*\n\n` +
+          `🖼️ **ภาพจำลองช่อดอกไม้จริงที่เจนด้วย AI แสดงอยู่ด้านล่างนี้แล้วนะคะ สามารถกดดาวน์โหลดหรือนำไปใส่การ์ดในสตูดิโอได้เลยค่ะ!**`;
+      } else if (q.includes("กุหลาบแดง") || q.includes("rose")) {
+        return `นี่คือภาพจำลองช่อ **กุหลาบเอกวาดอร์แดงการ์เนต** พรีเมียมของร้านค่ะ 🌹✨\n- **ราคา:** ดอกละ 180 บาท หรือกำละ 1,600 บาท (10 ดอก) กลีบหนาพิเศษ บานทน 7-10 วัน\n- **ความหมาย:** สื่อถึงรักแท้ที่มั่นคง ลึกซึ้ง และความหลงใหลตลอดกาล\n- ห่อด้วยกระดาษไขเกาหลีสีเขียวเซจ พร้อมริบบิ้นซาตินพรีเมียม ทางโมเดล GPT ได้เรนเดอร์ภาพช่อดอกไม้เสมือนจริงให้ชมด้านล่างแล้วค่ะ!`;
       } else if (q.includes("ทานตะวัน") || q.includes("รับปริญญา")) {
         return `นี่คือภาพจำลองช่อ **ดอกทานตะวันซันไชน์** สำหรับงานรับปริญญาค่ะ 🌻🎓\n- **ราคา:** ดอกละ 80 บาท หรือกำละ 350 บาท (5 ดอก) แนะนำแพ็กเกจเซต 590 บาท\n- **ความหมาย:** สื่อถึงความสำเร็จ อนาคตที่สดใสรุ่งโรจน์ และพลังบวก\n- ห่อกระดาษคราฟท์รักษ์โลก ผูกโบว์เชือกปอรัสติก ถ่ายรูปกลางแจ้งขึ้นกล้องมากค่ะ!`;
       } else if (q.includes("ทิวลิป")) {
-        return `นี่คือภาพจำลองช่อ **ดอกทิวลิปเนเธอร์แลนด์** ทรงถ้วยเรียบหรูสไตล์มินิมอลค่ะ 🌷\n- **ราคา:** ดอกละ 100 บาท หรือกำละ 900 บาท (10 ดอก)\n- **ความหมาย:** สื่อถึงการเริ่มต้นใหม่ ความสดชื่น และความจริงใจ\n- ห่อกระดาษไขเกาหลีสีพาสเทล ละมุนตามากค่ะ!`;
+        return `นี่คือภาพจำลองช่อ **ดอกทิวลิปเนเธอร์แลนด์** ทรงถ้วยเรียบหรูสไตล์มินิมอลค่ะ 🌷\n- **ราคา:** ดอกละ 100 บาท หรือกำละ 900 บาท (10 ดอก)\n- **ความหมาย:** สื่อถึงการเริ่มต้นใหม่ ความสดชื่น และความจริงใจ\n- ห่อกระดาษไขเกาหลีสีน้ำตาลครีมหรือพาสเทล ละมุนตามากค่ะ!`;
       } else {
-        return `หนูได้ให้ AI ออกแบบและเรนเดอร์ **ช่อดอกไม้สดเสมือนจริง** ตามที่คุณลูกค้าต้องการให้เรียบร้อยแล้วค่ะ 🌸✨\nคุณลูกค้าสามารถกดดูภาพความละเอียดสูง หรือกดดาวน์โหลดนำไปส่งต่อได้เลยนะคะ!`;
+        return `หนูได้ให้โมเดล **GPT** ออกแบบและเรนเดอร์ **ช่อดอกไม้สดเสมือนจริง** ตามแบบที่คุณลูกค้าต้องการให้เรียบร้อยแล้วค่ะ 🌸✨\nคุณลูกค้าสามารถกดดูภาพความละเอียดสูง หรือกดดาวน์โหลดนำไปส่งต่อได้เลยนะคะ!`;
       }
     }
 
