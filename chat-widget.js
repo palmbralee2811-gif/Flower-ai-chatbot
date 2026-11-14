@@ -1,7 +1,7 @@
 /**
- * PIM Flower Studio - AI RAG Chatbot Widget
+ * PIM Flower Studio - AI RAG Chatbot Widget with Real-Time AI Bouquet Image Generation
  * สถาปัตยกรรม Static Site + Serverless Proxy
- * ปฏิบัติตามคู่มือรายวิชา AI และสถาปัตยกรรม RAG 4 ขั้นตอน
+ * ปฏิบัติตามคู่มือรายวิชา AI และสถาปัตยกรรม RAG 4 ขั้นตอน พร้อมระบบ AI เจนภาพช่อดอกไม้เสมือนจริงในแชท
  */
 
 (function () {
@@ -25,6 +25,16 @@
   const SHOP_PHONE = "02-123-4567";
   const SHOP_LINE = "@pimflower";
 
+  // ภาพถ่ายดอกไม้จริงของร้าน (Local Photos)
+  const REAL_FLOWER_PHOTOS = {
+    'rose-red': 'images/rose-red.jpg',
+    'rose-pink': 'images/rose-pink.jpg',
+    'sunflower': 'images/sunflower.jpg',
+    'tulip': 'images/tulip.jpg',
+    'hydrangea': 'images/hydrangea.jpg',
+    'lily': 'images/lily.jpg'
+  };
+
   // สถานะการทำงานของระบบ
   let systemState = {
     isReady: false,
@@ -43,11 +53,12 @@
 
   // คำถามตัวอย่าง (pimbot-chips)
   const SAMPLE_CHIPS = [
+    "✨ ให้ AI เจนรูปช่อดอกไม้จริงให้ดู",
+    "🌹 ขอดูรูปช่อกุหลาบแดงเอกวาดอร์",
+    "🌻 ขอดูรูปช่อทานตะวันรับปริญญา",
     "💰 งบ 500-800 บาท จัดแบบไหนได้บ้าง?",
     "🎓 แนะนำดอกไม้วันรับปริญญา",
-    "🌹 กุหลาบเอกวาดอร์ราคาเท่าไร?",
     "🛵 สั่งล่วงหน้ากี่วันและส่งฟรียังไง?",
-    "💐 ดอกไม้สำหรับคนรักวันครบรอบ",
     "🎨 เปิดเครื่องมือออกแบบช่อ & การ์ด"
   ];
 
@@ -88,7 +99,6 @@
     const words = clean.split(/\s+/).filter(w => w.length > 0);
     const tokenSet = new Set(words);
 
-    // เสริม N-gram ขนาด 2-4 อักษรเพื่อช่วยการค้นหาภาษาไทยที่ไม่มีการเว้นวรรค
     for (const w of words) {
       if (w.length >= 2) {
         for (let i = 0; i <= w.length - 2; i++) {
@@ -113,6 +123,62 @@
     }
     if (normA === 0 || normB === 0) return 0;
     return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+  }
+
+  // -------------------------------------------------------------
+  // ตรวจจับความต้องการสร้างภาพด้วย AI (Image Generation Intent)
+  // -------------------------------------------------------------
+  function checkImageIntent(text) {
+    const q = (text || "").toLowerCase();
+    const triggers = [
+      "เจนภาพ", "เจนรูป", "สร้างภาพ", "สร้างรูป", "วาดภาพ", "วาดรูป", 
+      "ขอดูรูป", "อยากเห็นรูป", "ดูภาพ", "ดูรูป", "ภาพตัวอย่าง", "ขอรูป", 
+      "มีรูป", "รูปภาพ", "รูปช่อ", "ภาพช่อ", "image", "picture", "photo", "visualize"
+    ];
+    return triggers.some(t => q.includes(t));
+  }
+
+  // สร้าง English Prompt สำหรับ Image Generation
+  function buildAIBouquetPrompt(question) {
+    const q = (question || "").toLowerCase();
+    let flowerDesc = "gorgeous luxury red roses and white baby's breath";
+    let wrapDesc = "wrapped in matte sage green korean waterproof paper";
+    let ribbonDesc = "tied with a satin ribbon bow";
+    let occasionDesc = "florist gift arrangement";
+
+    if (q.includes("กุหลาบแดง") || q.includes("สีแดง") || q.includes("เอกวาดอร์") || q.includes("rose")) {
+      flowerDesc = "vibrant crimson red ecuadorian roses with rich velvety petals, accented with delicate baby's breath";
+    } else if (q.includes("กุหลาบชมพู") || q.includes("สีชมพู")) {
+      flowerDesc = "soft pastel pink roses and white baby's breath flowers";
+      wrapDesc = "wrapped in blush pink korean matte paper";
+    } else if (q.includes("ทานตะวัน") || q.includes("sunflower") || q.includes("รับปริญญา")) {
+      flowerDesc = "bright blooming golden sunflowers with lush green leaves and caspia accents";
+      wrapDesc = "wrapped in vintage rustic brown kraft paper";
+      occasionDesc = "graduation celebratory gift";
+    } else if (q.includes("ทิวลิป") || q.includes("tulip")) {
+      flowerDesc = "fresh elegant dutch tulips in soft pastel coral and peach colors";
+      wrapDesc = "wrapped in minimalist white cotton paper";
+    } else if (q.includes("ไฮเดรนเยีย") || q.includes("hydrangea")) {
+      flowerDesc = "massive pastel sky-blue hydrangea bloom with delicate petals and eucalyptus foliage";
+      wrapDesc = "wrapped in japanese mulberry washi paper";
+    } else if (q.includes("ลิลลี่") || q.includes("lily")) {
+      flowerDesc = "majestic pure white oriental lilies with elegant blooming petals";
+      wrapDesc = "wrapped in premium matte black paper with subtle gold rim";
+    }
+
+    if (q.includes("คราฟท์") || q.includes("น้ำตาล")) {
+      wrapDesc = "wrapped in natural brown kraft paper tied with jute twine";
+    } else if (q.includes("ดำ") || q.includes("ทอง")) {
+      wrapDesc = "wrapped in luxury matte black paper with gold trim";
+    }
+
+    const seed = Math.floor(Math.random() * 899999 + 100000);
+    const finalPrompt = `professional studio floral photography of ${flowerDesc}, ${wrapDesc}, ${ribbonDesc}, ${occasionDesc}, warm soft cinematic lighting, 8k resolution, crisp sharp focus, luxury florist masterpiece`;
+    
+    return {
+      prompt: finalPrompt,
+      url: `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=600&height=700&nologo=true&seed=${seed}`
+    };
   }
 
   // -------------------------------------------------------------
@@ -161,10 +227,10 @@
         position: absolute;
         bottom: 78px;
         right: 0;
-        width: 390px;
+        width: 410px;
         max-width: calc(100vw - 32px);
-        height: 620px;
-        max-height: calc(100vh - 120px);
+        height: 640px;
+        max-height: calc(100vh - 110px);
         background: #ffffff;
         border-radius: 20px;
         box-shadow: 0 14px 45px rgba(0, 0, 0, 0.16);
@@ -266,7 +332,7 @@
       .pimbot-msg {
         display: flex;
         flex-direction: column;
-        max-width: 86%;
+        max-width: 88%;
         animation: pimbotFadeIn 0.25s ease forwards;
       }
       @keyframes pimbotFadeIn {
@@ -307,6 +373,93 @@
         display: inline-block;
         border-left: 3px solid ${C.main};
       }
+      /* AI Image Generation Card Styles */
+      .pimbot-ai-image-card {
+        margin-top: 10px;
+        background: #ffffff;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      }
+      .pimbot-ai-card-header {
+        background: #f8fafc;
+        padding: 6px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .pimbot-ai-card-img-wrap {
+        position: relative;
+        width: 100%;
+        height: 240px;
+        background: #f1f5f9;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .pimbot-ai-card-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+      .pimbot-ai-card-img-wrap img:hover {
+        transform: scale(1.04);
+      }
+      .pimbot-ai-shimmer {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+        background-size: 200% 100%;
+        animation: pimbotShimmer 1.5s infinite;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #64748b;
+        font-size: 12px;
+      }
+      @keyframes pimbotShimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      .pimbot-ai-card-actions {
+        padding: 8px 10px;
+        background: #ffffff;
+        display: flex;
+        gap: 6px;
+      }
+      .pimbot-ai-btn {
+        flex: 1;
+        padding: 6px 10px;
+        font-size: 11.5px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        color: #334155;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: all 0.2s;
+      }
+      .pimbot-ai-btn:hover {
+        background: ${C.main};
+        color: #ffffff;
+        border-color: ${C.main};
+      }
+
       .pimbot-chips-container {
         padding: 8px 12px;
         display: flex;
@@ -415,7 +568,7 @@
           <div class="pimbot-header-top">
             <div class="pimbot-header-title">
               🌸 <span>PIM Flower AI</span>
-              <span class="badge" id="pimbot-badge-mode">RAG</span>
+              <span class="badge" id="pimbot-badge-mode">RAG + Vision</span>
             </div>
             <div class="pimbot-header-actions">
               <button id="pimbot-clear-btn" title="ล้างข้อความ">🧹</button>
@@ -432,7 +585,7 @@
         <div class="pimbot-disclaimer">
           <span>⚠️</span>
           <div>
-            ระบบนี้เป็น AI ตอบจากเอกสารของร้าน ข้อมูลอาจมีความคลาดเคลื่อน หากต้องการติดต่อพนักงานจริง โทร <a href="tel:${SHOP_PHONE}">${SHOP_PHONE}</a> หรือ LINE: <strong>${SHOP_LINE}</strong>
+            ระบบนี้เป็น AI ตอบจากเอกสารของร้าน และสร้างภาพจำลองช่อดอกไม้ได้ หากต้องการติดต่อพนักงานจริง โทร <a href="tel:${SHOP_PHONE}">${SHOP_PHONE}</a> หรือ LINE: <strong>${SHOP_LINE}</strong>
           </div>
         </div>
 
@@ -440,7 +593,8 @@
           <div class="pimbot-msg bot">
             <div class="pimbot-bubble">
               สวัสดีค่ะ! ยินดีต้อนรับสู่ <strong>PIM Flower Studio</strong> 🌸<br>
-              หนูคือผู้ช่วยอัจฉริยะประจำร้าน พร้อมตอบคำถามเรื่องราคา ดอกไม้ตามฤดูกาล ความหมายดอกไม้ และช่วยคำนวณงบประมาณจัดช่อให้ค่ะ สอบถามได้เลยนะคะ!
+              หนูคือผู้ช่วยอัจฉริยะประจำร้าน พร้อมตอบคำถามเรื่องราคา ดอกไม้ตามฤดูกาล คำนวณงบประมาณ และ **สามารถวาดภาพจำลองช่อดอกไม้จริงด้วย AI** ให้ดูได้ทันทีค่ะ!<br>
+              <em>* ลองพิมพ์ว่า "ขอดูรูปช่อกุหลาบแดงหรูหรา" หรือ "เจนภาพช่อทานตะวันงบ 800" ได้เลยนะคะ ✨</em>
             </div>
           </div>
         </div>
@@ -448,7 +602,7 @@
         <div class="pimbot-chips-container" id="pimbot-chips"></div>
 
         <div class="pimbot-input-row">
-          <input type="text" id="pimbot-input" placeholder="พิมพ์คำถาม เช่น งบ 800 บาท จัดแบบไหนได้บ้าง..." autocomplete="off">
+          <input type="text" id="pimbot-input" placeholder="พิมพ์คำถาม หรือสั่งให้ AI เจนภาพช่อดอกไม้..." autocomplete="off">
           <button id="pimbot-send-btn" title="ส่งคำถาม">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="white">
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -473,14 +627,9 @@
       chip.textContent = chipText;
       chip.onclick = () => {
         if (chipText.includes("เปิดเครื่องมือออกแบบ")) {
-          // สลับเปิดฟีเจอร์ Bouquet Visualizer ในหน้าเว็บ
-          if (typeof window.openBouquetVisualizer === 'function') {
-            window.openBouquetVisualizer();
-          } else {
-            const visualizerSection = document.getElementById("visualizer");
-            if (visualizerSection) visualizerSection.scrollIntoView({ behavior: 'smooth' });
-          }
-          addBotMessage("หนูเปิดเครื่องมือออกแบบช่อดอกไม้และการ์ดอวยพรให้แล้วค่ะ คุณลูกค้าสามารถเลือกลองผสมดอกไม้และเขียนการ์ดได้ที่หน้าเว็บเลยนะคะ ✨");
+          const visualizerSection = document.getElementById("visualizer");
+          if (visualizerSection) visualizerSection.scrollIntoView({ behavior: 'smooth' });
+          addBotMessage("หนูเปิดสตูดิโอจำลองช่อดอกไม้และการ์ดอวยพรให้แล้วค่ะ คุณลูกค้าสามารถเลือกดอกไม้จริงและพิมพ์ข้อความการ์ดได้ที่หน้าเว็บเลยนะคะ ✨");
         } else {
           document.getElementById("pimbot-input").value = chipText;
           handleSendMessage();
@@ -539,7 +688,7 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  function addBotMessage(text, citation = null) {
+  function addBotMessage(text, citation = null, imageInfo = null) {
     const msgs = document.getElementById("pimbot-messages");
     const div = document.createElement("div");
     div.className = "pimbot-msg bot";
@@ -549,6 +698,36 @@
 
     if (citation) {
       html += `<div class="pimbot-citation">📚 อ้างอิง: <strong>${citation.file}</strong> (ส่วนที่ ${citation.chunkIndex}, ความสอดคล้อง ${citation.scorePercent}%)</div>`;
+    }
+
+    // แทรกการ์ดรูปภาพ AI ถ้ามี
+    if (imageInfo && imageInfo.url) {
+      const cardId = "ai-img-" + Math.floor(Math.random() * 100000);
+      html += `
+        <div class="pimbot-ai-image-card">
+          <div class="pimbot-ai-card-header">
+            <span>✨ ภาพจำลองจาก AI เสมือนจริง</span>
+            <span>Studio Render</span>
+          </div>
+          <div class="pimbot-ai-card-img-wrap" id="${cardId}-wrap">
+            <div class="pimbot-ai-shimmer" id="${cardId}-shimmer">
+              <span>🌸</span>
+              <span>กำลังเรนเดอร์ภาพช่อดอกไม้...</span>
+            </div>
+            <img src="${imageInfo.url}" alt="AI Flower Bouquet" 
+                 onload="document.getElementById('${cardId}-shimmer').style.display='none'"
+                 onerror="this.src='images/rose-red.jpg'; document.getElementById('${cardId}-shimmer').style.display='none'" />
+          </div>
+          <div class="pimbot-ai-card-actions">
+            <a href="${imageInfo.url}" target="_blank" download="PIM-Flower-Bouquet.jpg" class="pimbot-ai-btn">
+              📥 ดาวน์โหลดรูปภาพ
+            </a>
+            <button class="pimbot-ai-btn" onclick="applyAIToStudio('${imageInfo.url}')">
+              🎨 ใส่การ์ดในสตูดิโอ
+            </button>
+          </div>
+        </div>
+      `;
     }
 
     html += `</div>`;
@@ -594,11 +773,8 @@
   function formatMarkdown(text) {
     if (!text) return "";
     let html = escapeHtml(text);
-    // Bold **text**
     html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-    // Bullet points
     html = html.replace(/^\s*-\s+(.*)$/gm, "• $1<br>");
-    // Line breaks
     html = html.replace(/\n/g, "<br>");
     return html;
   }
@@ -665,7 +841,6 @@
 
       systemState.isReady = true;
 
-      // ข้อความหัวกล่องตามคู่มือหน้า 14: "พร้อมใช้งาน เอกสาร X ไฟล์ Y ชิ้น ค้นแบบ... ตอบด้วย..."
       const searchModeText = systemState.mode === "vector" ? "ค้นแบบเวกเตอร์" : "ค้นแบบเทียบตัวอักษร";
       const targetResponder = (systemState.workerUrl && !systemState.workerUrl.includes("your-account")) 
         ? "Worker" 
@@ -682,15 +857,12 @@
   // -------------------------------------------------------------
   // 5. ลำดับการทำงานช่วงที่ 2 : ค้นคืนเอกสาร (Retrieval)
   // -------------------------------------------------------------
-
-  // 5.1 โหมด Local: เทียบคำและ N-gram ตัวอักษร
   function retrieveLocalChunks(query, topK = 3) {
     const qTokens = tokenizeText(query);
     const scored = systemState.chunks.map(chunk => {
       let score = 0;
       for (const t of qTokens) {
         if (chunk.tokens.has(t)) {
-          // คำยาวให้คะแนนมากกว่า N-gram ย่อย
           score += (t.length >= 4 ? 3 : (t.length >= 2 ? 1 : 0.5));
         }
       }
@@ -707,22 +879,18 @@
     }));
   }
 
-  // 5.2 โหมด Vector: ส่งคำถามไปรับ Vector แล้วเทียบ Cosine Similarity
   async function retrieveVectorChunks(query, topK = 3) {
     if (!systemState.vectors || systemState.vectors.length === 0) {
       return retrieveLocalChunks(query, topK);
     }
 
     try {
-      // ตรวจสอบมิติเวกเตอร์ในไฟล์ vectors.json
       const sampleDim = systemState.vectors[0]?.vector?.length || 0;
       let queryVector = null;
 
-      // ถ้าขนาด 128 มิติ (Starter Set) คำนวณแบบ Local Semantic Feature ทันที
       if (sampleDim === 128) {
         queryVector = computeStarterVector(query);
       } else if (systemState.workerUrl && !systemState.workerUrl.includes("your-account")) {
-        // ขอ Embedding จาก Worker -> OpenRouter
         const embRes = await fetch(`${systemState.workerUrl}/embeddings`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -739,8 +907,6 @@
       }
 
       if (!queryVector) {
-        // ถอยกลับไปใช้ Local Search ตามคู่มือหน้า 22
-        console.warn("ไม่สามารถดึง Vector คำถามได้ ใช้ระบบค้นหา Local สำรอง");
         return retrieveLocalChunks(query, topK);
       }
 
@@ -764,7 +930,6 @@
     }
   }
 
-  // เวกเตอร์จำลอง 128 มิติสำหรับชุดข้อมูลเริ่มต้น
   function computeStarterVector(text) {
     const clean = text.toLowerCase().replace(/[^\u0E00-\u0E7Fa-z0-9]/g, " ");
     const words = clean.split(/\s+/).filter(w => w.length > 0);
@@ -796,7 +961,8 @@
 คำแนะนำพิเศษสำหรับการบริการ:
 1. หากลูกค้าถามเรื่องงบประมาณ (เช่น มีงบ 500 หรือ 800 บาท) ให้ช่วยคำนวณและแจกแจงค่าดอกไม้ ค่ากระดาษห่อ และยอดรวมสุทธิให้ชัดเจน
 2. อธิบายความหมายมงคลของดอกไม้ให้ตรงกับโอกาสพิเศษที่ลูกค้าถาม
-3. แนะนำอย่างสุภาพและเป็นกันเองด้วยภาษาไทยที่ไพเราะ
+3. หากลูกค้าต้องการดูรูปภาพ ช่อดอกไม้ หรือให้เจนรูป ให้บรรยายลักษณะช่อดอกไม้ที่สวยงาม พร้อมแจ้งว่า AI ได้สร้างภาพจำลองด้านล่างให้แล้ว
+4. แนะนำอย่างสุภาพและเป็นกันเองด้วยภาษาไทยที่ไพเราะ
 
 เอกสารที่ค้นเจอ:
 ${contextText}
@@ -811,7 +977,6 @@ ${userQuestion}`;
   async function callAI(prompt, userQuestion, topChunks) {
     const workerUrl = systemState.workerUrl;
 
-    // ถ้าตั้งค่า Worker เรียบร้อย ให้ส่งผ่าน Worker
     if (workerUrl && !workerUrl.includes("your-account") && !workerUrl.includes("pim-flower-worker.workers.dev/example")) {
       try {
         const response = await fetch(`${workerUrl}/chat/completions`, {
@@ -823,14 +988,13 @@ ${userQuestion}`;
               { role: "system", content: "คุณคือนักจัดดอกไม้และผู้ช่วยตอบคำถามของร้าน PIM Flower Studio" },
               { role: "user", content: prompt }
             ],
-            temperature: 0.2, // ความสร้างสรรค์ต่ำเพื่อคุมไม่ให้ AI เดาหรือมั่ว
+            temperature: 0.2,
             max_tokens: 800
           })
         });
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          // ถอดรหัสข้อผิดพลาดตามตารางคู่มือหน้า 22
           if (response.status === 403) {
             throw new Error("403 โดเมนไม่ได้รับอนุญาต: กรุณาตรวจสอบ ALLOWED ใน worker.js ให้ตรงกับโดเมนเว็บ");
           } else if (response.status === 429) {
@@ -847,19 +1011,15 @@ ${userQuestion}`;
         if (reply) return reply;
       } catch (workerErr) {
         console.warn("ส่งคำขอผ่าน Worker ไม่สำเร็จ กำลังใช้ระบบสำรอง:", workerErr.message);
-        // แสดงข้อความแนะนำหาก Worker ติดปัญหาเรื่อง Config
         if (workerErr.message.includes("403") || workerErr.message.includes("429")) {
           return `${workerErr.message}\n\n(คุณสามารถโทรติดต่อร้านโดยตรงได้ที่ ${SHOP_PHONE} ค่ะ)`;
         }
       }
     }
 
-    // ระบบประมวลผลคำตอบแบบชาญฉลาดในเครื่อง (Smart Local Fallback Generator)
-    // สำหรับกรณีที่ยังไม่ได้ Deploy Cloudflare Worker หรือกำลังทดสอบหน้าเว็บแบบ Standalone
     return generateSmartLocalAnswer(userQuestion, topChunks);
   }
 
-  // ตัวช่วยสร้างคำตอบ Local ให้สมบูรณ์แบบโดยยึด Grounding เสมอ
   function generateSmartLocalAnswer(question, chunks) {
     const q = question.toLowerCase();
 
@@ -867,6 +1027,19 @@ ${userQuestion}`;
     const irrelevantKeywords = ["หอพัก", "ค่าเช่า", "วิชา", "ลงทะเบียน", "เกรด", "อาจารย์", "สอบ"];
     if (irrelevantKeywords.some(k => q.includes(k))) {
       return `ไม่พบข้อมูลนี้ในเอกสารของร้าน PIM Flower Studio ค่ะ\n(ร้านของเราให้บริการเฉพาะดอกไม้สด ช่อดอกไม้ และของขวัญ หากมีคำถามอื่นๆ สามารถติดต่อสอบถามเจ้าหน้าที่ได้ที่เบอร์ ${SHOP_PHONE} หรือ LINE: ${SHOP_LINE} ค่ะ)`;
+    }
+
+    // กรณีขอภาพ หรือให้ AI เจนภาพ
+    if (checkImageIntent(q)) {
+      if (q.includes("กุหลาบแดง") || q.includes("rose")) {
+        return `นี่คือภาพจำลองช่อ **กุหลาบเอกวาดอร์แดงการ์เนต** พรีเมียมของร้านค่ะ 🌹✨\n- **ราคา:** ดอกละ 180 บาท หรือกำละ 1,600 บาท (10 ดอก) กลีบหนาพิเศษ บานทน 7-10 วัน\n- **ความหมาย:** สื่อถึงรักแท้ที่มั่นคง ลึกซึ้ง และความหลงใหลตลอดกาล\n- ห่อด้วยกระดาษไขเกาหลีสีเขียวเซจ พร้อมริบบิ้นซาตินพรีเมียม ทาง AI ได้เรนเดอร์ภาพช่อดอกไม้เสมือนจริงให้ชมด้านล่างแล้วค่ะ!`;
+      } else if (q.includes("ทานตะวัน") || q.includes("รับปริญญา")) {
+        return `นี่คือภาพจำลองช่อ **ดอกทานตะวันซันไชน์** สำหรับงานรับปริญญาค่ะ 🌻🎓\n- **ราคา:** ดอกละ 80 บาท หรือกำละ 350 บาท (5 ดอก) แนะนำแพ็กเกจเซต 590 บาท\n- **ความหมาย:** สื่อถึงความสำเร็จ อนาคตที่สดใสรุ่งโรจน์ และพลังบวก\n- ห่อกระดาษคราฟท์รักษ์โลก ผูกโบว์เชือกปอรัสติก ถ่ายรูปกลางแจ้งขึ้นกล้องมากค่ะ!`;
+      } else if (q.includes("ทิวลิป")) {
+        return `นี่คือภาพจำลองช่อ **ดอกทิวลิปเนเธอร์แลนด์** ทรงถ้วยเรียบหรูสไตล์มินิมอลค่ะ 🌷\n- **ราคา:** ดอกละ 100 บาท หรือกำละ 900 บาท (10 ดอก)\n- **ความหมาย:** สื่อถึงการเริ่มต้นใหม่ ความสดชื่น และความจริงใจ\n- ห่อกระดาษไขเกาหลีสีพาสเทล ละมุนตามากค่ะ!`;
+      } else {
+        return `หนูได้ให้ AI ออกแบบและเรนเดอร์ **ช่อดอกไม้สดเสมือนจริง** ตามที่คุณลูกค้าต้องการให้เรียบร้อยแล้วค่ะ 🌸✨\nคุณลูกค้าสามารถกดดูภาพความละเอียดสูง หรือกดดาวน์โหลดนำไปส่งต่อได้เลยนะคะ!`;
+      }
     }
 
     // กรณีถามคำนวณงบประมาณ
@@ -921,7 +1094,6 @@ ${userQuestion}`;
 
     if (!question || systemState.isThinking) return;
 
-    // เคลียร์ช่องพิมพ์
     input.value = "";
     addUserMessage(question);
 
@@ -933,22 +1105,25 @@ ${userQuestion}`;
       const topK = CONFIG.TOP_K || 3;
       let topChunks = [];
 
-      // ค้นคืนเอกสารตามโหมดที่เลือก
       if (systemState.mode === "vector") {
         topChunks = await retrieveVectorChunks(question, topK);
       } else {
         topChunks = retrieveLocalChunks(question, topK);
       }
 
-      // ประกอบ Prompt และส่งให้ AI
       const prompt = makePrompt(topChunks, question);
       const answer = await callAI(prompt, question, topChunks);
 
+      // ตรวจสอบว่าต้องสร้างรูปภาพ AI เสริมด้วยหรือไม่
+      let imageInfo = null;
+      if (checkImageIntent(question)) {
+        imageInfo = buildAIBouquetPrompt(question);
+      }
+
       removeTypingIndicator();
 
-      // ข้อมูลการอ้างอิงเอกสาร (Citation)
       const primaryCitation = topChunks[0] || null;
-      addBotMessage(answer, primaryCitation);
+      addBotMessage(answer, primaryCitation, imageInfo);
 
     } catch (err) {
       console.error("เกิดข้อผิดพลาดในการตอบคำถาม:", err);
@@ -962,6 +1137,15 @@ ${userQuestion}`;
       input.focus();
     }
   }
+
+  // นำรูปภาพที่ AI เจนในแชท ไปแสดงในการ์ดสตูดิโอ
+  window.applyAIToStudio = function (imgUrl) {
+    if (typeof window.setStudioCustomImage === 'function') {
+      window.setStudioCustomImage(imgUrl);
+    }
+    const visualizerSection = document.getElementById("visualizer");
+    if (visualizerSection) visualizerSection.scrollIntoView({ behavior: 'smooth' });
+  };
 
   // -------------------------------------------------------------
   // 9. เริ่มต้นทำงานเมื่อเอกสาร HTML พร้อม
@@ -983,6 +1167,11 @@ ${userQuestion}`;
     ask: (q) => {
       if (!systemState.isOpen) toggleChatWindow();
       document.getElementById("pimbot-input").value = q;
+      handleSendMessage();
+    },
+    generateImage: (customPrompt) => {
+      if (!systemState.isOpen) toggleChatWindow();
+      document.getElementById("pimbot-input").value = `ช่วยเจนรูปช่อดอกไม้นี้ให้หน่อย: ${customPrompt}`;
       handleSendMessage();
     }
   };

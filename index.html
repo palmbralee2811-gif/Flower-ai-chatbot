@@ -631,7 +631,7 @@
     }
 
     .visualizer-canvas-panel {
-      padding: 36px;
+      padding: 30px 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -639,22 +639,180 @@
       background: radial-gradient(circle, #FAF5FF 0%, #FFFFFF 100%);
     }
 
-    #bouquetCanvas {
-      max-width: 100%;
-      height: auto;
-      border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-      border: 1px solid rgba(0,0,0,0.06);
-      background: #ffffff;
+    .studio-mode-tabs {
+      display: flex;
+      background: #E2E8F0;
+      padding: 4px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      width: 100%;
+      max-width: 440px;
+      gap: 6px;
+    }
+
+    .studio-tab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: transparent;
+      color: #64748B;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .studio-tab-btn.active {
+      background: #FFFFFF;
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .studio-preview-box {
+      width: 100%;
+      max-width: 440px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.12);
+      border: 1px solid rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .studio-photo-frame {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: #F1F5F9;
+      overflow: hidden;
+    }
+
+    .studio-photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease, opacity 0.3s ease;
+      display: block;
+    }
+
+    .studio-photo-frame:hover img {
+      transform: scale(1.03);
+    }
+
+    .studio-badge-overlay {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .studio-badge-pill {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(6px);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: fit-content;
+    }
+
+    .studio-price-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: var(--accent);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(231, 111, 81, 0.3);
+      z-index: 5;
+    }
+
+    .studio-card-box {
+      background: #FFFDF9;
+      padding: 16px 18px 20px;
+      border-top: 1px solid #F1E9DB;
+      position: relative;
+      text-align: center;
+    }
+
+    .studio-card-inner {
+      border: 1.5px solid #D4AF37;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #FFFFFF;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.08);
+    }
+
+    .studio-card-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .studio-card-message {
+      font-size: 14.5px;
+      color: #1F2937;
+      font-style: italic;
+      font-weight: 500;
+      min-height: 22px;
+      word-break: break-word;
+    }
+
+    .studio-card-footer {
+      font-size: 10.5px;
+      color: #9CA3AF;
+      margin-top: 6px;
+    }
+
+    .studio-shimmer-loader {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(5px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .studio-spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #E2E8F0;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: studioSpin 0.8s linear infinite;
+    }
+
+    @keyframes studioSpin {
+      to { transform: rotate(360deg); }
     }
 
     .canvas-actions {
-      margin-top: 22px;
+      margin-top: 20px;
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
       justify-content: center;
       width: 100%;
+      max-width: 440px;
     }
 
     /* RAG Explainer Section */
@@ -1117,16 +1275,60 @@
 
         </div>
 
-        <!-- Canvas Right Panel -->
+        <!-- Studio Preview Right Panel -->
         <div class="visualizer-canvas-panel">
-          <canvas id="bouquetCanvas" width="460" height="560"></canvas>
+          
+          <!-- Mode Tabs -->
+          <div class="studio-mode-tabs">
+            <button class="studio-tab-btn active" id="btnRealMode" onclick="setStudioMode('real')">
+              📷 ภาพถ่ายดอกไม้จริงของร้าน
+            </button>
+            <button class="studio-tab-btn" id="btnAIMode" onclick="setStudioMode('ai')">
+              ✨ ภาพจำลอง AI สดใหม่
+            </button>
+          </div>
+
+          <!-- Studio Preview Box -->
+          <div class="studio-preview-box" id="studioPreviewBox">
+            <div class="studio-shimmer-loader" id="studioShimmer">
+              <div class="studio-spinner"></div>
+              <div style="font-size:14px; font-weight:600; color:var(--primary-dark);">🌸 AI กำลังเนรมิตภาพช่อดอกไม้เสมือนจริง...</div>
+              <div style="font-size:12px; color:#6B7280;">จัดแสงสตูดิโอและกลีบดอกไม้แบบสมจริง</div>
+            </div>
+
+            <!-- Photo Frame with Badges -->
+            <div class="studio-photo-frame">
+              <div class="studio-badge-overlay">
+                <span class="studio-badge-pill" id="studioFlowerBadge">🌹 กุหลาบเอกวาดอร์แดง 3 ดอก</span>
+                <span class="studio-badge-pill" id="studioPaperBadge">🍃 กระดาษไขเขียวเซจ</span>
+                <span class="studio-badge-pill" id="studioRibbonBadge">🎗️ ริบบิ้นซาตินพรีเมียม</span>
+              </div>
+              <div class="studio-price-badge" id="studioPriceBadge">฿840.-</div>
+              <img id="studioFlowerImage" src="images/rose-red.jpg" alt="PIM Flower Studio Preview" />
+            </div>
+
+            <!-- Greeting Card Box -->
+            <div class="studio-card-box">
+              <div class="studio-card-inner">
+                <div class="studio-card-title">🌸 PIM FLOWER STUDIO · GREETING CARD 🌸</div>
+                <div class="studio-card-message" id="studioCardMessage">"ขอให้มีความสุขและสดใสในทุกๆ วันนะ 💖"</div>
+                <div class="studio-card-footer">Designed at PIM Flower Studio · โทร 02-123-4567</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Off-screen Canvas for composite export -->
+          <canvas id="bouquetCanvas" width="500" height="660" style="display:none;"></canvas>
           
           <div class="canvas-actions">
-            <button class="btn btn-accent" onclick="downloadGreetingCard()">
+            <button class="btn btn-accent" onclick="generateAIBouquetInStudio()">
+              ✨ ให้ AI เจนภาพช่อนี้ (AI Generate)
+            </button>
+            <button class="btn btn-outline" style="background:#2D6A4F; color:#FFFFFF; border-color:#2D6A4F;" onclick="downloadGreetingCard()">
               📥 ดาวน์โหลดการ์ด & ภาพช่อนี้
             </button>
-            <button class="btn btn-outline" onclick="consultAICustomBouquet()">
-              💬 ปรึกษา AI เรื่องช่อที่ออกแบบนี้
+            <button class="btn btn-outline" onclick="sendToAIChatWithImage()">
+              💬 ให้ AI ในแชทวิเคราะห์ & เจนภาพ
             </button>
           </div>
         </div>
@@ -1227,6 +1429,16 @@
 
   <!-- Interactive JavaScript Scripts for Visualizer and Budget Calculator -->
   <script>
+    // ฐานข้อมูลภาพถ่ายช่อดอกไม้จริงของร้าน (Real Flower Studio Photos)
+    const REAL_PHOTOS = {
+      'rose-red': 'images/rose-red.jpg',
+      'rose-pink': 'images/rose-pink.jpg',
+      'sunflower': 'images/sunflower.jpg',
+      'tulip': 'images/tulip.jpg',
+      'hydrangea': 'images/hydrangea.jpg',
+      'lily': 'images/lily.jpg'
+    };
+
     // State สำหรับ Bouquet Visualizer
     const visualizerState = {
       flower: 'rose-red',
@@ -1245,8 +1457,10 @@
       greeting: 'ขอให้มีความสุขและสดใสในทุกๆ วันนะ 💖'
     };
 
+    let currentStudioMode = 'real'; // 'real' หรือ 'ai'
+    let currentAIImageUrl = '';
+
     function selectOption(type, value, price, element) {
-      // เอา active ออกจาก sibling ใน grid เดียวกัน
       const parent = element.parentElement;
       parent.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
       element.classList.add('active');
@@ -1270,14 +1484,14 @@
       }
 
       updateVisualizerCost();
-      renderBouquetCanvas();
+      updateStudioUI();
     }
 
     function updateFlowerCount(val) {
       visualizerState.flowerCount = parseInt(val);
       document.getElementById('flowerCountVal').innerText = `${val} ดอก`;
       updateVisualizerCost();
-      renderBouquetCanvas();
+      updateStudioUI();
     }
 
     function updateVisualizerCost() {
@@ -1287,211 +1501,173 @@
       document.getElementById('visualizerTotalCost').innerText = `฿${total}.-`;
       document.getElementById('visualizerCostBreakdown').innerText = 
         `${visualizerState.flowerName} ${visualizerState.flowerCount} ดอก (฿${flowersTotal}) + ${visualizerState.foliageName} (฿${visualizerState.foliagePrice}) + ${visualizerState.paperName} (฿${visualizerState.paperPrice})`;
+
+      // อัปเดตราคาบนป้ายของภาพจำลอง
+      const priceBadge = document.getElementById('studioPriceBadge');
+      if (priceBadge) priceBadge.innerText = `฿${total}.-`;
     }
 
-    // วาดภาพจำลองช่อดอกไม้และการ์ดอวยพรลงบน HTML5 Canvas
-    function renderBouquetCanvas() {
+    function setStudioMode(mode) {
+      currentStudioMode = mode;
+      const btnReal = document.getElementById('btnRealMode');
+      const btnAI = document.getElementById('btnAIMode');
+      if (btnReal) btnReal.classList.toggle('active', mode === 'real');
+      if (btnAI) btnAI.classList.toggle('active', mode === 'ai');
+
+      const img = document.getElementById('studioFlowerImage');
+      if (mode === 'real') {
+        if (img) img.src = REAL_PHOTOS[visualizerState.flower] || 'images/rose-red.jpg';
+      } else {
+        if (currentAIImageUrl) {
+          if (img) img.src = currentAIImageUrl;
+        } else {
+          generateAIBouquetInStudio();
+        }
+      }
+      setTimeout(renderCompositeCanvas, 200);
+    }
+
+    function updateStudioUI() {
+      // 1. อัปเดตภาพตามโหมด
+      const img = document.getElementById('studioFlowerImage');
+      if (img && currentStudioMode === 'real') {
+        img.src = REAL_PHOTOS[visualizerState.flower] || 'images/rose-red.jpg';
+      }
+
+      // 2. อัปเดตข้อความบนการ์ดและป้าย
+      const flowerBadge = document.getElementById('studioFlowerBadge');
+      const paperBadge = document.getElementById('studioPaperBadge');
+      const ribbonBadge = document.getElementById('studioRibbonBadge');
+      const cardMsg = document.getElementById('studioCardMessage');
+      const inputMsg = document.getElementById('greetingMessageInput');
+
+      if (flowerBadge) flowerBadge.innerText = `${visualizerState.flowerName} ${visualizerState.flowerCount} ดอก`;
+      if (paperBadge) paperBadge.innerText = visualizerState.paperName;
+      if (ribbonBadge) ribbonBadge.innerText = visualizerState.ribbonName;
+      if (cardMsg && inputMsg) {
+        cardMsg.innerText = `"${inputMsg.value || 'ขอให้มีความสุขในทุกๆ วันนะ 💖'}"`;
+      }
+
+      // 3. วาดลงบน Export Canvas เพื่อเตรียมดาวน์โหลด
+      setTimeout(renderCompositeCanvas, 150);
+    }
+
+    // ฟังก์ชันให้ AI เจนภาพช่อดอกไม้เสมือนจริงในสตูดิโอ
+    async function generateAIBouquetInStudio() {
+      const shimmer = document.getElementById('studioShimmer');
+      if (shimmer) shimmer.style.display = 'flex';
+      setStudioMode('ai');
+
+      let flowerPrompt = `${visualizerState.flowerCount} fresh red roses`;
+      if (visualizerState.flower === 'rose-red') {
+        flowerPrompt = `${visualizerState.flowerCount} vibrant crimson red ecuadorian roses with velvety petals`;
+      } else if (visualizerState.flower === 'rose-pink') {
+        flowerPrompt = `${visualizerState.flowerCount} delicate pastel pink roses`;
+      } else if (visualizerState.flower === 'sunflower') {
+        flowerPrompt = `${visualizerState.flowerCount} bright blooming golden sunflowers with lush green leaves`;
+      } else if (visualizerState.flower === 'tulip') {
+        flowerPrompt = `${visualizerState.flowerCount} elegant dutch tulips in coral peach tones`;
+      } else if (visualizerState.flower === 'hydrangea') {
+        flowerPrompt = `magnificent sky-blue hydrangea bloom with delicate ruffled petals`;
+      } else if (visualizerState.flower === 'lily') {
+        flowerPrompt = `pure white oriental lilies with elegant blooming petals`;
+      }
+
+      let wrapPrompt = 'wrapped in matte sage green korean waterproof paper';
+      if (visualizerState.paper === 'korean-pink') wrapPrompt = 'wrapped in soft blush pink korean matte paper';
+      else if (visualizerState.paper === 'kraft') wrapPrompt = 'wrapped in vintage rustic brown kraft paper';
+      else if (visualizerState.paper === 'washi') wrapPrompt = 'wrapped in textured japanese washi paper';
+
+      let foliagePrompt = visualizerState.foliage === 'babys-breath' ? 'accented with white baby breath flowers' :
+                         visualizerState.foliage === 'eucalyptus' ? 'accented with fresh eucalyptus leaves' :
+                         visualizerState.foliage === 'caspia' ? 'accented with purple caspia sprigs' : '';
+
+      const seed = Math.floor(Math.random() * 899999 + 100000);
+      const fullPrompt = `professional studio floral photography of a luxury flower bouquet with ${flowerPrompt}, ${foliagePrompt}, ${wrapPrompt}, tied with satin ribbon, warm soft cinematic lighting, 8k resolution, crisp sharp focus, luxury florist masterpiece`;
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=600&height=700&nologo=true&seed=${seed}`;
+
+      const testImg = new Image();
+      testImg.onload = () => {
+        currentAIImageUrl = url;
+        const imgEl = document.getElementById('studioFlowerImage');
+        if (imgEl) imgEl.src = url;
+        if (shimmer) shimmer.style.display = 'none';
+        renderCompositeCanvas();
+      };
+      testImg.onerror = () => {
+        const imgEl = document.getElementById('studioFlowerImage');
+        if (imgEl) imgEl.src = REAL_PHOTOS[visualizerState.flower] || 'images/rose-red.jpg';
+        if (shimmer) shimmer.style.display = 'none';
+        renderCompositeCanvas();
+      };
+      testImg.src = url;
+    }
+
+    // วาดภาพรวม (รูปดอกไม้จริง + การ์ดอวยพรสีทอง) ลงใน Canvas สำหรับดาวน์โหลด
+    function renderCompositeCanvas() {
       const canvas = document.getElementById('bouquetCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const w = canvas.width;
       const h = canvas.height;
 
-      // 1. วาดพื้นหลังกระดาษการ์ดแบบ Soft Gradient
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-      bgGrad.addColorStop(0, '#FFFDF9');
-      bgGrad.addColorStop(1, '#F7F4EF');
-      ctx.fillStyle = bgGrad;
+      // 1. พื้นหลังการ์ดหรูหรา
+      ctx.fillStyle = '#FFFDF9';
       ctx.fillRect(0, 0, w, h);
 
-      // กรอบทองสไตล์พรีเมียม
+      // กรอบทองพรีเมียม
       ctx.strokeStyle = '#D4AF37';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(14, 14, w - 28, h - 28);
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(10, 10, w - 20, h - 20);
       ctx.strokeStyle = '#EBD59B';
       ctx.lineWidth = 1;
-      ctx.strokeRect(18, 18, w - 36, h - 36);
+      ctx.strokeRect(14, 14, w - 28, h - 28);
 
-      // หัวกระดาษการ์ด
-      ctx.fillStyle = '#2D6A4F';
-      ctx.font = '600 13px "Prompt", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🌸 PIM FLOWER STUDIO · BOUQUET CARD 🌸', w / 2, 42);
-
-      // 2. วาดกระดาษห่อช่อ (Wrapping Cone / Paper)
-      ctx.save();
-      let paperColor = '#84A98C'; // sage green
-      let paperFoldColor = '#6B9080';
-      if (visualizerState.paper === 'korean-pink') {
-        paperColor = '#F7CAD0';
-        paperFoldColor = '#EEB1B9';
-      } else if (visualizerState.paper === 'kraft') {
-        paperColor = '#D4A373';
-        paperFoldColor = '#BC8A5F';
-      } else if (visualizerState.paper === 'washi') {
-        paperColor = '#E9ECEF';
-        paperFoldColor = '#CED4DA';
-      }
-
-      // ปีกกระดาษห่อชั้นหลัง
-      ctx.fillStyle = paperColor;
-      ctx.beginPath();
-      ctx.moveTo(w / 2 - 130, 150);
-      ctx.lineTo(w / 2 + 130, 150);
-      ctx.lineTo(w / 2 + 35, 340);
-      ctx.lineTo(w / 2 - 35, 340);
-      ctx.closePath();
-      ctx.fill();
-
-      // เส้นจับจีบกระดาษ
-      ctx.fillStyle = paperFoldColor;
-      ctx.beginPath();
-      ctx.moveTo(w / 2 - 130, 150);
-      ctx.lineTo(w / 2 - 50, 230);
-      ctx.lineTo(w / 2 - 35, 340);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(w / 2 + 130, 150);
-      ctx.lineTo(w / 2 + 50, 230);
-      ctx.lineTo(w / 2 + 35, 340);
-      ctx.closePath();
-      ctx.fill();
-
-      // 3. วาดดอกไม้แซม (Foliage / Baby's breath)
-      if (visualizerState.foliage === 'babys-breath') {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.strokeStyle = '#D1D5DB';
-        ctx.lineWidth = 0.8;
-        for (let i = 0; i < 28; i++) {
-          const fx = w / 2 + (Math.sin(i * 1.7) * 90);
-          const fy = 150 + (Math.cos(i * 2.3) * 45);
-          ctx.beginPath();
-          ctx.arc(fx, fy, 4, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-        }
-      } else if (visualizerState.foliage === 'eucalyptus') {
-        ctx.fillStyle = '#52796F';
-        for (let i = 0; i < 14; i++) {
-          const ex = w / 2 + (Math.sin(i * 1.5) * 85);
-          const ey = 140 + (Math.cos(i * 2.1) * 40);
-          ctx.beginPath();
-          ctx.ellipse(ex, ey, 10, 6, i * 0.4, 0, Math.PI * 2);
-          ctx.fill();
+      // 2. วาดภาพดอกไม้จริง / ภาพ AI ลงครึ่งบน
+      const currentImg = document.getElementById('studioFlowerImage');
+      if (currentImg && currentImg.complete && currentImg.naturalWidth > 0) {
+        try {
+          ctx.save();
+          // ทำขอบมนให้ภาพดอกไม้
+          roundRect(ctx, 20, 20, w - 40, 430, 12, false, false);
+          ctx.clip();
+          ctx.drawImage(currentImg, 20, 20, w - 40, 430);
+          ctx.restore();
+        } catch (e) {
+          console.warn('Canvas drawImage notice:', e);
         }
       }
 
-      // 4. วาดดอกไม้หลักตามจำนวน (Flower blooms)
-      let bloomColor = '#D90429'; // Red rose
-      let centerColor = '#EF233C';
-      if (visualizerState.flower === 'rose-pink') {
-        bloomColor = '#FF8FA3';
-        centerColor = '#FF4D6D';
-      } else if (visualizerState.flower === 'sunflower') {
-        bloomColor = '#FFB703';
-        centerColor = '#6F4E37';
-      } else if (visualizerState.flower === 'tulip') {
-        bloomColor = '#F77F00';
-        centerColor = '#D62828';
-      } else if (visualizerState.flower === 'hydrangea') {
-        bloomColor = '#8ECAE6';
-        centerColor = '#219EBC';
-      } else if (visualizerState.flower === 'lily') {
-        bloomColor = '#FAEDCD';
-        centerColor = '#CCD5AE';
-      }
-
-      const count = visualizerState.flowerCount;
-      for (let i = 0; i < count; i++) {
-        // จัดเรียงดอกเป็นพุ่มสวยงาม
-        let cx = w / 2;
-        let cy = 180;
-        if (count > 1) {
-          const angle = (i / (count - 1)) * Math.PI - Math.PI / 2;
-          cx = w / 2 + (i - (count - 1) / 2) * (180 / Math.max(2, count));
-          cy = 180 + Math.abs(i - (count - 1) / 2) * 12;
-        }
-
-        // วาดกลีบดอก
-        ctx.fillStyle = bloomColor;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 24, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = centerColor;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 14, 0, Math.PI * 2);
-        ctx.fill();
-
-        // เกสรหรือกลีบซ้อน
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 7, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      // 5. โบว์ริบบิ้น (Ribbon bow)
-      ctx.fillStyle = visualizerState.ribbon === 'chiffon' ? '#FFCCD5' : '#D90429';
-      // ปมโบว์
-      ctx.beginPath();
-      ctx.arc(w / 2, 330, 11, 0, Math.PI * 2);
-      ctx.fill();
-      // หูปีกโบว์
-      ctx.beginPath();
-      ctx.ellipse(w / 2 - 24, 328, 18, 9, -0.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(w / 2 + 24, 328, 18, 9, 0.2, 0, Math.PI * 2);
-      ctx.fill();
-      // ชายริบบิ้น
-      ctx.beginPath();
-      ctx.moveTo(w / 2 - 6, 336);
-      ctx.lineTo(w / 2 - 20, 380);
-      ctx.lineTo(w / 2 - 8, 375);
-      ctx.lineTo(w / 2 - 2, 340);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(w / 2 + 6, 336);
-      ctx.lineTo(w / 2 + 20, 380);
-      ctx.lineTo(w / 2 + 8, 375);
-      ctx.lineTo(w / 2 + 2, 340);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.restore();
-
-      // 6. ป้ายการ์ดข้อความอวยพร (Digital Greeting Message Box)
-      const cardBoxY = 405;
+      // 3. วาดกล่องการ์ดอวยพรลงครึ่งล่าง
+      const cardY = 465;
       ctx.fillStyle = '#FFFFFF';
-      ctx.shadowColor = 'rgba(0,0,0,0.08)';
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 4;
-      roundRect(ctx, 36, cardBoxY, w - 72, 115, 12, true, false);
-      ctx.shadowColor = 'transparent';
-
       ctx.strokeStyle = '#D4AF37';
-      ctx.lineWidth = 1;
-      roundRect(ctx, 40, cardBoxY + 4, w - 80, 107, 8, false, true);
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, 24, cardY, w - 48, 170, 12, true, true);
+
+      // หัวการ์ด
+      ctx.fillStyle = '#2D6A4F';
+      ctx.font = '700 13px "Prompt", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🌸 PIM FLOWER STUDIO · BOUQUET CARD 🌸', w / 2, cardY + 28);
 
       // ข้อความอวยพร
       const msg = document.getElementById('greetingMessageInput')?.value || visualizerState.greeting;
-      ctx.fillStyle = '#1B4332';
-      ctx.font = '600 15px "Prompt", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('💌 การ์ดอวยพรพิเศษ', w / 2, cardBoxY + 30);
+      ctx.fillStyle = '#1F2937';
+      ctx.font = '500 16px "Prompt", sans-serif';
+      wrapText(ctx, `"${msg}"`, w / 2, cardY + 65, w - 80, 24);
 
-      ctx.fillStyle = '#374151';
-      ctx.font = '400 13.5px "Prompt", sans-serif';
-      wrapText(ctx, `"${msg}"`, w / 2, cardBoxY + 58, w - 100, 22);
+      // ข้อมูลดอกไม้และราคารวม
+      const flowersTotal = visualizerState.flowerPrice * visualizerState.flowerCount;
+      const total = flowersTotal + visualizerState.foliagePrice + visualizerState.paperPrice + visualizerState.ribbonPrice;
+      ctx.fillStyle = '#E76F51';
+      ctx.font = '700 13.5px "Prompt", sans-serif';
+      ctx.fillText(`${visualizerState.flowerName} (${visualizerState.flowerCount} ดอก) · ยอดรวม ฿${total}.-`, w / 2, cardY + 125);
 
+      // เบอร์ติดต่อร้าน
       ctx.fillStyle = '#9CA3AF';
       ctx.font = '11px "Prompt", sans-serif';
-      ctx.fillText('Designed at PIM Flower Studio · 02-123-4567', w / 2, cardBoxY + 102);
+      ctx.fillText('โทร 02-123-4567 · LINE: @pimflower', w / 2, cardY + 152);
     }
 
     function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
@@ -1529,23 +1705,30 @@
 
     // ดาวน์โหลดรูปการ์ด
     function downloadGreetingCard() {
+      renderCompositeCanvas();
       const canvas = document.getElementById('bouquetCanvas');
       if (!canvas) return;
       const link = document.createElement('a');
-      link.download = 'PIM-Flower-Greeting-Card.png';
+      link.download = `PIM-Flower-${visualizerState.flower}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
 
-    // ปรึกษา AI เรื่องช่อที่ออกแบบนี้
-    function consultAICustomBouquet() {
+    // ส่งแบบช่อที่ออกแบบให้ AI ในแชทวิเคราะห์ และให้ AI เจนภาพในแชททันที
+    function sendToAIChatWithImage() {
       const flowersTotal = visualizerState.flowerPrice * visualizerState.flowerCount;
       const total = flowersTotal + visualizerState.foliagePrice + visualizerState.paperPrice + visualizerState.ribbonPrice;
-      const question = `สนใจสั่งช่อที่ออกแบบเองค่ะ: ${visualizerState.flowerName} จำนวน ${visualizerState.flowerCount} ดอก แซมด้วย ${visualizerState.foliageName} ห่อ ${visualizerState.paperName} ราคารวมประมาณ ${total} บาท มีคำแนะนำการดูแลหรือรอบส่งยังไงบ้างคะ?`;
+      const question = `ช่วยเจนรูปช่อดอกไม้นี้ให้ดูหน่อยค่ะ: ${visualizerState.flowerName} ${visualizerState.flowerCount} ดอก แซมด้วย ${visualizerState.foliageName} ห่อ ${visualizerState.paperName} ผูก ${visualizerState.ribbonName} ราคารวมประมาณ ${total} บาท มีคำแนะนำการดูแลหรือรอบส่งยังไงบ้างคะ?`;
       if (window.PimBot) {
         window.PimBot.ask(question);
       }
     }
+
+    // รับภาพจากแชทมาใส่ในสตูดิโอ
+    window.setStudioCustomImage = function (url) {
+      currentAIImageUrl = url;
+      setStudioMode('ai');
+    };
 
     // Hero Canvas Render
     function renderHeroCanvas() {
@@ -1718,7 +1901,7 @@
       renderHeroCanvas();
       updateBudgetSlider(850);
       updateVisualizerCost();
-      renderBouquetCanvas();
+      updateStudioUI();
     });
   </script>
 
