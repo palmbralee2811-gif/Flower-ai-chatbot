@@ -1,29 +1,38 @@
 /**
- * PIM Flower Studio - AI RAG Chatbot Widget with Real-Time AI Bouquet Image Generation
- * สถาปัตยกรรม Static Site + Serverless Proxy
- * ปฏิบัติตามคู่มือรายวิชา AI และสถาปัตยกรรม RAG 4 ขั้นตอน พร้อมระบบ AI เจนภาพช่อดอกไม้เสมือนจริงในแชท
+ * Bloomie Florist - AI RAG Chatbot Widget with Real-Time AI Bouquet Image Generation
+ * ดีไซน์เอกลักษณ์ Bloomie Florist: โทนครีม เบจ และเขียวมะกอก (Cormorant Garamond + Anuphan)
+ * สถาปัตยกรรม Static Site + Serverless Proxy ตามหลักสูตร RAG 4 ขั้นตอน พร้อมระบบ AI เจนภาพช่อดอกไม้เสมือนจริง
  */
 
 (function () {
   // -------------------------------------------------------------
-  // 1. การกำหนดสีและธีม (อ้างอิงตอนที่ 5 จุดที่ 3 ในคู่มือ)
+  // 1. กำหนดสีและธีม Bloomie Florist (โทนครีม เบจ และเขียวมะกอก)
   // -------------------------------------------------------------
-  const C = {
-    main: "#2D6A4F",       // สีหลัก: เขียวเข้มฟลอรัล สำหรับปุ่มและหัวกล่อง
-    accent: "#E76F51",     // สีปุ่มส่งและไฮไลท์: ส้มคอรัลสดใส
-    bg: "#FFFFFF",
-    headerBg: "linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%)",
-    userBubble: "#2D6A4F",
+  const THEME = {
+    olive: "#7D8B6E",             // สีเขียวมะกอกหลัก (Olive Green)
+    oliveHover: "#6B785D",        // เขียวมะกอกเข้มขึ้นเมื่อ Hover
+    oliveLight: "#8F9E7C",        // เขียวมะกอกสว่าง
+    oliveBg: "#EBF0E7",           // พื้นหลังสีเขียวมะกอกอ่อนละมุน
+    cream: "#FAF7F2",             // สีครีมพื้นฐาน
+    creamCard: "#FFFDFB",         // สีครีมขาวสะอาดสำหรับบับเบิล
+    creamBorder: "#EAE3D6",       // เส้นขอบสีครีมเบจ
+    warmBeige: "#F3ECE2",         // สีเบจอบอุ่น
+    textDark: "#332F2A",          // สีข้อความหลัก
+    textMuted: "#766F65",         // สีข้อความรอง
+    userBubble: "#7D8B6E",        // กล่องข้อความผู้ใช้สีเขียวมะกอก
     userText: "#FFFFFF",
-    botBubble: "#F4F6F5",
-    botText: "#1F2937",
-    disclaimerBg: "#FEF3C7",
-    disclaimerText: "#92400E"
+    botBubble: "#FFFDFB",
+    botText: "#332F2A",
+    statusBg: "rgba(246, 241, 234, 0.92)",
+    statusText: "#4E483F",
+    disclaimerBg: "rgba(254, 250, 240, 0.9)",
+    disclaimerBorder: "rgba(235, 218, 178, 0.8)",
+    disclaimerText: "#856023"
   };
 
   // เบอร์ติดต่อพนักงานจริงตามหลักจริยธรรม (ตอนที่ 5 จุดที่ 4)
   const SHOP_PHONE = "02-123-4567";
-  const SHOP_LINE = "@pimflower";
+  const SHOP_LINE = "@bloomieflorist";
 
   // ภาพถ่ายดอกไม้จริงของร้าน (Local Photos)
   const REAL_FLOWER_PHOTOS = {
@@ -35,7 +44,7 @@
     'lily': 'images/lily.jpg'
   };
 
-  // สถานะการทำงานของระบบ
+  // สถานะการทำงานของระบบ RAG
   let systemState = {
     isReady: false,
     docsLoaded: false,
@@ -51,14 +60,40 @@
     isThinking: false
   };
 
-  // คำถามตัวอย่าง (pimbot-chips)
-  const SAMPLE_CHIPS = [
+  // คำถามตัวอย่าง 4 หมวดหลัก (ชุดไอคอนตาม Reference Design)
+  const QUICK_QUESTIONS = [
+    {
+      id: "q-advance",
+      icon: "images/icon-calendar.svg",
+      text: "สั่งล่วงหน้าได้ไหม?",
+      query: "สั่งล่วงหน้าได้ไหม?"
+    },
+    {
+      id: "q-delivery",
+      icon: "images/icon-truck.svg",
+      text: "จัดส่งกี่วัน?",
+      query: "จัดส่งกี่วัน?"
+    },
+    {
+      id: "q-price",
+      icon: "images/icon-tag.svg",
+      text: "ราคาเท่าไหร่?",
+      query: "ราคาเท่าไหร่?"
+    },
+    {
+      id: "q-services",
+      icon: "images/icon-help.svg",
+      text: "มีบริการอะไรบ้าง?",
+      query: "มีบริการอะไรบ้าง?"
+    }
+  ];
+
+  // คำถามเสริมสำหรับ AI เจนรูป
+  const EXTRA_AI_PROMPTS = [
     "✨ กุหลาบ ทิวลิป ช่อดอกไม้ สีน้ำตาลครีมกระดาษเกาหลี ติดโบว์สีขาว",
-    "🌹 ขอดูรูปช่อกุหลาบแดงเอกวาดอร์หรูหรา",
-    "🌻 ขอดูรูปช่อทานตะวันรับปริญญา",
-    "💰 งบ 500-800 บาท จัดแบบไหนได้บ้าง?",
-    "🎓 แนะนำดอกไม้วันรับปริญญา",
-    "🎨 เปิดเครื่องมือออกแบบช่อ & การ์ด"
+    "🌹 ช่อกุหลาบแดงเอกวาดอร์หรูหรา",
+    "🌻 ช่อทานตะวันรับปริญญา",
+    "🎨 เปิดสตูดิโอออกแบบช่อดอกไม้ & การ์ด"
   ];
 
   // -------------------------------------------------------------
@@ -153,27 +188,27 @@
     if (q.includes("กุหลาบแดง") || q.includes("สีแดง")) {
       flowerList.push("vibrant crimson red roses with velvety petals");
     } else if (q.includes("กุหลาบชมพู")) {
-      flowerList.push("soft pastel pink roses");
+      flowerList.push("soft pastel blush pink roses");
     } else if (q.includes("กุหลาบขาว")) {
-      flowerList.push("pure white roses");
+      flowerList.push("pure immaculate white roses");
     } else if (q.includes("กุหลาบ") || q.includes("rose")) {
-      flowerList.push("fresh blooming roses");
+      flowerList.push("fresh premium blooming roses");
     }
 
     if (q.includes("ทิวลิป") || q.includes("tulip")) {
-      flowerList.push("graceful blooming dutch tulips in pastel coral and white");
+      flowerList.push("graceful blooming dutch tulips in pastel coral and ivory white");
     }
     if (q.includes("ทานตะวัน") || q.includes("sunflower")) {
-      flowerList.push("radiant golden sunflowers with lush green leaves");
+      flowerList.push("radiant sunny golden sunflowers with rich green foliage");
     }
     if (q.includes("ไฮเดรนเยีย") || q.includes("hydrangea")) {
-      flowerList.push("cloud-like sky-blue hydrangea blooms");
+      flowerList.push("cloud-like pastel blue and lilac hydrangea clusters");
     }
     if (q.includes("ลิลลี่") || q.includes("lily")) {
-      flowerList.push("majestic white oriental lilies");
+      flowerList.push("majestic fragrant white oriental lilies");
     }
     if (q.includes("เดซี่") || q.includes("daisy")) {
-      flowerList.push("cheerful white daisies");
+      flowerList.push("cheerful petite white daisies");
     }
 
     let flowerDesc = flowerList.length > 0 
@@ -181,15 +216,15 @@
       : "luxurious velvety roses and graceful dutch tulips";
 
     // ดอกไม้แซม
-    let foliageDesc = "accented with delicate white baby's breath";
+    let foliageDesc = "accented with delicate airy white baby's breath";
     if (q.includes("ยูคาลิปตัส") || q.includes("eucalyptus")) {
-      foliageDesc = "accented with aromatic round-leaf eucalyptus leaves";
+      foliageDesc = "accented with aromatic silver-dollar eucalyptus leaves";
     } else if (q.includes("แคสเปีย") || q.includes("caspia")) {
-      foliageDesc = "accented with subtle purple caspia sprigs";
+      foliageDesc = "accented with dreamy purple caspia sprigs";
     }
 
     // 2. ตรวจจับกระดาษห่อช่อ (Wrapping Paper)
-    let wrapDesc = "expertly wrapped in aesthetic cream-brown korean matte waterproof paper with elegant layered folds";
+    let wrapDesc = "expertly wrapped in aesthetic cream-brown and warm beige korean matte waterproof paper with layered accordion folds";
     if (q.includes("น้ำตาลครีม") || q.includes("ครีมน้ำตาล") || (q.includes("น้ำตาล") && q.includes("ครีม")) || q.includes("ชานม")) {
       wrapDesc = "artistically wrapped in luxurious cream-brown and warm beige korean matte paper with soft dimensional pleats";
     } else if (q.includes("เขียวเซจ") || q.includes("เซจ") || (q.includes("เขียว") && q.includes("เกาหลี"))) {
@@ -207,7 +242,7 @@
     }
 
     // 3. ตรวจจับโบว์ริบบิ้น (Ribbon & Bow)
-    let ribbonDesc = "tied with an elegant pure white satin ribbon bow";
+    let ribbonDesc = "tied with an elegant pure white silky satin ribbon bow with flowing ribbons";
     if (q.includes("โบว์สีขาว") || q.includes("โบว์ขาว") || q.includes("ริบบิ้นสีขาว") || q.includes("ริบบิ้นขาว") || q.includes("ขาว")) {
       ribbonDesc = "tied with an exquisite pure white silky satin ribbon bow with flowing ribbons";
     } else if (q.includes("โบว์ชมพู") || q.includes("ริบบิ้นชมพู")) {
@@ -223,7 +258,7 @@
     }
 
     const seed = Math.floor(Math.random() * 899999 + 100000);
-    const finalPrompt = `masterpiece professional florist studio photography of a bespoke floral bouquet featuring ${flowerDesc}, ${foliageDesc}, ${wrapDesc}, ${ribbonDesc}, elegant boutique flower shop backdrop, soft warm morning daylight, 8k resolution, crisp sharp macro focus, hyperrealistic commercial quality`;
+    const finalPrompt = `masterpiece professional florist studio photography of a bespoke floral bouquet featuring ${flowerDesc}, ${foliageDesc}, ${wrapDesc}, ${ribbonDesc}, elegant boutique flower shop backdrop with soft pink roses and warm bokeh, natural morning daylight, 8k resolution, crisp sharp macro focus, hyperrealistic commercial quality`;
 
     return {
       prompt: finalPrompt,
@@ -232,63 +267,92 @@
   }
 
   // -------------------------------------------------------------
-  // 3. การสร้างหน้าตา UI (Inject HTML & CSS)
+  // 3. การสร้างหน้าตา UI Bloomie Florist (Inject HTML & CSS)
   // -------------------------------------------------------------
   function injectWidgetUI() {
     const style = document.createElement("style");
-    style.id = "pimbot-styles";
+    style.id = "bloomie-bot-styles";
     style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
+
       #pimbot-root {
         position: fixed;
         bottom: 24px;
         right: 24px;
         z-index: 999999;
-        font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Anuphan', sans-serif;
+        color: ${THEME.textDark};
       }
+
+      /* Floating Toggle Button */
       #pimbot-toggle-btn {
-        width: 62px;
-        height: 62px;
+        width: 64px;
+        height: 64px;
         border-radius: 50%;
-        background: ${C.main};
+        background: ${THEME.olive};
         color: #ffffff;
         border: none;
-        box-shadow: 0 8px 24px rgba(45, 106, 79, 0.35);
+        box-shadow: 0 10px 28px rgba(125, 139, 110, 0.42);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         outline: none;
+        position: relative;
       }
       #pimbot-toggle-btn:hover {
         transform: scale(1.08);
-        box-shadow: 0 12px 28px rgba(45, 106, 79, 0.45);
+        background: ${THEME.oliveHover};
+        box-shadow: 0 14px 34px rgba(125, 139, 110, 0.52);
       }
-      #pimbot-toggle-btn svg {
-        width: 30px;
-        height: 30px;
-        fill: currentColor;
+      #pimbot-toggle-btn .bloomie-toggle-icon {
+        width: 32px;
+        height: 32px;
         transition: transform 0.3s ease;
       }
-      #pimbot-toggle-btn.open svg {
+      #pimbot-toggle-btn.open .bloomie-toggle-icon {
         transform: rotate(90deg);
       }
+
+      /* Pulse badge on toggle button */
+      .bloomie-pulse-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 14px;
+        height: 14px;
+        background: #F4A261;
+        border: 2.5px solid #ffffff;
+        border-radius: 50%;
+        animation: bloomiePulse 2s infinite;
+      }
+      @keyframes bloomiePulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(244, 162, 97, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(244, 162, 97, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(244, 162, 97, 0); }
+      }
+
+      /* Main Chat Window */
       #pimbot-window {
         position: absolute;
-        bottom: 78px;
+        bottom: 80px;
         right: 0;
-        width: 410px;
+        width: 420px;
         max-width: calc(100vw - 32px);
-        height: 640px;
+        height: 660px;
         max-height: calc(100vh - 110px);
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 14px 45px rgba(0, 0, 0, 0.16);
+        background: linear-gradient(180deg, rgba(250, 247, 242, 0.86) 0%, rgba(246, 241, 233, 0.92) 100%),
+                    url('images/bloomie-bg.jpg') center/cover no-repeat;
+        backdrop-filter: blur(14px) saturate(140%);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+        border-radius: 30px;
+        box-shadow: 0 24px 60px rgba(50, 42, 32, 0.22), 0 4px 16px rgba(0,0,0,0.06);
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1.5px solid rgba(255, 255, 255, 0.75);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         transform: translateY(20px) scale(0.95);
         opacity: 0;
         pointer-events: none;
@@ -298,202 +362,353 @@
         opacity: 1;
         pointer-events: auto;
       }
-      .pimbot-header {
-        background: ${C.headerBg};
-        color: #ffffff;
-        padding: 16px 18px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-      .pimbot-header-top {
+
+      /* Bloomie Header: Olive Green Pill */
+      .bloomie-header {
+        margin: 14px 14px 8px 14px;
+        background: ${THEME.olive};
+        border-radius: 30px;
+        padding: 10px 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        box-shadow: 0 4px 16px rgba(105, 119, 91, 0.28);
+        color: #ffffff;
+        flex-shrink: 0;
       }
-      .pimbot-header-title {
+      .bloomie-header-left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+      }
+      .bloomie-header-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        flex-shrink: 0;
+      }
+      .bloomie-header-avatar img {
+        width: 44px;
+        height: 44px;
+        object-fit: contain;
+      }
+      .bloomie-header-titles {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.25;
+      }
+      .bloomie-header-name {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 20px;
         font-weight: 600;
-        font-size: 16px;
+        color: #ffffff;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
       }
-      .pimbot-header-title span.badge {
-        background: rgba(255, 255, 255, 0.2);
+      .bloomie-header-name .heart {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+      .bloomie-header-sub {
+        font-family: 'Anuphan', sans-serif;
         font-size: 11px;
-        font-weight: 400;
-        padding: 2px 8px;
-        border-radius: 12px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.92);
+        letter-spacing: 0.2px;
       }
-      .pimbot-header-actions button {
+      .bloomie-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .bloomie-header-btn {
         background: none;
         border: none;
         color: #ffffff;
-        opacity: 0.8;
+        opacity: 0.9;
         cursor: pointer;
-        padding: 4px;
+        font-size: 16px;
+        padding: 4px 6px;
         border-radius: 6px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .pimbot-header-actions button:hover {
+      .bloomie-header-btn:hover {
         opacity: 1;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
       }
-      .pimbot-status-bar {
+      .bloomie-header-sep {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 14px;
+        font-weight: 300;
+      }
+
+      /* Status Bar: Cream Translucent Capsule */
+      .bloomie-status-bar {
+        margin: 0 14px 6px 14px;
+        background: ${THEME.statusBg};
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.85);
+        border-radius: 20px;
+        padding: 6px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
         font-size: 11px;
-        color: #d1fae5;
-        background: rgba(0, 0, 0, 0.18);
-        padding: 5px 10px;
-        border-radius: 6px;
+        color: ${THEME.statusText};
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        flex-shrink: 0;
+      }
+      .bloomie-status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #52B788;
+        display: inline-block;
+        box-shadow: 0 0 6px rgba(82, 183, 136, 0.6);
+      }
+      .bloomie-status-sep {
+        color: #C3B4A2;
+        font-size: 12px;
+      }
+
+      /* Ethical Disclaimer Bar */
+      .bloomie-disclaimer {
+        margin: 0 14px 6px 14px;
+        background: ${THEME.disclaimerBg};
+        border: 1px solid ${THEME.disclaimerBorder};
+        border-radius: 12px;
+        padding: 5px 12px;
+        font-size: 10.5px;
+        line-height: 1.4;
+        color: ${THEME.disclaimerText};
         display: flex;
         align-items: center;
         gap: 6px;
+        flex-shrink: 0;
       }
-      .pimbot-status-indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #10b981;
-      }
-      .pimbot-disclaimer {
-        background: ${C.disclaimerBg};
-        color: ${C.disclaimerText};
-        font-size: 11.5px;
-        line-height: 1.45;
-        padding: 8px 14px;
-        border-bottom: 1px solid #fef08a;
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-      }
-      .pimbot-disclaimer a {
-        color: #b45309;
-        font-weight: 600;
+      .bloomie-disclaimer a {
+        color: #925816;
+        font-weight: 500;
         text-decoration: underline;
       }
-      .pimbot-messages {
+
+      /* Chat Messages Scroll Container */
+      .bloomie-messages {
         flex: 1;
         overflow-y: auto;
-        padding: 16px;
+        padding: 8px 14px;
         display: flex;
         flex-direction: column;
-        gap: 14px;
-        background: #fdfdfd;
+        gap: 12px;
+        scroll-behavior: smooth;
       }
-      .pimbot-msg {
+      .bloomie-messages::-webkit-scrollbar {
+        width: 5px;
+      }
+      .bloomie-messages::-webkit-scrollbar-thumb {
+        background: rgba(125, 139, 110, 0.25);
+        border-radius: 4px;
+      }
+
+      /* Message Rows */
+      .bloomie-msg-row {
         display: flex;
-        flex-direction: column;
-        max-width: 88%;
-        animation: pimbotFadeIn 0.25s ease forwards;
+        align-items: flex-start;
+        gap: 10px;
+        animation: bloomieFadeIn 0.25s ease forwards;
       }
-      @keyframes pimbotFadeIn {
+      @keyframes bloomieFadeIn {
         from { opacity: 0; transform: translateY(6px); }
         to { opacity: 1; transform: translateY(0); }
       }
-      .pimbot-msg.user {
-        align-self: flex-end;
+      .bloomie-msg-row.user-row {
+        justify-content: flex-end;
       }
-      .pimbot-msg.bot {
-        align-self: flex-start;
+      .bloomie-msg-row.bot-row {
+        justify-content: flex-start;
       }
-      .pimbot-bubble {
-        padding: 11px 15px;
-        border-radius: 16px;
+
+      /* Bot Avatar Circle next to message */
+      .bloomie-bot-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 1.5px solid rgba(230, 222, 210, 0.9);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .bloomie-bot-avatar img {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+      }
+
+      /* Message Bubbles */
+      .bloomie-bubble {
+        padding: 13px 16px;
+        border-radius: 22px;
         font-size: 13.5px;
-        line-height: 1.55;
+        line-height: 1.6;
         word-break: break-word;
+        max-width: 82%;
+        font-family: 'Anuphan', sans-serif;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
       }
-      .pimbot-msg.user .pimbot-bubble {
-        background: ${C.userBubble};
-        color: ${C.userText};
+      .bloomie-bubble.user {
+        background: ${THEME.userBubble};
+        color: ${THEME.userText};
         border-bottom-right-radius: 4px;
+        font-weight: 400;
       }
-      .pimbot-msg.bot .pimbot-bubble {
-        background: ${C.botBubble};
-        color: ${C.botText};
+      .bloomie-bubble.bot {
+        background: ${THEME.botBubble};
+        color: ${THEME.botText};
         border-bottom-left-radius: 4px;
-        border: 1px solid #e5e7eb;
+        border: 1px solid rgba(234, 227, 214, 0.85);
+        font-weight: 400;
       }
-      .pimbot-citation {
-        font-size: 11px;
-        color: #4b5563;
-        background: #e5e7eb;
-        padding: 4px 8px;
-        border-radius: 6px;
-        margin-top: 6px;
+
+      /* Welcoming Bubble Styling */
+      .bloomie-welcome-title {
+        font-size: 14.5px;
+        font-weight: 600;
+        color: #2D2722;
+        margin-bottom: 6px;
+      }
+      .bloomie-welcome-desc {
+        font-size: 13px;
+        font-weight: 400;
+        color: #4A443D;
+        line-height: 1.6;
+      }
+      .bloomie-ribbon-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin: 12px 0 10px 0;
+      }
+      .bloomie-divider-line {
+        flex: 1;
+        height: 1px;
+        background: rgba(200, 185, 170, 0.45);
+      }
+      .bloomie-ribbon-icon {
+        width: 20px;
+        height: 20px;
         display: inline-block;
-        border-left: 3px solid ${C.main};
+        vertical-align: middle;
       }
-      /* AI Image Generation Card Styles */
-      .pimbot-ai-image-card {
+      .bloomie-welcome-footer {
+        font-size: 12.5px;
+        font-weight: 400;
+        color: #5C5449;
+        text-align: left;
+      }
+
+      /* Citation / Reference Box */
+      .bloomie-citation {
+        font-size: 11px;
+        color: #555047;
+        background: rgba(243, 236, 226, 0.85);
+        padding: 5px 10px;
+        border-radius: 8px;
+        margin-top: 8px;
+        display: inline-block;
+        border-left: 3px solid ${THEME.olive};
+      }
+
+      /* AI Image Generation Card */
+      .bloomie-ai-card {
         margin-top: 10px;
         background: #ffffff;
-        border-radius: 14px;
+        border-radius: 16px;
         overflow: hidden;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(225, 215, 200, 0.8);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
       }
-      .pimbot-ai-card-header {
-        background: #f8fafc;
+      .bloomie-ai-card-header {
+        background: #FAF7F2;
         padding: 6px 12px;
         font-size: 11px;
-        font-weight: 600;
-        color: #475569;
+        font-weight: 500;
+        color: #5C5449;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid rgba(235, 225, 212, 0.7);
       }
-      .pimbot-ai-card-img-wrap {
+      .bloomie-ai-card-img-wrap {
         position: relative;
         width: 100%;
         height: 240px;
-        background: #f1f5f9;
+        background: #F5EFE6;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      .pimbot-ai-card-img-wrap img {
+      .bloomie-ai-card-img-wrap img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.3s ease;
       }
-      .pimbot-ai-card-img-wrap img:hover {
-        transform: scale(1.04);
+      .bloomie-ai-card-img-wrap img:hover {
+        transform: scale(1.03);
       }
-      .pimbot-ai-shimmer {
+      .bloomie-ai-shimmer {
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+        background: linear-gradient(90deg, #F5EFE6 25%, #EFE7DC 50%, #F5EFE6 75%);
         background-size: 200% 100%;
-        animation: pimbotShimmer 1.5s infinite;
+        animation: bloomieShimmer 1.5s infinite;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        color: #64748b;
+        color: #7E7569;
         font-size: 12px;
       }
-      @keyframes pimbotShimmer {
+      @keyframes bloomieShimmer {
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
       }
-      .pimbot-ai-card-actions {
+      .bloomie-ai-card-actions {
         padding: 8px 10px;
         background: #ffffff;
         display: flex;
         gap: 6px;
       }
-      .pimbot-ai-btn {
+      .bloomie-ai-btn {
         flex: 1;
         padding: 6px 10px;
         font-size: 11.5px;
         border-radius: 8px;
-        border: 1px solid #cbd5e1;
-        background: #f8fafc;
-        color: #334155;
+        border: 1px solid #DED4C5;
+        background: #FAF7F2;
+        color: #4A443B;
         text-align: center;
         text-decoration: none;
         cursor: pointer;
@@ -503,109 +718,192 @@
         justify-content: center;
         gap: 4px;
         transition: all 0.2s;
+        font-family: 'Anuphan', sans-serif;
       }
-      .pimbot-ai-btn:hover {
-        background: ${C.main};
+      .bloomie-ai-btn:hover {
+        background: ${THEME.olive};
         color: #ffffff;
-        border-color: ${C.main};
+        border-color: ${THEME.olive};
       }
 
-      .pimbot-chips-container {
+      /* 4 Action Question Pills: Styled Exactly like Mockup */
+      .bloomie-quick-questions {
+        padding: 4px 14px 8px 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .bloomie-pill-btn {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid rgba(220, 210, 196, 0.85);
+        border-radius: 22px;
         padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 500; /* Anuphan Medium */
+        color: #423B33;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        outline: none;
+        font-family: 'Anuphan', sans-serif;
+        text-align: center;
+      }
+      .bloomie-pill-btn img {
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+      }
+      .bloomie-pill-btn:hover {
+        background: #ffffff;
+        border-color: ${THEME.olive};
+        color: ${THEME.oliveDark};
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(125, 139, 110, 0.18);
+      }
+
+      /* Extra Prompts (Horizontal Scrollable Chips) */
+      .bloomie-extra-chips {
+        padding: 0 14px 6px 14px;
         display: flex;
         gap: 6px;
         overflow-x: auto;
         white-space: nowrap;
-        background: #fafafa;
-        border-top: 1px solid #f0f0f0;
+        flex-shrink: 0;
       }
-      .pimbot-chips-container::-webkit-scrollbar {
-        height: 4px;
+      .bloomie-extra-chips::-webkit-scrollbar {
+        height: 3px;
       }
-      .pimbot-chips-container::-webkit-scrollbar-thumb {
-        background: #d1d5db;
-        border-radius: 4px;
+      .bloomie-extra-chips::-webkit-scrollbar-thumb {
+        background: rgba(125, 139, 110, 0.25);
+        border-radius: 3px;
       }
-      .pimbot-chip {
-        font-size: 12px;
-        background: #ffffff;
-        color: #374151;
-        border: 1px solid #e5e7eb;
-        padding: 5px 11px;
+      .bloomie-mini-chip {
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.75);
+        color: #554D43;
+        border: 1px solid rgba(225, 217, 205, 0.8);
+        padding: 4px 10px;
         border-radius: 14px;
         cursor: pointer;
         transition: all 0.2s;
         flex-shrink: 0;
+        font-family: 'Anuphan', sans-serif;
       }
-      .pimbot-chip:hover {
-        background: ${C.main};
+      .bloomie-mini-chip:hover {
+        background: ${THEME.olive};
         color: #ffffff;
-        border-color: ${C.main};
+        border-color: ${THEME.olive};
       }
-      .pimbot-input-row {
-        padding: 12px 14px;
+
+      /* Input Area: White Pill with Smiley Icon and Olive-Green Circular Send Button */
+      .bloomie-input-wrapper {
+        margin: 0 14px 14px 14px;
         display: flex;
-        gap: 8px;
         align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .bloomie-input-field-pill {
+        flex: 1;
         background: #ffffff;
-        border-top: 1px solid #f1f3f5;
+        border: 1.2px solid rgba(220, 210, 196, 0.95);
+        border-radius: 28px;
+        padding: 0 14px 0 14px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: border-color 0.2s;
+      }
+      .bloomie-input-field-pill:focus-within {
+        border-color: ${THEME.olive};
+        box-shadow: 0 0 0 3px rgba(125, 139, 110, 0.15);
+      }
+      .bloomie-smiley-icon {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+      .bloomie-input-field-pill:focus-within .bloomie-smiley-icon {
+        opacity: 1;
       }
       #pimbot-input {
         flex: 1;
-        border: 1.5px solid #e5e7eb;
-        border-radius: 22px;
-        padding: 10px 16px;
-        font-size: 13.5px;
+        border: none;
         outline: none;
-        transition: border-color 0.2s;
+        font-size: 13.5px;
+        font-family: 'Anuphan', sans-serif;
+        font-weight: 400; /* Anuphan Regular */
+        color: ${THEME.textDark};
+        background: transparent;
       }
-      #pimbot-input:focus {
-        border-color: ${C.main};
+      #pimbot-input::placeholder {
+        color: #9E968B;
+        font-weight: 300;
       }
       #pimbot-send-btn {
-        width: 42px;
-        height: 42px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        background: ${C.accent};
+        background: ${THEME.olive};
         color: #ffffff;
         border: none;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 4px 14px rgba(125, 139, 110, 0.35);
         transition: transform 0.2s, background-color 0.2s;
         flex-shrink: 0;
+        outline: none;
+      }
+      #pimbot-send-btn img {
+        width: 20px;
+        height: 20px;
       }
       #pimbot-send-btn:hover {
-        background: #d95d39;
-        transform: scale(1.05);
+        background: ${THEME.oliveHover};
+        transform: scale(1.06);
       }
       #pimbot-send-btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
         transform: none;
       }
-      .pimbot-typing {
+
+      /* Typing Indicator */
+      .bloomie-typing-wrap {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
         padding: 10px 14px;
-        background: ${C.botBubble};
-        border-radius: 16px;
+        background: ${THEME.botBubble};
+        border-radius: 18px;
+        border: 1px solid rgba(230, 222, 210, 0.8);
         width: fit-content;
       }
-      .pimbot-dot {
+      .bloomie-dot {
         width: 6px;
         height: 6px;
-        background: #9ca3af;
+        background: #A3998C;
         border-radius: 50%;
-        animation: pimbotBounce 1.2s infinite ease-in-out;
+        animation: bloomieBounce 1.2s infinite ease-in-out;
       }
-      .pimbot-dot:nth-child(2) { animation-delay: 0.2s; }
-      .pimbot-dot:nth-child(3) { animation-delay: 0.4s; }
-      @keyframes pimbotBounce {
+      .bloomie-dot:nth-child(2) { animation-delay: 0.2s; }
+      .bloomie-dot:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes bloomieBounce {
         0%, 80%, 100% { transform: translateY(0); }
-        40% { transform: translateY(-6px); }
+        40% { transform: translateY(-5px); }
       }
     `;
     document.head.appendChild(style);
@@ -614,90 +912,142 @@
     root.id = "pimbot-root";
     root.innerHTML = `
       <div id="pimbot-window">
-        <div class="pimbot-header">
-          <div class="pimbot-header-top">
-            <div class="pimbot-header-title">
-              🌸 <span>PIM Flower AI</span>
-              <span class="badge" id="pimbot-badge-mode">RAG + Vision</span>
+        <!-- 1. Header (Olive Green Pill) -->
+        <div class="bloomie-header">
+          <div class="bloomie-header-left">
+            <div class="bloomie-header-avatar" title="Bloomie Florist">
+              <img src="images/bloomie-logo.svg" alt="Bloomie Florist Logo">
             </div>
-            <div class="pimbot-header-actions">
-              <button id="pimbot-clear-btn" title="ล้างข้อความ">🧹</button>
-              <button id="pimbot-close-btn" title="ปิดกล่องแชท">✕</button>
+            <div class="bloomie-header-titles">
+              <div class="bloomie-header-name">
+                Bloomie Florist <span class="heart">♡</span>
+              </div>
+              <div class="bloomie-header-sub">
+                Let flowers say it for you ♡
+              </div>
             </div>
           </div>
-          <div class="pimbot-status-bar" id="pimbot-status-bar">
-            <div class="pimbot-status-indicator" id="pimbot-status-dot"></div>
-            <span id="pimbot-status-text">กำลังเตรียมระบบ RAG...</span>
+          <div class="bloomie-header-actions">
+            <button id="pimbot-clear-btn" class="bloomie-header-btn" title="ล้างประวัติการแชท">🧹</button>
+            <button id="pimbot-pin-btn" class="bloomie-header-btn" title="ปักหมุดข้อความ">📌</button>
+            <span class="bloomie-header-sep">|</span>
+            <button id="pimbot-close-btn" class="bloomie-header-btn" title="ปิดกล่องข้อความ">✕</button>
           </div>
         </div>
 
-        <!-- แถบคำเตือนตามหลักจริยธรรม (ตอนที่ 5 จุดที่ 4 ในคู่มือ) -->
-        <div class="pimbot-disclaimer">
+        <!-- 2. Status Bar (Capsule Pill) -->
+        <div class="bloomie-status-bar" id="pimbot-status-bar">
+          <span class="bloomie-status-dot" id="pimbot-status-dot"></span>
+          <span id="pimbot-status-text">พร้อมให้บริการ</span>
+          <span class="bloomie-status-sep">|</span>
+          <span>🕒 เปิดให้บริการทุกวัน เวลา 09:00 – 20:00 น.</span>
+        </div>
+
+        <!-- 3. แถบคำเตือนตามหลักจริยธรรม (Ethical AI Disclaimer) -->
+        <div class="bloomie-disclaimer">
           <span>⚠️</span>
           <div>
-            ระบบนี้เป็น AI ตอบจากเอกสารของร้าน และสร้างภาพจำลองช่อดอกไม้ได้ หากต้องการติดต่อพนักงานจริง โทร <a href="tel:${SHOP_PHONE}">${SHOP_PHONE}</a> หรือ LINE: <strong>${SHOP_LINE}</strong>
+            ระบบ AI อัจฉริยะ ตอบจากข้อมูลร้าน • ติดต่อพนักงานโทร <a href="tel:${SHOP_PHONE}">${SHOP_PHONE}</a> | LINE: <strong>${SHOP_LINE}</strong>
           </div>
         </div>
 
-        <div class="pimbot-messages" id="pimbot-messages">
-          <div class="pimbot-msg bot">
-            <div class="pimbot-bubble">
-              สวัสดีค่ะ! ยินดีต้อนรับสู่ <strong>PIM Flower Studio</strong> 🌸<br>
-              หนูคือผู้ช่วยอัจฉริยะประจำร้าน พร้อมตอบคำถามเรื่องราคา ดอกไม้ตามฤดูกาล คำนวณงบประมาณ และ **สามารถวาดภาพจำลองช่อดอกไม้จริงด้วย AI** ให้ดูได้ทันทีค่ะ!<br>
-              <em>* ลองพิมพ์ว่า "ขอดูรูปช่อกุหลาบแดงหรูหรา" หรือ "เจนภาพช่อทานตะวันงบ 800" ได้เลยนะคะ ✨</em>
+        <!-- 4. Messages Container -->
+        <div class="bloomie-messages" id="pimbot-messages">
+          <div class="bloomie-msg-row bot-row">
+            <div class="bloomie-bot-avatar">
+              <img src="images/bloomie-logo.svg" alt="Bloomie Avatar">
+            </div>
+            <div class="bloomie-bubble bot">
+              <div class="bloomie-welcome-title">สวัสดีค่ะ! ยินดีต้อนรับสู่ Bloomie Florist 🌸</div>
+              <div class="bloomie-welcome-desc">
+                หนูคือผู้ช่วยจัดดอกไม้ของร้าน พร้อมดูแลทุกท่านด้วยความใส่ใจ ไม่ว่าจะเป็นการสั่งจัดช่อดอกไม้ ช่อดอกไม้วันพิเศษ หรือสอบถามข้อมูลสินค้า หนูยินดีให้บริการค่ะ 💐
+              </div>
+              <div class="bloomie-ribbon-divider">
+                <span class="bloomie-divider-line"></span>
+                <img src="images/icon-ribbon.svg" alt="ribbon" class="bloomie-ribbon-icon">
+                <span class="bloomie-divider-line"></span>
+              </div>
+              <div class="bloomie-welcome-footer">
+                ✨ สอบถามข้อมูลเพิ่มเติมได้เลยนะคะ หรือเลือกเมนูด้านล่างได้เลยค่ะ ♡
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="pimbot-chips-container" id="pimbot-chips"></div>
+        <!-- 5. ชุด 4 ไอคอนคำถาม (Quick Action Questions) -->
+        <div class="bloomie-quick-questions" id="bloomie-quick-questions"></div>
 
-        <div class="pimbot-input-row">
-          <input type="text" id="pimbot-input" placeholder="พิมพ์คำถาม หรือสั่งให้ AI เจนภาพช่อดอกไม้..." autocomplete="off">
-          <button id="pimbot-send-btn" title="ส่งคำถาม">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="white">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-            </svg>
+        <!-- 6. คำแนะนำเสริมการเจนภาพด้วย AI -->
+        <div class="bloomie-extra-chips" id="bloomie-extra-chips"></div>
+
+        <!-- 7. Input Pill + Olive Green Send Button -->
+        <div class="bloomie-input-wrapper">
+          <div class="bloomie-input-field-pill">
+            <img src="images/icon-smiley.svg" alt="smiley" class="bloomie-smiley-icon">
+            <input type="text" id="pimbot-input" placeholder="พิมพ์ข้อความที่นี่..." autocomplete="off">
+          </div>
+          <button id="pimbot-send-btn" title="ส่งข้อความ">
+            <img src="images/icon-plane.svg" alt="ส่ง">
           </button>
         </div>
       </div>
 
-      <button id="pimbot-toggle-btn" title="เปิดแชทกับ PIM Flower AI">
-        <svg viewBox="0 0 24 24">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-        </svg>
+      <!-- Floating Open/Close Button -->
+      <button id="pimbot-toggle-btn" title="แชทกับ Bloomie Florist">
+        <span class="bloomie-pulse-badge"></span>
+        <img src="images/bloomie-logo.svg" alt="Bloomie Logo" class="bloomie-toggle-icon">
       </button>
     `;
     document.body.appendChild(root);
 
-    // สร้าง Chips คำถามตัวอย่าง
-    const chipsContainer = document.getElementById("pimbot-chips");
-    SAMPLE_CHIPS.forEach(chipText => {
+    // สร้างปุ่ม 4 ไอคอนคำถาม
+    const qContainer = document.getElementById("bloomie-quick-questions");
+    QUICK_QUESTIONS.forEach(item => {
+      const btn = document.createElement("button");
+      btn.className = "bloomie-pill-btn";
+      btn.innerHTML = `<img src="${item.icon}" alt="${item.text}"><span>${item.text}</span>`;
+      btn.onclick = () => {
+        document.getElementById("pimbot-input").value = item.query;
+        handleSendMessage();
+      };
+      qContainer.appendChild(btn);
+    });
+
+    // สร้างชิปเสริมสำหรับ AI เจนภาพ
+    const chipsContainer = document.getElementById("bloomie-extra-chips");
+    EXTRA_AI_PROMPTS.forEach(promptText => {
       const chip = document.createElement("button");
-      chip.className = "pimbot-chip";
-      chip.textContent = chipText;
+      chip.className = "bloomie-mini-chip";
+      chip.textContent = promptText;
       chip.onclick = () => {
-        if (chipText.includes("เปิดเครื่องมือออกแบบ")) {
+        if (promptText.includes("เปิดสตูดิโอ")) {
           const visualizerSection = document.getElementById("visualizer");
           if (visualizerSection) visualizerSection.scrollIntoView({ behavior: 'smooth' });
           addBotMessage("หนูเปิดสตูดิโอจำลองช่อดอกไม้และการ์ดอวยพรให้แล้วค่ะ คุณลูกค้าสามารถเลือกดอกไม้จริงและพิมพ์ข้อความการ์ดได้ที่หน้าเว็บเลยนะคะ ✨");
         } else {
-          document.getElementById("pimbot-input").value = chipText;
+          document.getElementById("pimbot-input").value = promptText;
           handleSendMessage();
         }
       };
       chipsContainer.appendChild(chip);
     });
 
-    // Event Listeners สำหรับ UI
+    // ผูก Event Listeners
     const toggleBtn = document.getElementById("pimbot-toggle-btn");
     const closeBtn = document.getElementById("pimbot-close-btn");
     const clearBtn = document.getElementById("pimbot-clear-btn");
+    const pinBtn = document.getElementById("pimbot-pin-btn");
     const sendBtn = document.getElementById("pimbot-send-btn");
     const input = document.getElementById("pimbot-input");
 
     toggleBtn.onclick = toggleChatWindow;
     closeBtn.onclick = toggleChatWindow;
     clearBtn.onclick = clearChatHistory;
+    if (pinBtn) {
+      pinBtn.onclick = () => {
+        addBotMessage("📌 ปักหมุดกล่องแชท Bloomie Florist ไว้กับหน้าจอเรียบร้อยค่ะ ลูกค้าสามารถเลื่อนชมสินค้าพร้อมแชทไปพร้อมกันได้เลยนะคะ ♡");
+      };
+    }
     sendBtn.onclick = handleSendMessage;
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") handleSendMessage();
@@ -721,9 +1071,13 @@
   function clearChatHistory() {
     const msgs = document.getElementById("pimbot-messages");
     msgs.innerHTML = `
-      <div class="pimbot-msg bot">
-        <div class="pimbot-bubble">
-          ล้างประวัติการสนทนาเรียบร้อยค่ะ มีอะไรให้ PIM Flower Studio ดูแลเพิ่มเติมไหมคะ? 🌸
+      <div class="bloomie-msg-row bot-row">
+        <div class="bloomie-bot-avatar">
+          <img src="images/bloomie-logo.svg" alt="Bloomie Avatar">
+        </div>
+        <div class="bloomie-bubble bot">
+          <div class="bloomie-welcome-title">ล้างประวัติการสนทนาเรียบร้อยค่ะ 🌸</div>
+          <p class="bloomie-welcome-desc">มีอะไรให้ Bloomie Florist ดูแลเรื่องดอกไม้สดหรือของขวัญเพิ่มเติมไหมคะ? ยินดีให้บริการเสมอนะคะ ♡</p>
         </div>
       </div>
     `;
@@ -731,36 +1085,42 @@
 
   function addUserMessage(text) {
     const msgs = document.getElementById("pimbot-messages");
-    const div = document.createElement("div");
-    div.className = "pimbot-msg user";
-    div.innerHTML = `<div class="pimbot-bubble">${escapeHtml(text)}</div>`;
-    msgs.appendChild(div);
+    const row = document.createElement("div");
+    row.className = "bloomie-msg-row user-row";
+    row.innerHTML = `<div class="bloomie-bubble user">${escapeHtml(text)}</div>`;
+    msgs.appendChild(row);
     msgs.scrollTop = msgs.scrollHeight;
   }
 
   function addBotMessage(text, citation = null, imageInfo = null) {
     const msgs = document.getElementById("pimbot-messages");
-    const div = document.createElement("div");
-    div.className = "pimbot-msg bot";
+    const row = document.createElement("div");
+    row.className = "bloomie-msg-row bot-row";
 
     let formattedText = formatMarkdown(text);
-    let html = `<div class="pimbot-bubble">${formattedText}`;
+    let html = `
+      <div class="bloomie-bot-avatar">
+        <img src="images/bloomie-logo.svg" alt="Bloomie Avatar">
+      </div>
+      <div class="bloomie-bubble bot">
+        <div>${formattedText}</div>
+    `;
 
     if (citation) {
-      html += `<div class="pimbot-citation">📚 อ้างอิง: <strong>${citation.file}</strong> (ส่วนที่ ${citation.chunkIndex}, ความสอดคล้อง ${citation.scorePercent}%)</div>`;
+      html += `<div class="bloomie-citation">📚 อ้างอิง: <strong>${citation.file}</strong> (ส่วนที่ ${citation.chunkIndex}, ความสอดคล้อง ${citation.scorePercent}%)</div>`;
     }
 
     // แทรกการ์ดรูปภาพ AI ถ้ามี
     if (imageInfo && imageInfo.url) {
       const cardId = "ai-img-" + Math.floor(Math.random() * 100000);
       html += `
-        <div class="pimbot-ai-image-card">
-          <div class="pimbot-ai-card-header">
+        <div class="bloomie-ai-card">
+          <div class="bloomie-ai-card-header">
             <span>✨ ภาพจำลองจาก AI เสมือนจริง</span>
-            <span>Studio Render</span>
+            <span>Bloomie Studio</span>
           </div>
-          <div class="pimbot-ai-card-img-wrap" id="${cardId}-wrap">
-            <div class="pimbot-ai-shimmer" id="${cardId}-shimmer">
+          <div class="bloomie-ai-card-img-wrap" id="${cardId}-wrap">
+            <div class="bloomie-ai-shimmer" id="${cardId}-shimmer">
               <span>🌸</span>
               <span>กำลังเรนเดอร์ภาพช่อดอกไม้...</span>
             </div>
@@ -768,11 +1128,11 @@
                  onload="document.getElementById('${cardId}-shimmer').style.display='none'"
                  onerror="this.src='images/rose-red.jpg'; document.getElementById('${cardId}-shimmer').style.display='none'" />
           </div>
-          <div class="pimbot-ai-card-actions">
-            <a href="${imageInfo.url}" target="_blank" download="PIM-Flower-Bouquet.jpg" class="pimbot-ai-btn">
+          <div class="bloomie-ai-card-actions">
+            <a href="${imageInfo.url}" target="_blank" download="Bloomie-Bouquet.jpg" class="bloomie-ai-btn">
               📥 ดาวน์โหลดรูปภาพ
             </a>
-            <button class="pimbot-ai-btn" onclick="applyAIToStudio('${imageInfo.url}')">
+            <button class="bloomie-ai-btn" onclick="applyAIToStudio('${imageInfo.url}')">
               🎨 ใส่การ์ดในสตูดิโอ
             </button>
           </div>
@@ -781,8 +1141,8 @@
     }
 
     html += `</div>`;
-    div.innerHTML = html;
-    msgs.appendChild(div);
+    row.innerHTML = html;
+    msgs.appendChild(row);
     msgs.scrollTop = msgs.scrollHeight;
   }
 
@@ -790,12 +1150,15 @@
     const msgs = document.getElementById("pimbot-messages");
     const typing = document.createElement("div");
     typing.id = "pimbot-typing";
-    typing.className = "pimbot-msg bot";
+    typing.className = "bloomie-msg-row bot-row";
     typing.innerHTML = `
-      <div class="pimbot-typing">
-        <div class="pimbot-dot"></div>
-        <div class="pimbot-dot"></div>
-        <div class="pimbot-dot"></div>
+      <div class="bloomie-bot-avatar">
+        <img src="images/bloomie-logo.svg" alt="Bloomie Avatar">
+      </div>
+      <div class="bloomie-typing-wrap">
+        <div class="bloomie-dot"></div>
+        <div class="bloomie-dot"></div>
+        <div class="bloomie-dot"></div>
       </div>
     `;
     msgs.appendChild(typing);
@@ -812,7 +1175,7 @@
     const dot = document.getElementById("pimbot-status-dot");
     if (bar) bar.textContent = text;
     if (dot) {
-      dot.style.background = isError ? "#ef4444" : "#10b981";
+      dot.style.background = isError ? "#ef4444" : "#52B788";
     }
   }
 
@@ -830,7 +1193,7 @@
   }
 
   // -------------------------------------------------------------
-  // 4. ลำดับการทำงานช่วงที่ 1 : เตรียมระบบ (ตามคู่มือ ตอนที่ 2 หน้า 4)
+  // 4. ลำดับการทำงานช่วงที่ 1 : เตรียมระบบ RAG
   // -------------------------------------------------------------
   async function initializeRAGSystem() {
     try {
@@ -841,14 +1204,14 @@
 
       systemState.workerUrl = CONFIG.WORKER_URL || "";
       systemState.mode = CONFIG.SEARCH_MODE || "local";
-      systemState.model = CONFIG.MODEL || "google/gemini-2.5-flash";
+      systemState.model = CONFIG.MODEL || "openai/gpt-4o-mini";
       const files = CONFIG.FILES || [];
       const docsBase = CONFIG.DOCS_BASE || "docs";
       const chunkSize = CONFIG.CHUNK_SIZE || 500;
       const overlap = CONFIG.OVERLAP || 100;
 
       systemState.totalFiles = files.length;
-      updateStatusBar(`กำลังโหลดเอกสาร ${files.length} ไฟล์...`);
+      updateStatusBar(`กำลังโหลดข้อมูล ${files.length} ไฟล์...`);
 
       // 4.1 อ่านเอกสารจากโฟลเดอร์ docs แล้วแบ่งส่วน (Chunking)
       for (const filename of files) {
@@ -869,38 +1232,28 @@
 
       // 4.2 ถ้าตั้งค่าเป็น SEARCH_MODE = 'vector' ให้โหลด vectors.json
       if (systemState.mode === "vector") {
-        updateStatusBar("กำลังโหลดดัชนีเวกเตอร์ vectors.json...");
+        updateStatusBar("กำลังโหลดดัชนีเวกเตอร์...");
         try {
           const vRes = await fetch("vectors.json");
           if (!vRes.ok) throw new Error("ไม่พบไฟล์ vectors.json");
           const vData = await vRes.json();
           if (Array.isArray(vData) && vData.length > 0) {
             systemState.vectors = vData;
-            document.getElementById("pimbot-badge-mode").textContent = "Vector RAG";
           } else {
             throw new Error("โครงสร้าง vectors.json ว่างเปล่า");
           }
         } catch (vErr) {
           console.warn("โหลดเวกเตอร์ล้มเหลว สลับเป็น Local Search อัตโนมัติ:", vErr.message);
           systemState.mode = "local";
-          document.getElementById("pimbot-badge-mode").textContent = "Local RAG";
         }
-      } else {
-        document.getElementById("pimbot-badge-mode").textContent = "Local RAG";
       }
 
       systemState.isReady = true;
-
-      const searchModeText = systemState.mode === "vector" ? "ค้นแบบเวกเตอร์" : "ค้นแบบเทียบตัวอักษร";
-      const targetResponder = (systemState.workerUrl && !systemState.workerUrl.includes("your-account")) 
-        ? "Worker" 
-        : systemState.model.split("/").pop();
-
-      updateStatusBar(`พร้อมใช้งาน เอกสาร ${systemState.totalFiles} ไฟล์ ${systemState.totalChunks} ชิ้น ${searchModeText} ตอบด้วย ${targetResponder}`);
+      updateStatusBar("พร้อมให้บริการ");
 
     } catch (err) {
       console.error("เกิดข้อผิดพลาดในการเริ่มระบบ RAG:", err);
-      updateStatusBar("เตรียมระบบไม่สำเร็จ กรุณาตรวจสอบ Console (F12)", true);
+      updateStatusBar("เตรียมระบบไม่สำเร็จ", true);
     }
   }
 
@@ -996,23 +1349,23 @@
   }
 
   // -------------------------------------------------------------
-  // 6. การประกอบคำสั่ง (Prompt Assembly) & กติกาสามข้อ (หน้า 8 ในคู่มือ)
+  // 6. การประกอบคำสั่ง (Prompt Assembly) & กติกาสามข้อ
   // -------------------------------------------------------------
   function makePrompt(topChunks, userQuestion) {
     const contextText = topChunks.map(c => 
       `[ชิ้นที่ ${c.chunkIndex} จากไฟล์ ${c.file}]\n${c.text}`
     ).join("\n\n");
 
-    return `คุณคือผู้ช่วยอัจฉริยะและนักจัดดอกไม้ผู้เชี่ยวชาญของร้าน PIM Flower Studio
+    return `คุณคือผู้ช่วยจัดดอกไม้ประจำร้าน Bloomie Florist
 ให้ตอบโดยใช้เฉพาะข้อมูลในเอกสารด้านล่างเท่านั้น
 ถ้าเอกสารไม่มีคำตอบ ให้ตอบว่า ไม่พบข้อมูลนี้ในเอกสารของร้าน และแนะนำให้ติดต่อพนักงานจริงที่เบอร์ ${SHOP_PHONE} หรือ LINE: ${SHOP_LINE}
 ห้ามเดา ห้ามเติมข้อมูลจากความรู้ทั่วไป
 
 คำแนะนำพิเศษสำหรับการบริการ:
-1. หากลูกค้าถามเรื่องงบประมาณ (เช่น มีงบ 500 หรือ 800 บาท) ให้ช่วยคำนวณและแจกแจงค่าดอกไม้ ค่ากระดาษห่อ และยอดรวมสุทธิให้ชัดเจน
-2. อธิบายความหมายมงคลของดอกไม้ให้ตรงกับโอกาสพิเศษที่ลูกค้าถาม
+1. หากลูกค้าถามเรื่องสั่งล่วงหน้าหรือจัดส่ง ให้อธิบายระยะเวลาล่วงหน้าและรูปแบบการจัดส่งให้ครบถ้วน
+2. หากลูกค้าถามเรื่องงบประมาณหรือราคา ให้ช่วยคำนวณและแจกแจงแพ็กเกจให้ชัดเจน
 3. หากลูกค้าต้องการดูรูปภาพ ช่อดอกไม้ หรือให้เจนรูป ให้บรรยายลักษณะช่อดอกไม้ที่สวยงาม พร้อมแจ้งว่า AI ได้สร้างภาพจำลองด้านล่างให้แล้ว
-4. แนะนำอย่างสุภาพและเป็นกันเองด้วยภาษาไทยที่ไพเราะ
+4. ตอบด้วยน้ำเสียงสุภาพ นุ่มนวล ละมุน สไตล์ Bloomie Florist
 
 เอกสารที่ค้นเจอ:
 ${contextText}
@@ -1027,7 +1380,7 @@ ${userQuestion}`;
   async function callAI(prompt, userQuestion, topChunks) {
     const workerUrl = systemState.workerUrl;
 
-    if (workerUrl && !workerUrl.includes("your-account") && !workerUrl.includes("pim-flower-worker.workers.dev/example")) {
+    if (workerUrl && !workerUrl.includes("your-account") && !workerUrl.includes("example.workers.dev")) {
       try {
         const response = await fetch(`${workerUrl}/chat/completions`, {
           method: "POST",
@@ -1035,7 +1388,7 @@ ${userQuestion}`;
           body: JSON.stringify({
             model: systemState.model,
             messages: [
-              { role: "system", content: "คุณคือนักจัดดอกไม้และผู้ช่วยตอบคำถามของร้าน PIM Flower Studio" },
+              { role: "system", content: "คุณคือนักจัดดอกไม้และผู้ช่วยตอบคำถามของร้าน Bloomie Florist" },
               { role: "user", content: prompt }
             ],
             temperature: 0.2,
@@ -1046,11 +1399,9 @@ ${userQuestion}`;
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
           if (response.status === 403) {
-            throw new Error("403 โดเมนไม่ได้รับอนุญาต: กรุณาตรวจสอบ ALLOWED ใน worker.js ให้ตรงกับโดเมนเว็บ");
+            throw new Error("403 โดเมนไม่ได้รับอนุญาต");
           } else if (response.status === 429) {
-            throw new Error("429 โควตาของรุ่นฟรีหมดชั่วคราว กรุณารอสักครู่แล้วถามใหม่");
-          } else if (errData.error?.message?.includes("model")) {
-            throw new Error("model not found: ตรวจสอบชื่อรุ่น MODEL ใน config.js");
+            throw new Error("429 โควตาหมดชั่วคราว กรุณารอสักครู่แล้วถามใหม่");
           } else {
             throw new Error(`Worker Error (${response.status}): ${errData.error || response.statusText}`);
           }
@@ -1060,10 +1411,7 @@ ${userQuestion}`;
         const reply = data.choices?.[0]?.message?.content;
         if (reply) return reply;
       } catch (workerErr) {
-        console.warn("ส่งคำขอผ่าน Worker ไม่สำเร็จ กำลังใช้ระบบสำรอง:", workerErr.message);
-        if (workerErr.message.includes("403") || workerErr.message.includes("429")) {
-          return `${workerErr.message}\n\n(คุณสามารถโทรติดต่อร้านโดยตรงได้ที่ ${SHOP_PHONE} ค่ะ)`;
-        }
+        console.warn("ส่งคำขอผ่าน Worker ไม่สำเร็จ กำลังใช้ระบบ Local Answer:", workerErr.message);
       }
     }
 
@@ -1073,18 +1421,52 @@ ${userQuestion}`;
   function generateSmartLocalAnswer(question, chunks) {
     const q = question.toLowerCase();
 
-    // กฎสำคัญข้อที่ 3 ของคู่มือ (หน้า 14): ปฏิเสธเรื่องที่ไม่มีในเอกสาร เช่น ค่าเช่าหอพัก
-    const irrelevantKeywords = ["หอพัก", "ค่าเช่า", "วิชา", "ลงทะเบียน", "เกรด", "อาจารย์", "สอบ"];
+    // กฎปฏิเสธเรื่องที่ไม่มีในเอกสาร (กติกาสามข้อ)
+    const irrelevantKeywords = ["หอพัก", "ค่าเช่า", "วิชา", "ลงทะเบียน", "เกรด", "อาจารย์", "สอบ", "บิทคอยน์", "หุ้น"];
     if (irrelevantKeywords.some(k => q.includes(k))) {
-      return `ไม่พบข้อมูลนี้ในเอกสารของร้าน PIM Flower Studio ค่ะ\n(ร้านของเราให้บริการเฉพาะดอกไม้สด ช่อดอกไม้ และของขวัญ หากมีคำถามอื่นๆ สามารถติดต่อสอบถามเจ้าหน้าที่ได้ที่เบอร์ ${SHOP_PHONE} หรือ LINE: ${SHOP_LINE} ค่ะ)`;
+      return `ไม่พบข้อมูลนี้ในเอกสารของร้าน Bloomie Florist ค่ะ\n(ร้านของเราให้บริการเฉพาะดอกไม้สด ช่อดอกไม้ และของขวัญ หากมีคำถามอื่นๆ สามารถติดต่อสอบถามเจ้าหน้าที่ได้ที่เบอร์ ${SHOP_PHONE} หรือ LINE: ${SHOP_LINE} ค่ะ)`;
+    }
+
+    // 1. หมวดคำถาม: สั่งล่วงหน้าได้ไหม?
+    if (q.includes("ล่วงหน้า") || q.includes("จองกี่วัน") || q.includes("สั่งกี่วัน")) {
+      return `สำหรับการสั่งจัดช่อดอกไม้ที่ **Bloomie Florist** มีรายละเอียดดังนี้ค่ะ 📅:\n\n` +
+        `• **ช่อดอกไม้สดมาตรฐาน:** แนะนำสั่งจองล่วงหน้าอย่างน้อย **1 วัน** เพื่อให้ทางร้านคัดสรรดอกไม้ที่สดและสวยที่สุดค่ะ\n` +
+        `• **ช่อดอกไม้นำเข้าพิเศษ / ช่อรับปริญญาขนาดใหญ่:** สั่งจองล่วงหน้า **2 - 3 วันทำการ** ค่ะ\n` +
+        `• **กรณีต้องการดอกไม้ด่วนวันเดียวกัน (Same-Day):** สามารถสั่งซื้อดอกไม้ที่มีสต็อกหน้าร้านได้เลยค่ะ ใช้เวลาจัดช่อประมาณ **45 - 60 นาที** หลังยืนยันชำระเงิน โทรสอบถามสต็อกดอกไม้สดประจำวันได้ที่ ${SHOP_PHONE} ค่ะ 🌸`;
+    }
+
+    // 2. หมวดคำถาม: จัดส่งกี่วัน?
+    if (q.includes("จัดส่งกี่วัน") || q.includes("ส่งกี่วัน") || (q.includes("จัดส่ง") && q.includes("วัน")) || q.includes("ส่งด่วน")) {
+      return `บริการจัดส่งของ **Bloomie Florist** รวดเร็วและดูแลดอกไม้ด้วยความใส่ใจค่ะ 🚚:\n\n` +
+        `• 🛵 **บริการส่งด่วนในวันเดียวกัน (Same-Day Delivery):** จัดส่งถึงมือผู้รับภายใน **2 - 3 ชั่วโมง** ในพื้นที่กรุงเทพฯ และปริมณฑล หรือสามารถระบุวันและเวลานัดหมายล่วงหน้าได้ตามต้องการค่ะ\n` +
+        `• 🎓 **จัดส่งฟรี:** ภายในมหาวิทยาลัย PIM และพื้นที่ใกล้เคียงไม่เกิน 3 กม. เมื่อมียอดสั่งซื้อ 500 บาทขึ้นไป\n` +
+        `• ❄️ **รถยนต์ปรับอากาศควบคุมอุณหภูมิ:** เหมาจ่าย 250 บาทต่อเที่ยว เพื่อรักษาความสดชื่นและทรงช่อให้สวยสมบูรณ์แบบที่สุด หรือจัดส่งผ่าน GrabExpress / Lalamove ตามระยะทางจริงค่ะ`;
+    }
+
+    // 3. หมวดคำถาม: ราคาเท่าไหร่?
+    if (q.includes("ราคาเท่าไหร่") || q.includes("ราคาเท่าไร") || q.includes("ราคาช่อ") || q.includes("คิดราคา")) {
+      return `ราคาช่อดอกไม้ของ **Bloomie Florist** มีให้เลือกตามขนาดและประเภทดอกไม้ดังนี้ค่ะ 🏷️:\n\n` +
+        `• 🌸 **Mini Cute:** เริ่มต้น **390 - 450 บาท** (ช่อทานตะวันซันนี่ 1 ดอก หรือกุหลาบไทยเกรด A 3 ดอก ห่อกระดาษคราฟท์)\n` +
+        `• 💐 **Sweet Delight (ยอดนิยม):** **590 - 890 บาท** (ช่อทานตะวัน 3 ดอก หรือกุหลาบฮอลแลนด์/ทิวลิปเนเธอร์แลนด์ 3-5 ดอก ห่อกระดาษไขเกาหลีสีครีมน้ำตาล)\n` +
+        `• 👑 **Elegance & Luxury:** **1,290 - 2,500+ บาท** (ช่อกุหลาบเอกวาดอร์พรีเมียม 10 ดอก หรือไฮเดรนเยียทรงบอลใหญ่ ผูกริบบิ้นซาตินพรีเมียม)\n\n` +
+        `✨ *ทุกช่อแถมฟรี การ์ดอวยพรเขียนข้อความพิเศษ และผูกโบว์ริบบิ้นผ้าซาตินพรีเมียมให้ฟรีทุกช่อค่ะ!*`;
+    }
+
+    // 4. หมวดคำถาม: มีบริการอะไรบ้าง?
+    if (q.includes("บริการอะไร") || q.includes("ทำอะไรได้บ้าง") || q.includes("มีอะไรบ้าง")) {
+      return `**Bloomie Florist** ยินดีให้บริการครบวงจรด้วยความประณีตค่ะ 💐✨:\n\n` +
+        `1. 🌹 **จัดช่อดอกไม้สดตามสั่ง:** คัดสรรดอกไม้เกรดพรีเมียม ทั้งกุหลาบเอกวาดอร์, ทิวลิปเนเธอร์แลนด์, ทานตะวัน, ไฮเดรนเยีย, ลิลลี่\n` +
+        `2. 🎓 **ช่อดอกไม้สำหรับทุกโอกาสพิเศษ:** งานรับปริญญา, วันเกิด, วันครบรอบ, ขอแสดงความยินดี, วาเลนไทน์\n` +
+        `3. 💌 **การ์ดอวยพรพิเศษ:** บริการพิมพ์ข้อความหรือเขียนการ์ดอวยพรจากใจส่งมอบความรู้สึกถึงคนสำคัญ\n` +
+        `4. 🚚 **บริการจัดส่งด่วน Same-Day:** รถปรับอากาศควบคุมอุณหภูมิ ดูแลช่อดอกไม้ไม่ให้ช้ำ\n` +
+        `5. 🎨 **ระบบ AI ออกแบบ & เจนภาพช่อดอกไม้เสมือนจริง:** ให้คุณลูกค้าเลือกผสมดอกไม้ สีกระดาษ และโบว์ แล้วให้ AI เรนเดอร์ภาพตัวอย่างให้ชมได้ทันทีค่ะ!`;
     }
 
     // กรณีขอภาพ หรือให้ AI เจนภาพ หรือระบุสเปกช่อดอกไม้
     if (checkImageIntent(q)) {
-      // ตรวจสอบกรณีผสม กุหลาบ + ทิวลิป (ตรงกับคำถามที่ผู้ใช้ยกตัวอย่าง)
       if (q.includes("กุหลาบ") && q.includes("ทิวลิป")) {
         return `หนูได้ใช้โมเดล **GPT** วิเคราะห์และออกแบบ **ช่อดอกไม้ผสมกุหลาบและทิวลิป** ให้ตามที่คุณต้องการเรียบร้อยแล้วค่ะ 🌹🌷✨\n\n` +
-          `**📋 รายละเอียดและราคาจากเอกสารของร้าน PIM Flower Studio:**\n` +
+          `**📋 รายละเอียดและราคาจากเอกสารของร้าน Bloomie Florist:**\n` +
           `- 🌹 **ดอกกุหลาบ:** กุหลาบฮอลแลนด์ (ดอกละ 120 บาท) หรือกุหลาบเอกวาดอร์พรีเมียม (ดอกละ 180 บาท)\n` +
           `- 🌷 **ดอกทิวลิปเนเธอร์แลนด์:** ดอกละ 100 บาท (ทรงถ้วยสวยงาม โมเดิร์นมินิมอล)\n` +
           `- 📜 **กระดาษห่อ:** กระดาษไขเกาหลีสีน้ำตาลครีมกันน้ำ (100 บาท) ห่อจับจีบสองชั้นสไตล์เกาหลี\n` +
@@ -1108,41 +1490,26 @@ ${userQuestion}`;
     if (budgetMatch || q.includes("งบ")) {
       const budget = budgetMatch ? parseInt(budgetMatch[1]) : 800;
       if (budget < 400) {
-        return `ด้วยงบ **${budget} บาท** ทางร้านแนะนำแพ็กเกจ **Mini Cute** เช่น:\n- **ทานตะวันซันนี่มินิ** (390 บาท): ดอกทานตะวันดอกใหญ่ 1 ดอก แซมแคสเปียและสเตติส ห่อกระดาษคราฟท์โบว์เชือกปอ\n- หรือ **กุหลาบไทยเกรด A** 3 ดอก (150 บาท) พร้อมค่าห่อกระดาษคราฟท์ (80 บาท) รวม 230 บาท อยู่ในงบสบายๆ เลยค่ะ ✨`;
+        return `ด้วยงบ **${budget} บาท** ทางร้านแนะนำแพ็กเกจ **Mini Cute** เช่น:\n- **ทานตะวันซันนี่มินิ** (390 บาท): ดอกทานตะวัน 1 ดอก แซมแคสเปียและสเตติส ห่อกระดาษคราฟท์\n- หรือ **กุหลาบไทยเกรด A** 3 ดอก (150 บาท) พร้อมค่าห่อกระดาษคราฟท์ (80 บาท) รวม 230 บาท สบายกระเป๋าค่ะ ✨`;
       } else if (budget <= 800) {
-        return `ด้วยงบ **${budget} บาท** สามารถจัดเซต **Sweet Delight** ได้สวยงามมากค่ะ เช่น:\n- **กุหลาบฮอลแลนด์** 3 ดอก (360 บาท) + แซมดอกยิปโซขาว (200 บาท) + ห่อกระดาษไขเกาหลีสีพาสเทล (100 บาท) ผูกโบว์ซาตินฟรี รวมเป็น **660 บาท** เหลือเงินทอนค่ะ!\n- หรือช่อ **ทานตะวัน 3 ดอก** ห่อกระดาษคราฟท์ราคา **590 บาท** โดดเด่นสดใสมากค่ะ 🌻`;
+        return `ด้วยงบ **${budget} บาท** สามารถจัดเซต **Sweet Delight** ได้สวยงามมากค่ะ เช่น:\n- **กุหลาบฮอลแลนด์** 3 ดอก (360 บาท) + แซมดอกยิปโซขาว (200 บาท) + ห่อกระดาษไขเกาหลีสีครีม (100 บาท) ผูกโบว์ซาตินฟรี รวมเป็น **660 บาท** ค่ะ!\n- หรือช่อ **ทานตะวัน 3 ดอก** ห่อกระดาษคราฟท์ราคา **590 บาท** โดดเด่นสดใสมากค่ะ 🌻`;
       } else {
-        return `ด้วยงบ **${budget} บาท** แนะนำจัดช่อพรีเมียม **Elegance Warmth** หรือ **Premium Romance** ได้เลยค่ะ เช่น:\n- **กุหลาบเอกวาดอร์นำเข้า** 3 ดอก (540 บาท) + ดอกไฮเดรนเยียฟ้า 1 หัวใหญ่ (250 บาท) + ห่อกระดาษไขเกาหลี 2 ชั้น (100 บาท) รวมเป็น **890 บาท** ช่อใหญ่ฟู ถ่ายรูปขึ้นกล้องสุดๆ ค่ะ! 🌹✨`;
+        return `ด้วยงบ **${budget} บาท** แนะนำจัดช่อพรีเมียม **Elegance Warmth** หรือ **Premium Romance** ได้เลยค่ะ เช่น:\n- **กุหลาบเอกวาดอร์นำเข้า** 3 ดอก (540 บาท) + ไฮเดรนเยียฟ้า (250 บาท) + ห่อกระดาษไขเกาหลี 2 ชั้น (100 บาท) รวมเป็น **890 บาท** ช่อใหญ่ฟู ถ่ายรูปขึ้นกล้องสุดๆ ค่ะ! 🌹✨`;
       }
-    }
-
-    // กรณีถามเรื่องรับปริญญา
-    if (q.includes("รับปริญญา") || q.includes("บัณฑิต") || q.includes("ยินดี")) {
-      return `สำหรับงานรับปริญญา ทางร้านขอแนะนำ **ดอกทานตะวัน** หรือ **ดอกทิวลิปสีส้ม/ชมพู** ค่ะ 🌻🎓\n- **ความหมาย:** สื่อถึงความสำเร็จอันงดงาม อนาคตที่สดใสรุ่งโรจน์ และการเริ่มต้นก้าวใหม่ด้วยความหวัง\n- **สไตล์แนะนำ:** จัดช่อคู่กับกระดาษไขเกาหลีสีครีม หรือกระดาษคราฟท์สไตล์มินิมอล ถ่ายรูปกลางแจ้งขึ้นกล้องเด่นมากค่ะ!\n- แนะนำแพ็กเกจ *ซันไชน์การ์เด้น (590 บาท)* หรือสั่งจองล่วงหน้า 2-3 วันนะคะ`;
     }
 
     // กรณีถามเรื่องคนรัก / วาเลนไทน์ / วันครบรอบ
     if (q.includes("แฟน") || q.includes("ครบรอบ") || q.includes("วาเลนไทน์") || q.includes("รัก")) {
-      return `สำหรับวันพิเศษกับคนรัก แนะนำ **กุหลาบเอกวาดอร์สีแดงการ์เนต** หรือ **กุหลาบชมพูพาสเทล** ค่ะ 🌹\n- **ความหมาย:** สื่อถึงความรักแท้ที่มั่นคง ลึกซึ้ง และความผูกพันอันยาวนาน\n- **ราคา:** กุหลาบเอกวาดอร์ดอกละ 180 บาท หรือกำละ 1,600 บาท (10 ดอก) กลีบหนาพิเศษ บานทน 7-10 วันค่ะ\n- แนะนำห่อด้วยกระดาษไขเกาหลีสีขาวมุกหรือสีดำขอบทอง ผูกโบว์ริบบิ้นชีฟองขอบรุ่ย โรแมนติกสุดๆ ค่ะ 💕`;
-    }
-
-    // กรณีถามเรื่องกระดาษห่อและริบบิ้น
-    if (q.includes("กระดาษ") || q.includes("ห่อ") || q.includes("ริบบิ้น")) {
-      return `ทางร้านมีวัสดุห่อช่อให้เลือกหลากหลายแบบค่ะ:\n1. **กระดาษไขเกาหลีกันน้ำ (100 บาท):** เนื้อแมตต์ ละมุน กันน้ำ มีสีขาวมุก พาสเทล เขียวเซจ ดำ\n2. **กระดาษคราฟท์รักษ์โลก (80 บาท):** สไตล์มินิมอล อบอุ่น วินเทจ\n3. **กระดาษสาญี่ปุ่น (120 บาท):** เส้นใยธรรมชาติหรูหรา นุ่มนวล\n4. **กระดาษโฮโลแกรมเหลือบแสง (130 บาท):** ประกายรุ้ง ล้ำสมัย\n🎀 *พิเศษ: ริบบิ้นผ้าซาตินพรีเมียมผูกให้ฟรีทุกช่อค่ะ!*`;
-    }
-
-    // กรณีถามเรื่องการจัดส่งและเวลาเปิดร้าน
-    if (q.includes("ส่ง") || q.includes("เวลา") || q.includes("เปิด") || q.includes("จอง") || q.includes("ที่ตั้ง")) {
-      return `ข้อมูลการให้บริการและการจัดส่ง PIM Flower Studio ค่ะ 🛵:\n- **เวลาเปิดทำการ:** จันทร์ - เสาร์ เวลา 08:30 - 19:30 น. (ปิดวันอาทิตย์ ยกเว้นเทศกาล)\n- **ที่ตั้ง:** อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์ แจ้งวัฒนะ\n- **โปรโมชั่นจัดส่งฟรี:** จัดส่งฟรีภายใน ม.PIM และไม่เกิน 3 กม. เมื่อสั่งซื้อครบ 500 บาทขึ้นไป\n- **การสั่งจอง:** ช่อดอกไม้สดแนะนำสั่งล่วงหน้า 1 วัน หากต้องการด่วนสามารถโทรเช็คสต็อกได้ที่เบอร์ ${SHOP_PHONE} ค่ะ`;
+      return `สำหรับวันพิเศษกับคนรัก แนะนำ **กุหลาบเอกวาดอร์สีแดงการ์เนต** หรือ **กุหลาบชมพูพาสเทล** ค่ะ 🌹\n- **ความหมาย:** สื่อถึงความรักแท้ที่มั่นคง ลึกซึ้ง และความผูกพันอันยาวนาน\n- **ราคา:** กุหลาบเอกวาดอร์ดอกละ 180 บาท หรือกำละ 1,600 บาท (10 ดอก) กลีบหนาพิเศษ บานทน 7-10 วันค่ะ\n- แนะนำห่อด้วยกระดาษไขเกาหลีสีครีมหรือสีดำขอบทอง ผูกโบว์ริบบิ้นชีฟอง ละมุนโรแมนติกมากค่ะ 💕`;
     }
 
     // สรุปจากเนื้อหา Chunk ที่ดีที่สุด
     const bestChunk = chunks[0];
     if (bestChunk && bestChunk.text) {
-      return `จากข้อมูลของทางร้าน PIM Flower Studio ค่ะ:\n\n${bestChunk.text.substring(0, 320)}...\n\n(หากต้องการรายละเอียดเพิ่มเติมหรือสั่งจอง สามารถติดต่อได้ที่เบอร์ ${SHOP_PHONE} ค่ะ)`;
+      return `จากข้อมูลของทางร้าน Bloomie Florist ค่ะ:\n\n${bestChunk.text.substring(0, 320)}...\n\n(หากต้องการรายละเอียดเพิ่มเติมหรือสั่งจอง สามารถติดต่อได้ที่เบอร์ ${SHOP_PHONE} ค่ะ)`;
     }
 
-    return `ไม่พบข้อมูลนี้ในเอกสารของร้าน PIM Flower Studio ค่ะ แนะนำให้ติดต่อพนักงานจริงเพื่อสอบถามข้อมูลเพิ่มเติมได้ที่เบอร์ ${SHOP_PHONE} หรือ LINE: ${SHOP_LINE} ได้เลยนะคะ 🌸`;
+    return `ไม่พบข้อมูลนี้ในเอกสารของร้าน Bloomie Florist ค่ะ แนะนำให้ติดต่อพนักงานจริงเพื่อสอบถามข้อมูลเพิ่มเติมได้ที่เบอร์ ${SHOP_PHONE} หรือ LINE: ${SHOP_LINE} ได้เลยนะคะ 🌸`;
   }
 
   // -------------------------------------------------------------

@@ -3,30 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIM Flower Studio - ร้านดอกไม้อัจฉริยะ & AI RAG Chatbot</title>
+  <title>Bloomie Florist - ร้านดอกไม้อัจฉริยะ & AI RAG Chatbot</title>
   
-  <!-- Google Fonts: Prompt & Playfair Display -->
+  <!-- Google Fonts: Anuphan & Cormorant Garamond (Bloomie Florist) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --primary: #2D6A4F;
-      --primary-dark: #1B4332;
-      --primary-light: #40916C;
-      --accent: #E76F51;
+      --primary: #7D8B6E;        /* สีเขียวมะกอกหลัก Bloomie Florist */
+      --primary-dark: #58654B;   /* เขียวมะกอกเข้ม */
+      --primary-light: #94A385;  /* เขียวมะกอกสว่าง */
+      --accent: #E08A68;         /* ส้มคอรัลนวล */
       --accent-warm: #F4A261;
-      --soft-pink: #FDE2E4;
-      --soft-cream: #F8F9FA;
-      --sage: #D8F3DC;
-      --text-main: #1F2937;
-      --text-muted: #4B5563;
-      --border-color: #E5E7EB;
+      --cream: #FAF7F2;          /* ครีม */
+      --beige: #F3ECE2;          /* เบจ */
+      --olive: #7D8B6E;          /* เขียวมะกอก */
+      --soft-pink: #FCECEE;
+      --soft-cream: #FAF7F2;
+      --sage: #E8EFE5;
+      --text-main: #332F2A;
+      --text-muted: #6E675D;
+      --border-color: #E8E1D5;
       --card-bg: #FFFFFF;
-      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
     }
 
     * {
@@ -36,9 +39,10 @@
     }
 
     body {
-      font-family: 'Prompt', sans-serif;
+      font-family: 'Anuphan', sans-serif;
+      font-weight: 400;
       color: var(--text-main);
-      background-color: #FAF9F6;
+      background-color: #FAF7F2;
       line-height: 1.6;
       overflow-x: hidden;
     }
@@ -46,10 +50,11 @@
     h1, h2, h3, h4 {
       font-weight: 600;
       color: var(--primary-dark);
+      font-family: 'Anuphan', sans-serif;
     }
 
-    .font-serif {
-      font-family: 'Playfair Display', serif;
+    .font-serif, .shop-brand-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
     }
 
     /* Navigation */
@@ -950,10 +955,10 @@
   <header>
     <div class="nav-container">
       <a href="#" class="logo">
-        <div class="logo-icon">🌸</div>
+        <img src="images/bloomie-logo.svg" alt="Bloomie Florist Logo" width="46" height="46" style="border-radius:50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
         <div class="logo-text">
-          <h1>PIM Flower Studio</h1>
-          <span>AI RAG Florist & Visualizer</span>
+          <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Bloomie Florist <span style="font-size:16px; font-weight:normal;">♡</span></h1>
+          <span style="font-family: 'Anuphan', sans-serif; font-size: 11px; color: #7D8B6E; font-weight: 400; text-transform:none; letter-spacing:0.3px;">Let flowers say it for you ♡</span>
         </div>
       </a>
 
