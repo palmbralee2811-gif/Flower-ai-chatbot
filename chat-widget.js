@@ -905,6 +905,74 @@
         0%, 80%, 100% { transform: translateY(0); }
         40% { transform: translateY(-5px); }
       }
+
+      .bloomie-order-start {
+        margin: 0 14px 6px;
+        padding: 8px 12px;
+        border: 1px solid ${THEME.creamBorder};
+        border-radius: 18px;
+        background: ${THEME.creamCard};
+        color: ${THEME.textDark};
+        cursor: pointer;
+        font: 500 12px 'Anuphan', sans-serif;
+        flex-shrink: 0;
+      }
+      .bloomie-order-start:hover { border-color: ${THEME.olive}; }
+      .bloomie-order-form, .bloomie-order-card {
+        width: min(320px, 100%);
+        padding: 14px;
+        border: 1px solid ${THEME.creamBorder};
+        border-radius: 16px;
+        background: ${THEME.creamCard};
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        font-size: 12px;
+      }
+      .bloomie-order-form h3, .bloomie-order-card h3 {
+        margin: 0 0 8px;
+        color: ${THEME.textDark};
+        font: 600 15px 'Anuphan', sans-serif;
+      }
+      .bloomie-order-form label {
+        display: block;
+        margin-top: 8px;
+        color: ${THEME.textMuted};
+      }
+      .bloomie-order-form input, .bloomie-order-form textarea,
+      .bloomie-order-form select {
+        width: 100%;
+        margin-top: 3px;
+        padding: 8px 9px;
+        border: 1px solid ${THEME.creamBorder};
+        border-radius: 8px;
+        background: #fff;
+        color: ${THEME.textDark};
+        font: 12px 'Anuphan', sans-serif;
+      }
+      .bloomie-order-form textarea { min-height: 54px; resize: vertical; }
+      .bloomie-order-fee { margin-top: 8px; line-height: 1.5; }
+      .bloomie-order-submit {
+        width: 100%;
+        margin-top: 10px;
+        padding: 9px;
+        border: 0;
+        border-radius: 10px;
+        background: ${THEME.olive};
+        color: #fff;
+        cursor: pointer;
+        font: 500 12px 'Anuphan', sans-serif;
+      }
+      .bloomie-order-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+      .bloomie-order-note { margin-top: 8px; color: ${THEME.textMuted}; line-height: 1.5; }
+      .bloomie-promptpay-qr {
+        display: flex;
+        justify-content: center;
+        margin: 10px auto;
+        min-height: 0;
+      }
+      .bloomie-promptpay-qr img, .bloomie-promptpay-qr canvas {
+        max-width: 100%;
+        height: auto;
+      }
     `;
     document.head.appendChild(style);
 
@@ -976,6 +1044,7 @@
 
         <!-- 5. ชุด 4 ไอคอนคำถาม (Quick Action Questions) -->
         <div class="bloomie-quick-questions" id="bloomie-quick-questions"></div>
+        <button class="bloomie-order-start" id="bloomie-order-start" type="button">🧾 จัดทำสรุปคำสั่งซื้อ / เลือกรอบส่ง</button>
 
         <!-- 6. คำแนะนำเสริมการเจนภาพด้วย AI -->
         <div class="bloomie-extra-chips" id="bloomie-extra-chips"></div>
@@ -1039,6 +1108,7 @@
     const pinBtn = document.getElementById("pimbot-pin-btn");
     const sendBtn = document.getElementById("pimbot-send-btn");
     const input = document.getElementById("pimbot-input");
+    const orderStartBtn = document.getElementById("bloomie-order-start");
 
     toggleBtn.onclick = toggleChatWindow;
     closeBtn.onclick = toggleChatWindow;
@@ -1049,6 +1119,7 @@
       };
     }
     sendBtn.onclick = handleSendMessage;
+    orderStartBtn.onclick = openOrderForm;
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") handleSendMessage();
     });
@@ -1144,6 +1215,273 @@
     row.innerHTML = html;
     msgs.appendChild(row);
     msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  const DELIVERY_SLOTS = [
+    "09:00 - 12:00 น. (รอบเช้า)",
+    "13:00 - 16:00 น. (รอบบ่าย)",
+    "16:00 - 19:00 น. (รอบเย็น)"
+  ];
+
+  function getDeliveryQuote(area, subtotal) {
+    const zones = (typeof CONFIG !== "undefined" && Array.isArray(CONFIG.DELIVERY_ZONES))
+      ? CONFIG.DELIVERY_ZONES : [];
+    const normalizedArea = (area || "").trim().toLowerCase();
+    if (!normalizedArea) return { error: "กรุณาระบุแขวง/เขต หรือชื่อพื้นที่จัดส่ง" };
+
+    const zone = zones.find(item =>
+      item && Array.isArray(item.keywords) &&
+      item.keywords.some(keyword => normalizedArea.includes(String(keyword).toLowerCase()))
+    );
+    if (!zone || !Number.isFinite(Number(zone.fee)) || Number(zone.fee) < 0) {
+      return { error: "ยังไม่พบโซนนี้ในตารางค่าจัดส่ง กรุณาติดต่อร้านเพื่อประเมินราคา" };
+    }
+
+    const fee = Number(zone.freeOver) > 0 && subtotal >= Number(zone.freeOver)
+      ? 0 : Number(zone.fee);
+    return { fee, zone: zone.name || "โซนจัดส่งที่กำหนด", estimate: true };
+  }
+
+  function openOrderForm() {
+    const messages = document.getElementById("pimbot-messages");
+    const existing = document.getElementById("bloomie-order-form");
+    if (existing) {
+      existing.closest(".bloomie-msg-row").scrollIntoView({ block: "nearest" });
+      return;
+    }
+
+    const row = document.createElement("div");
+    row.className = "bloomie-msg-row bot-row";
+    row.innerHTML = `
+      <div class="bloomie-bot-avatar"><img src="images/bloomie-logo.svg" alt="Bloomie Avatar"></div>
+      <form class="bloomie-order-form" id="bloomie-order-form">
+        <h3>สรุปแบบช่อและรายละเอียดจัดส่ง</h3>
+        <label>แบบช่อ/รายการสินค้า
+          <input name="bouquet" type="text" maxlength="120" placeholder="เช่น ช่อกุหลาบ 5 ดอก" required>
+        </label>
+        <label>ราคาช่อ (บาท)
+          <input name="price" type="number" min="1" max="100000" step="1" placeholder="ระบุราคาจากร้าน" required>
+        </label>
+        <label>ข้อความในการ์ด
+          <textarea name="card" maxlength="300" placeholder="พิมพ์ข้อความในการ์ด (ไม่บังคับ)"></textarea>
+        </label>
+        <label>แขวง/เขต หรือชื่อพื้นที่จัดส่ง
+          <input name="area" type="text" maxlength="100" placeholder="เช่น มหาวิทยาลัย PIM" required>
+        </label>
+        <label>วันที่ต้องการรับ
+          <input name="date" type="date" required>
+        </label>
+        <label>รอบเวลาที่ต้องการ
+          <select name="slot" required>
+            <option value="">เลือกรอบจัดส่ง</option>
+            ${DELIVERY_SLOTS.map(slot => `<option value="${slot}">${slot}</option>`).join("")}
+          </select>
+        </label>
+        <div class="bloomie-order-fee" id="bloomie-order-fee" aria-live="polite">
+          ระบุราคาและพื้นที่จัดส่งเพื่อประเมินยอดรวม
+        </div>
+        <button class="bloomie-order-submit" type="submit" disabled>ยืนยันคำขอและสรุปคำสั่งซื้อ</button>
+        <div class="bloomie-order-note">รอบจัดส่งเป็นคำขอรอยืนยันจากร้าน ระบบนี้ยังไม่ล็อกคิวหรือยืนยันการชำระเงิน</div>
+      </form>`;
+    messages.appendChild(row);
+
+    const form = row.querySelector("form");
+    const dateInput = form.elements.date;
+    const today = new Date();
+    dateInput.min = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    form.addEventListener("input", updateOrderFee);
+    form.addEventListener("change", updateOrderFee);
+    form.addEventListener("submit", submitOrder);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function updateOrderFee(event) {
+    const form = event.currentTarget;
+    const submit = form.querySelector(".bloomie-order-submit");
+    const feeDisplay = form.querySelector("#bloomie-order-fee");
+    const subtotal = Number(form.elements.price.value);
+    const quote = getDeliveryQuote(form.elements.area.value, subtotal);
+    const date = form.elements.date.value;
+    const isPastDate = date && date < form.elements.date.min;
+    const isValid = form.checkValidity() && subtotal > 0 && !quote.error && !isPastDate;
+
+    if (quote.error) {
+      feeDisplay.textContent = quote.error;
+    } else {
+      feeDisplay.textContent = `โซน ${quote.zone} • ค่าจัดส่งโดยประมาณ ฿${quote.fee.toLocaleString("th-TH")} • รวม ฿${(subtotal + quote.fee).toLocaleString("th-TH")}`;
+    }
+    if (isPastDate) feeDisplay.textContent = "กรุณาเลือกวันที่ตั้งแต่วันนี้เป็นต้นไป";
+    submit.disabled = !isValid;
+  }
+
+  function promptPayTag(id, value) {
+    const text = String(value);
+    return `${id}${String(text.length).padStart(2, "0")}${text}`;
+  }
+
+  function buildPromptPayPayload(promptPayId, amount) {
+    const id = String(promptPayId || "").replace(/[\s-]/g, "");
+    let accountType;
+    let accountValue;
+    if (/^0\d{9}$/.test(id)) {
+      accountType = "01";
+      accountValue = `0066${id.substring(1)}`;
+    } else if (/^\d{13}$/.test(id)) {
+      accountType = "02";
+      accountValue = id;
+    } else {
+      throw new Error("กรุณาตั้งค่าเบอร์ PromptPay 10 หลักหรือเลขประจำตัว 13 หลักใน config.js");
+    }
+    if (!Number.isFinite(amount) || amount <= 0) throw new Error("ยอดชำระไม่ถูกต้อง");
+
+    const merchantInfo = promptPayTag("00", "A000000677010111") + promptPayTag(accountType, accountValue);
+    const payload = promptPayTag("00", "01") + promptPayTag("01", "12") +
+      promptPayTag("29", merchantInfo) + promptPayTag("53", "764") +
+      promptPayTag("54", amount.toFixed(2)) + promptPayTag("58", "TH") +
+      promptPayTag("59", String(CONFIG.PROMPTPAY_NAME || "BLOOMIE FLORIST").substring(0, 25)) +
+      promptPayTag("60", "BANGKOK") + "6304";
+    let crc = 0xFFFF;
+    for (let i = 0; i < payload.length; i++) {
+      crc ^= payload.charCodeAt(i) << 8;
+      for (let bit = 0; bit < 8; bit++) {
+        crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+        crc &= 0xFFFF;
+      }
+    }
+    return `${payload}${crc.toString(16).toUpperCase().padStart(4, "0")}`;
+  }
+
+  function buildDemoPaymentPayload(amount) {
+    if (!Number.isFinite(amount) || amount <= 0) throw new Error("ยอดชำระไม่ถูกต้อง");
+    const reference = `DEMO-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    return {
+      payload: `BLOOMIE-DEMO-NOT-A-REAL-PAYMENT|AMOUNT=${amount.toFixed(2)}|REFERENCE=${reference}`,
+      reference
+    };
+  }
+
+  let qrLibraryPromise;
+  function loadQrLibrary() {
+    if (window.QRCode) return Promise.resolve(window.QRCode);
+    if (qrLibraryPromise) return qrLibraryPromise;
+    qrLibraryPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+      script.onload = () => {
+        if (window.QRCode) {
+          resolve(window.QRCode);
+        } else {
+          qrLibraryPromise = null;
+          reject(new Error("โหลดไลบรารี QR ไม่สำเร็จ"));
+        }
+      };
+      script.onerror = () => {
+        qrLibraryPromise = null;
+        reject(new Error("โหลดไลบรารี QR ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต"));
+      };
+      document.head.appendChild(script);
+    });
+    return qrLibraryPromise;
+  }
+
+  function submitOrder(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    updateOrderFee({ currentTarget: form });
+    if (!form.checkValidity() || form.querySelector(".bloomie-order-submit").disabled) {
+      form.reportValidity();
+      return;
+    }
+
+    const subtotal = Number(form.elements.price.value);
+    const quote = getDeliveryQuote(form.elements.area.value, subtotal);
+    const order = {
+      bouquet: form.elements.bouquet.value.trim(),
+      subtotal,
+      card: form.elements.card.value.trim(),
+      area: form.elements.area.value.trim(),
+      date: form.elements.date.value,
+      slot: form.elements.slot.value,
+      fee: quote.fee,
+      total: subtotal + quote.fee
+    };
+    const row = form.closest(".bloomie-msg-row");
+    form.remove();
+    addOrderSummary(order);
+    row.remove();
+  }
+
+  async function addOrderSummary(order) {
+    const messages = document.getElementById("pimbot-messages");
+    const row = document.createElement("div");
+    row.className = "bloomie-msg-row bot-row";
+    const card = document.createElement("div");
+    card.className = "bloomie-order-card";
+    const title = document.createElement("h3");
+    title.textContent = "สรุปคำขอสั่งซื้อ";
+    card.appendChild(title);
+
+    const details = [
+      `สินค้า: ${order.bouquet}`,
+      `ราคา: ฿${order.subtotal.toLocaleString("th-TH")}`,
+      `จัดส่งไป: ${order.area}`,
+      `วันที่: ${order.date} • ${order.slot}`,
+      `ค่าจัดส่งโดยประมาณ: ฿${order.fee.toLocaleString("th-TH")}`,
+      `ยอดรวม: ฿${order.total.toLocaleString("th-TH")}`,
+      `ข้อความการ์ด: ${order.card || "-"}`
+    ];
+    details.forEach(text => {
+      const line = document.createElement("div");
+      line.textContent = text;
+      line.style.marginTop = "4px";
+      card.appendChild(line);
+    });
+
+    const paymentMode = CONFIG.PAYMENT_MODE || "mock";
+    const note = document.createElement("div");
+    note.className = "bloomie-order-note";
+    note.textContent = paymentMode === "mock"
+      ? "⚠️ QR จำลองสำหรับสาธิตเท่านั้น สแกนแล้วไม่สามารถชำระเงินจริงได้"
+      : "คำสั่งซื้อและรอบจัดส่งยังรอร้านยืนยัน QR ไม่ใช่หลักฐานยืนยันการชำระเงิน";
+    card.appendChild(note);
+
+    const qrContainer = document.createElement("div");
+    qrContainer.className = "bloomie-promptpay-qr";
+    card.appendChild(qrContainer);
+    const paymentStatus = document.createElement("div");
+    paymentStatus.className = "bloomie-order-note";
+    paymentStatus.textContent = "กำลังเตรียม QR ชำระเงิน…";
+    card.appendChild(paymentStatus);
+
+    const avatar = document.createElement("div");
+    avatar.className = "bloomie-bot-avatar";
+    avatar.innerHTML = '<img src="images/bloomie-logo.svg" alt="Bloomie Avatar">';
+    row.appendChild(avatar);
+    row.appendChild(card);
+    messages.appendChild(row);
+    messages.scrollTop = messages.scrollHeight;
+
+    try {
+      let payload;
+      let demoReference = "";
+      if (paymentMode === "mock") {
+        const demoPayment = buildDemoPaymentPayload(order.total);
+        payload = demoPayment.payload;
+        demoReference = demoPayment.reference;
+      } else if (paymentMode === "promptpay") {
+        payload = buildPromptPayPayload(CONFIG.PROMPTPAY_ID, order.total);
+      } else {
+        throw new Error('ค่า PAYMENT_MODE ไม่ถูกต้อง (ใช้ "mock" หรือ "promptpay")');
+      }
+      const QRCode = await loadQrLibrary();
+      new QRCode(qrContainer, { text: payload, width: 190, height: 190, correctLevel: QRCode.CorrectLevel.M });
+      paymentStatus.textContent = paymentMode === "mock"
+        ? `QR จำลองเท่านั้น • ยอด ฿${order.total.toLocaleString("th-TH")} • ${demoReference} • ใช้ชำระเงินจริงไม่ได้`
+        : "สแกนด้วยแอปธนาคารเพื่อตรวจสอบชื่อผู้รับและยอดก่อนชำระเงินจริง";
+    } catch (error) {
+      paymentStatus.textContent = `${error.message} • ติดต่อร้านเพื่อสอบถามช่องทางชำระเงิน`;
+    }
+    messages.scrollTop = messages.scrollHeight;
   }
 
   function showTypingIndicator() {
