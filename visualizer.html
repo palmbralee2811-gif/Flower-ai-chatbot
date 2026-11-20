@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สตูดิโอจำลองช่อดอกไม้ & การ์ด - Bloomie Florist</title>
+  
+  <!-- Google Fonts: Anuphan & Cormorant Garamond -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="images/bloomie-logo.svg" alt="Bloomie Florist Logo" width="46" height="46" style="border-radius:50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div class="logo-text">
+          <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Bloomie Florist</h1>
+          <span style="font-family: 'Anuphan', sans-serif; font-size: 11px; color: #7D8B6E; font-weight: 400; text-transform:none; letter-spacing:0.3px;">Let flowers say it for you</span>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="catalog.html">รายการดอกไม้และราคา</a></li>
+        <li><a href="budget.html">คำนวณงบประมาณ</a></li>
+        <li><a href="occasions.html">ความหมายตามโอกาส</a></li>
+        <li><a href="visualizer.html" class="nav-active">จำลองช่อ & การ์ด</a></li>
+        <li>
+          <a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();" class="nav-cta-btn">
+             แชทกับ AI
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+  <!-- Feature 3: Bouquet Visualizer & Greeting Card Studio -->
+  <section id="visualizer" class="section-container">
+    <div class="section-header">
+      <span class="section-tag">Bouquet & Card Studio</span>
+      <h2>สตูดิโอจำลองช่อดอกไม้ & การ์ดอวยพรออนไลน์</h2>
+      <p>ผสมผสานสายพันธุ์ดอกไม้ เลือกโทนสีกระดาษห่อ และเขียนข้อความอวยพรส่วนตัว พร้อมดาวน์โหลดเป็นการ์ดดิจิทัลได้ทันที</p>
+    </div>
+
+    <div class="visualizer-section">
+      <div class="visualizer-layout">
+        
+        <!-- Controls Left Panel -->
+        <div class="visualizer-controls">
+          
+          <!-- 1. ใส่ชื่อหรือเลือกดอกไม้ (สามารถผสมได้หลายชนิด) -->
+          <div class="control-group">
+            <label style="display:flex; justify-content:space-between; align-items:center;">
+              <span>1. เลือกและใส่ชื่อดอกไม้ที่ต้องการ (ผสมได้):</span>
+              <span style="font-size:11px; background:#E8F5E9; color:var(--primary); padding:2px 8px; border-radius:10px;">โมเดล GPT</span>
+            </label>
+                        <div class="option-grid" id="flowersGrid">
+              <div class="option-card active" onclick="toggleFlowerSelection('กุหลาบ', 120, this)">
+                <div class="flower-opt-name">กุหลาบ (Rose)</div>
+                <div class="flower-opt-price">เริ่มต้น ฿50-฿180/ดอก</div>
+              </div>
+              <div class="option-card active" onclick="toggleFlowerSelection('ทิวลิป', 100, this)">
+                <div class="flower-opt-name">ทิวลิป (Tulip)</div>
+                <div class="flower-opt-price">฿100/ดอก (กำละ ฿900)</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('ทานตะวัน', 80, this)">
+                <div class="flower-opt-name">ทานตะวัน (Sunflower)</div>
+                <div class="flower-opt-price">฿80/ดอก (กำละ ฿350)</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('ไฮเดรนเยีย', 250, this)">
+                <div class="flower-opt-name">ไฮเดรนเยีย (Hydrangea)</div>
+                <div class="flower-opt-price">฿250/ก้าน (ช่อใหญ่)</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('ลิลลี่', 160, this)">
+                <div class="flower-opt-name">ลิลลี่ (Lily)</div>
+                <div class="flower-opt-price">฿140-฿180/ก้าน</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('พีโอนี/โบตั๋น', 380, this)">
+                <div class="flower-opt-name">โบตั๋น (Peony)</div>
+                <div class="flower-opt-price">฿380/ดอก (เกรดพรีเมียม)</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('เยอบีร่า', 50, this)">
+                <div class="flower-opt-name">เยอบีร่า (Gerbera)</div>
+                <div class="flower-opt-price">฿35-฿60/ดอก</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('คาร์เนชั่น', 50, this)">
+                <div class="flower-opt-name">คาร์เนชั่น (Carnation)</div>
+                <div class="flower-opt-price">฿45-฿55/ดอก</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('มัมปิงปอง', 50, this)">
+                <div class="flower-opt-name">เบญจมาศ / มัม (Chrysanthemum)</div>
+                <div class="flower-opt-price">฿50-฿60/ดอก</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('กล้วยไม้', 150, this)">
+                <div class="flower-opt-name">กล้วยไม้ (Orchid)</div>
+                <div class="flower-opt-price">฿70-฿350/กิ่ง</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('ลิเซียนทัส', 75, this)">
+                <div class="flower-opt-name">ลิเซียนทัส (Lisianthus)</div>
+                <div class="flower-opt-price">฿75/ก้าน</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('รานังคูลัส', 120, this)">
+                <div class="flower-opt-name">รานังคูลัส (Ranunculus)</div>
+                <div class="flower-opt-price">฿120/ดอก</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('คาลล่าลิลลี่', 160, this)">
+                <div class="flower-opt-name">คาลล่าลิลลี่ (Calla Lily)</div>
+                <div class="flower-opt-price">฿160/ดอก</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('ยิปโซ', 200, this)">
+                <div class="flower-opt-name">ยิปโซ (Baby's Breath)</div>
+                <div class="flower-opt-price">฿200/กำ</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('แคสเปีย/สแตติส', 140, this)">
+                <div class="flower-opt-name">แคสเปีย & สแตติส</div>
+                <div class="flower-opt-price">฿130-฿150/กำ</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('เดซี่', 150, this)">
+                <div class="flower-opt-name">เดซี่ (Daisy)</div>
+                <div class="flower-opt-price">฿150/กำ</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('ใบยูคาลิปตัส', 120, this)">
+                <div class="flower-opt-name">ใบยูคาลิปตัส / ใบเงิน</div>
+                <div class="flower-opt-price">฿120-฿140/กำ</div>
+              </div>
+              <div class="option-card" onclick="toggleFlowerSelection('ดอกฝ้าย', 80, this)">
+                <div class="flower-opt-name">ดอกฝ้าย (Cotton Flower)</div>
+                <div class="flower-opt-price">฿80/ก้าน</div>
+              </div>
+            </div>
+            <!-- ช่องระบุชื่อดอกไม้เพิ่มเติมตามใจชอบ -->
+            <div style="margin-top:10px;">
+              <input type="text" id="customFlowerNames" value="กุหลาบ, ทิวลิป" 
+                     placeholder="พิมพ์ชื่อดอกไม้ที่ต้องการ เช่น กุหลาบ, ทิวลิป, เดซี่..." 
+                     style="width:100%; padding:9px 12px; border:1.5px solid var(--border-color); border-radius:10px; font-size:13px;"
+                     oninput="onCustomFlowerChange(this.value)">
+              <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">
+                 สามารถพิมพ์ชื่อหรือสายพันธุ์ดอกไม้ตามใจชอบ ระบบ GPT จะนำไปประกอบเป็นช่อให้ทันที
+              </div>
+            </div>
+          </div>
+
+          <!-- จำนวนดอกไม้รวม -->
+          <div class="control-group">
+            <label>จำนวนดอกไม้ในช่อโดยประมาณ: <span id="flowerCountVal" style="color:var(--primary); font-weight:700;">6 ดอก</span></label>
+            <input type="range" id="flowerCountSlider" min="1" max="15" value="6" style="width:100%; accent-color:var(--primary);" oninput="updateFlowerCount(this.value)">
+          </div>
+
+          <!-- 2. กระดาษห่อช่อ -->
+          <div class="control-group">
+            <label>2. เลือกสีกระดาษห่อช่อ (Wrapping Paper):</label>
+            <div class="option-grid">
+              <div class="option-card active" onclick="selectPaperOption('korean-matte', 'กระดาษฟิล์มเกาหลีเนื้อด้าน', 100, this)">
+                <div class="flower-opt-name">กระดาษฟิล์มเกาหลีเนื้อด้าน</div>
+                <div class="flower-opt-price">฿100/ช่อ (กันน้ำ 100%)</div>
+              </div>
+              <div class="option-card" onclick="selectPaperOption('clear-opp', 'กระดาษฟิล์มใสขอบสี', 80, this)">
+                <div class="flower-opt-name">กระดาษฟิล์มใส OPP</div>
+                <div class="flower-opt-price">฿80/ช่อ (มินิมอลโมเดิร์น)</div>
+              </div>
+              <div class="option-card" onclick="selectPaperOption('tracing-paper', 'กระดาษไข/กระดาษแก้วขุ่น', 90, this)">
+                <div class="flower-opt-name">กระดาษไข / แก้วขุ่น</div>
+                <div class="flower-opt-price">฿90/ช่อ (โปร่งนวลตา)</div>
+              </div>
+              <div class="option-card" onclick="selectPaperOption('kraft', 'กระดาษคราฟท์รักษ์โลก', 80, this)">
+                <div class="flower-opt-name">กระดาษคราฟท์ธรรมชาติ</div>
+                <div class="flower-opt-price">฿80/ช่อ (คลาสสิกวินเทจ)</div>
+              </div>
+              <div class="option-card" onclick="selectPaperOption('mulberry', 'กระดาษสาใยธรรมชาติ', 120, this)">
+                <div class="flower-opt-name">กระดาษสาญี่ปุ่น / พรีเมียม</div>
+                <div class="flower-opt-price">฿120/ช่อ (นุ่มนวลทรงคุณค่า)</div>
+              </div>
+              <div class="option-card" onclick="selectPaperOption('crepe', 'กระดาษย่นเครป', 90, this)">
+                <div class="flower-opt-name">กระดาษย่น / กระดาษเครป</div>
+                <div class="flower-opt-price">฿90/ช่อ (มีมิติยืดหยุ่น)</div>
+              </div>
+              <div class="option-card" onclick="selectPaperOption('snow', 'กระดาษสโนว์ใยบัว', 110, this)">
+                <div class="flower-opt-name">กระดาษสโนว์ / ใยบัว</div>
+                <div class="flower-opt-price">฿110/ช่อ (หวานละมุน)</div>
+              </div>
+              <div class="option-card" onclick="selectPaperOption('mesh', 'ผ้าตาข่าย/ผ้าโปร่งเลเยอร์', 60, this)">
+                <div class="flower-opt-name">ผ้าตาข่าย / ผ้าโปร่งหรู</div>
+                <div class="flower-opt-price">฿60/ช่อ (เลเยอร์ซ้อน)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. โบว์ริบบิ้น -->
+          <div class="control-group">
+            <label>3. ติดโบว์ริบบิ้น (Ribbon & Bow):</label>
+            <div class="option-grid">
+              <div class="option-card active" onclick="selectRibbonOption('satin', 'ริบบิ้นผ้าซาตินพรีเมียม', 0, this)">
+                <div class="flower-opt-name">ริบบิ้นผ้าซาติน</div>
+                <div class="flower-opt-price">บริการผูกฟรี</div>
+              </div>
+              <div class="option-card" onclick="selectRibbonOption('jute', 'เชือกป่าน/เชือกกระดาษ', 0, this)">
+                <div class="flower-opt-name">เชือกป่าน / เชือกกระดาษ</div>
+                <div class="flower-opt-price">บริการผูกฟรี</div>
+              </div>
+              <div class="option-card" onclick="selectRibbonOption('chiffon', 'ริบบิ้นผ้าชีฟองขอบรุ่ย', 40, this)">
+                <div class="flower-opt-name">ริบบิ้นผ้าชีฟองขอบรุ่ย</div>
+                <div class="flower-opt-price">+฿40/ช่อ (พลิ้วไหวหรูหรา)</div>
+              </div>
+              <div class="option-card" onclick="selectRibbonOption('organza', 'ริบบิ้นผ้าออร์แกนซ่าแก้ว', 30, this)">
+                <div class="flower-opt-name">ริบบิ้นแก้ว ออร์แกนซ่า</div>
+                <div class="flower-opt-price">+฿30/ช่อ (โปร่งประกาย)</div>
+              </div>
+              <div class="option-card" onclick="selectRibbonOption('grosgrain', 'ริบบิ้นผ้ากรอสเกรน', 30, this)">
+                <div class="flower-opt-name">ริบบิ้นผ้ากรอสเกรน</div>
+                <div class="flower-opt-price">+฿30/ช่อ (ทนทานคลาสสิก)</div>
+              </div>
+              <div class="option-card" onclick="selectRibbonOption('velvet', 'ริบบิ้นผ้ากำมะหยี่', 50, this)">
+                <div class="flower-opt-name">ริบบิ้นผ้ากำมะหยี่</div>
+                <div class="flower-opt-price">+฿50/ช่อ (พรีเมียมหรูหรา)</div>
+              </div>
+              <div class="option-card" onclick="selectRibbonOption('cotton', 'ริบบิ้นผ้าฝ้ายลินิน', 30, this)">
+                <div class="flower-opt-name">ริบบิ้นผ้าฝ้าย / ลินิน</div>
+                <div class="flower-opt-price">+฿30/ช่อ (เอิร์ธโทน)</div>
+              </div>
+              <div class="option-card" onclick="selectRibbonOption('lace', 'ริบบิ้นผ้าลูกไม้', 40, this)">
+                <div class="flower-opt-name">ริบบิ้นผ้าลูกไม้หวาน</div>
+                <div class="flower-opt-price">+฿40/ช่อ (วินเทจ)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. ข้อความในการ์ดอวยพร -->
+          <div class="control-group">
+            <label>4. ข้อความบนการ์ดอวยพร (Digital Greeting Card):</label>
+            <input type="text" id="greetingMessageInput" value="ขอให้มีความสุขและสดใสในทุกๆ วันนะ " style="width:100%; padding:10px 14px; border:1.5px solid var(--border-color); border-radius:10px; font-size:14px;" oninput="updateStudioUI()">
+          </div>
+
+          <!-- สรุปงบประมาณของช่อที่ออกแบบ -->
+          <div style="background:#E8F5E9; padding:14px 18px; border-radius:12px; margin-top:15px; border-left:4px solid var(--primary);">
+            <div style="font-size:13px; color:#1B4332;">ประเมินราคารวมของช่อที่ออกแบบ:</div>
+            <div id="visualizerTotalCost" style="font-size:24px; font-weight:700; color:var(--primary);">฿850.-</div>
+            <div id="visualizerCostBreakdown" style="font-size:12px; color:#4B5563;">กุหลาบ + ทิวลิป (฿750) + กระดาษเกาหลีสีน้ำตาลครีม (฿100) + โบว์ขาว (ฟรี)</div>
+          </div>
+
+        </div>
+
+        <!-- Studio Preview Right Panel -->
+        <div class="visualizer-canvas-panel">
+          
+          <!-- Mode Tabs -->
+          <div class="studio-mode-tabs">
+            <button class="studio-tab-btn active" id="btnRealMode" onclick="setStudioMode('real')">
+               ภาพถ่ายดอกไม้จริงของร้าน
+            </button>
+            <button class="studio-tab-btn" id="btnAIMode" onclick="setStudioMode('ai')">
+               ภาพจำลอง AI สดใหม่
+            </button>
+          </div>
+
+          <!-- Studio Preview Box -->
+          <div class="studio-preview-box" id="studioPreviewBox">
+            <div class="studio-shimmer-loader" id="studioShimmer">
+              <div class="studio-spinner"></div>
+              <div style="font-size:14px; font-weight:600; color:var(--primary-dark);"> AI กำลังเนรมิตภาพช่อดอกไม้เสมือนจริง...</div>
+              <div style="font-size:12px; color:#6B7280;">จัดแสงสตูดิโอและกลีบดอกไม้แบบสมจริง</div>
+            </div>
+
+            <!-- Photo Frame with Badges -->
+            <div class="studio-photo-frame">
+              <div class="studio-badge-overlay">
+                <span class="studio-badge-pill" id="studioFlowerBadge"> กุหลาบเอกวาดอร์แดง 3 ดอก</span>
+                <span class="studio-badge-pill" id="studioPaperBadge"> กระดาษไขเขียวเซจ</span>
+                <span class="studio-badge-pill" id="studioRibbonBadge"> ริบบิ้นซาตินพรีเมียม</span>
+              </div>
+              <div class="studio-price-badge" id="studioPriceBadge">฿840.-</div>
+              <img id="studioFlowerImage" src="images/rose-red.jpg" alt="PIM Flower Studio Preview" />
+            </div>
+
+            <!-- Greeting Card Box -->
+            <div class="studio-card-box">
+              <div class="studio-card-inner">
+                <div class="studio-card-title"> PIM FLOWER STUDIO · GREETING CARD </div>
+                <div class="studio-card-message" id="studioCardMessage">"ขอให้มีความสุขและสดใสในทุกๆ วันนะ "</div>
+                <div class="studio-card-footer">Designed at PIM Flower Studio · โทร 02-123-4567</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Off-screen Canvas for composite export -->
+          <canvas id="bouquetCanvas" width="500" height="660" style="display:none;"></canvas>
+          
+          <div class="canvas-actions">
+            <button class="btn btn-accent" onclick="generateAIBouquetInStudio()">
+               ให้ AI เจนภาพช่อนี้ (AI Generate)
+            </button>
+            <button class="btn btn-outline" style="background:#2D6A4F; color:#FFFFFF; border-color:#2D6A4F;" onclick="downloadGreetingCard()">
+               ดาวน์โหลดการ์ด & ภาพช่อนี้
+            </button>
+            <button class="btn btn-outline" onclick="sendToAIChatWithImage()">
+               ให้ AI ในแชทวิเคราะห์ & เจนภาพ
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+
+
+  <script>
+    const REAL_PHOTOS = {
+      'rose-red': 'images/rose-red.jpg',
+      'rose-pink': 'images/rose-pink.jpg',
+      'sunflower': 'images/sunflower.jpg',
+      'tulip': 'images/tulip.jpg',
+      'hydrangea': 'images/hydrangea.jpg',
+      'lily': 'images/lily.jpg'
+    };
+
+    // State สำหรับ Bouquet Visualizer ที่รองรับการผสมดอกไม้และโมเดล GPT
+    const visualizerState = {
+      flowers: ['กุหลาบ', 'ทิวลิป'],
+      flowerCustomText: 'กุหลาบ, ทิวลิป',
+      flowerCount: 6,
+      paperId: 'korean-cream',
+      paperName: 'กระดาษเกาหลีสีน้ำตาลครีม',
+      paperPrice: 100,
+      ribbonId: 'white',
+      ribbonName: 'โบว์สีขาวบริสุทธิ์',
+      ribbonPrice: 0,
+      foliageName: 'ยิปโซขาว',
+      foliagePrice: 0,
+      greeting: 'ขอให้มีความสุขและสดใสในทุกๆ วันนะ '
+    };
+
+    let currentStudioMode = 'real';
+    let currentAIImageUrl = '';
+
+    // สลับเลือกดอกไม้ (สามารถเลือกหลายชนิดได้)
+    function toggleFlowerSelection(flowerName, price, element) {
+      element.classList.toggle('active');
+      const idx = visualizerState.flowers.indexOf(flowerName);
+      if (idx > -1) {
+        if (visualizerState.flowers.length > 1) {
+          visualizerState.flowers.splice(idx, 1);
+        } else {
+          element.classList.add('active'); // ต้องมีอย่างน้อย 1 ชนิด
+        }
+      } else {
+        visualizerState.flowers.push(flowerName);
+      }
+      visualizerState.flowerCustomText = visualizerState.flowers.join(', ');
+      const input = document.getElementById('customFlowerNames');
+      if (input) input.value = visualizerState.flowerCustomText;
+
+      updateVisualizerCost();
+      updateStudioUI();
+    }
+
+    // เมื่อพิมพ์ชื่อดอกไม้เพิ่มเติมเอง
+    function onCustomFlowerChange(val) {
+      visualizerState.flowerCustomText = val || 'กุหลาบ, ทิวลิป';
+      updateVisualizerCost();
+      updateStudioUI();
+    }
+
+    // เลือกสีกระดาษห่อช่อ
+    function selectPaperOption(id, name, price, element) {
+      element.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+      element.classList.add('active');
+      visualizerState.paperId = id;
+      visualizerState.paperName = name;
+      visualizerState.paperPrice = price;
+      updateVisualizerCost();
+      updateStudioUI();
+    }
+
+    // เลือกโบว์ริบบิ้น
+    function selectRibbonOption(id, name, price, element) {
+      element.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+      element.classList.add('active');
+      visualizerState.ribbonId = id;
+      visualizerState.ribbonName = name;
+      visualizerState.ribbonPrice = price;
+      updateVisualizerCost();
+      updateStudioUI();
+    }
+
+    function updateFlowerCount(val) {
+      visualizerState.flowerCount = parseInt(val);
+      document.getElementById('flowerCountVal').innerText = `${val} ดอก`;
+      updateVisualizerCost();
+      updateStudioUI();
+    }
+
+    function updateVisualizerCost() {
+      // ประเมินราคาดอกไม้เฉลี่ยตามจำนวนดอก
+      const avgFlowerPrice = 130;
+      const flowersTotal = avgFlowerPrice * visualizerState.flowerCount;
+      const total = flowersTotal + visualizerState.paperPrice + visualizerState.ribbonPrice;
+      
+      document.getElementById('visualizerTotalCost').innerText = `฿${total}.-`;
+      document.getElementById('visualizerCostBreakdown').innerText = 
+        `${visualizerState.flowerCustomText} (${visualizerState.flowerCount} ดอก ฿${flowersTotal}) + ${visualizerState.paperName} (฿${visualizerState.paperPrice}) + ${visualizerState.ribbonName} (${visualizerState.ribbonPrice === 0 ? 'ฟรี' : '฿' + visualizerState.ribbonPrice})`;
+
+      const priceBadge = document.getElementById('studioPriceBadge');
+      if (priceBadge) priceBadge.innerText = `฿${total}.-`;
+    }
+
+    function setStudioMode(mode) {
+      currentStudioMode = mode;
+      const btnReal = document.getElementById('btnRealMode');
+      const btnAI = document.getElementById('btnAIMode');
+      if (btnReal) btnReal.classList.toggle('active', mode === 'real');
+      if (btnAI) btnAI.classList.toggle('active', mode === 'ai');
+
+      const img = document.getElementById('studioFlowerImage');
+      if (mode === 'real') {
+        // ในโหมดภาพจริง ถ้าเลือกกุหลาบหรือทิวลิป จะแสดงภาพสตูดิโอจริง
+        const primaryFlower = visualizerState.flowers[0] || 'กุหลาบ';
+        let photoKey = 'rose-red';
+        if (primaryFlower.includes('ทิวลิป')) photoKey = 'tulip';
+        else if (primaryFlower.includes('ทานตะวัน')) photoKey = 'sunflower';
+        else if (primaryFlower.includes('ไฮเดรนเยีย')) photoKey = 'hydrangea';
+        else if (primaryFlower.includes('ลิลลี่')) photoKey = 'lily';
+        else if (primaryFlower.includes('ชมพู')) photoKey = 'rose-pink';
+
+        if (img) img.src = REAL_PHOTOS[photoKey] || 'images/rose-red.jpg';
+      } else {
+        if (currentAIImageUrl) {
+          if (img) img.src = currentAIImageUrl;
+        } else {
+          generateAIBouquetInStudio();
+        }
+      }
+      setTimeout(renderCompositeCanvas, 200);
+    }
+
+    function updateStudioUI() {
+      // 1. อัปเดตภาพ
+      const img = document.getElementById('studioFlowerImage');
+      if (img && currentStudioMode === 'real') {
+        const primaryFlower = visualizerState.flowers[0] || 'กุหลาบ';
+        let photoKey = 'rose-red';
+        if (primaryFlower.includes('ทิวลิป')) photoKey = 'tulip';
+        else if (primaryFlower.includes('ทานตะวัน')) photoKey = 'sunflower';
+        else if (primaryFlower.includes('ไฮเดรนเยีย')) photoKey = 'hydrangea';
+        else if (primaryFlower.includes('ลิลลี่')) photoKey = 'lily';
+        else if (primaryFlower.includes('ชมพู')) photoKey = 'rose-pink';
+
+        img.src = REAL_PHOTOS[photoKey] || 'images/rose-red.jpg';
+      }
+
+      // 2. อัปเดตข้อความบนการ์ดและป้าย
+      const flowerBadge = document.getElementById('studioFlowerBadge');
+      const paperBadge = document.getElementById('studioPaperBadge');
+      const ribbonBadge = document.getElementById('studioRibbonBadge');
+      const cardMsg = document.getElementById('studioCardMessage');
+      const inputMsg = document.getElementById('greetingMessageInput');
+
+      if (flowerBadge) flowerBadge.innerText = ` ${visualizerState.flowerCustomText} (${visualizerState.flowerCount} ดอก)`;
+      if (paperBadge) paperBadge.innerText = visualizerState.paperName;
+      if (ribbonBadge) ribbonBadge.innerText = visualizerState.ribbonName;
+      if (cardMsg && inputMsg) {
+        cardMsg.innerText = `"${inputMsg.value || 'ขอให้มีความสุขในทุกๆ วันนะ '}"`;
+      }
+
+      setTimeout(renderCompositeCanvas, 150);
+    }
+
+    // ฟังก์ชันให้โมเดล GPT ออกแบบและเรนเดอร์ภาพช่อดอกไม้จริงตามแบบที่สั่ง
+    async function generateAIBouquetInStudio() {
+      const shimmer = document.getElementById('studioShimmer');
+      if (shimmer) shimmer.style.display = 'flex';
+      setStudioMode('ai');
+
+      // วิเคราะห์ชนิดดอกไม้ที่ผู้ใช้เลือกหรือพิมพ์
+      const fText = visualizerState.flowerCustomText.toLowerCase();
+      const flowerDescriptors = [];
+
+      if (fText.includes('กุหลาบแดง') || fText.includes('แดง')) {
+        flowerDescriptors.push('deep velvety crimson red ecuadorian roses');
+      } else if (fText.includes('กุหลาบชมพู')) {
+        flowerDescriptors.push('soft blush pink roses');
+      } else if (fText.includes('กุหลาบขาว')) {
+        flowerDescriptors.push('pure ivory white roses');
+      } else if (fText.includes('กุหลาบ') || fText.includes('rose')) {
+        flowerDescriptors.push('fresh luxurious roses');
+      }
+
+      if (fText.includes('ทิวลิป') || fText.includes('tulip')) {
+        flowerDescriptors.push('graceful blooming dutch tulips in warm coral and pastel shades');
+      }
+      if (fText.includes('ทานตะวัน') || fText.includes('sunflower')) {
+        flowerDescriptors.push('golden radiant blooming sunflowers');
+      }
+      if (fText.includes('ไฮเดรนเยีย') || fText.includes('hydrangea')) {
+        flowerDescriptors.push('cloud-like sky-blue hydrangea blooms');
+      }
+      if (fText.includes('ลิลลี่') || fText.includes('lily')) {
+        flowerDescriptors.push('majestic white oriental lilies');
+      }
+      if (fText.includes('เดซี่') || fText.includes('daisy')) {
+        flowerDescriptors.push('delicate white daisies');
+      }
+
+      let flowersString = flowerDescriptors.length > 0 
+        ? flowerDescriptors.join(' and ') 
+        : `${visualizerState.flowerCount} fresh bespoke roses and tulips`;
+
+      // กระดาษห่อช่อ (เช่น กระดาษเกาหลีสีน้ำตาลครีม)
+      let wrapDesc = 'artfully wrapped in aesthetic cream-brown and warm beige korean matte paper with soft layered origami folds';
+      if (visualizerState.paperId === 'korean-cream') {
+        wrapDesc = 'wrapped in aesthetic cream-brown and warm beige korean matte paper with elegant layered pleats';
+      } else if (visualizerState.paperId === 'korean-sage') {
+        wrapDesc = 'wrapped in soft matte sage green korean waterproof paper';
+      } else if (visualizerState.paperId === 'korean-pink') {
+        wrapDesc = 'wrapped in pastel blush pink korean matte paper';
+      } else if (visualizerState.paperId === 'kraft') {
+        wrapDesc = 'wrapped in vintage rustic eco brown kraft paper';
+      } else if (visualizerState.paperId === 'korean-black') {
+        wrapDesc = 'wrapped in luxury matte black paper with delicate gold trim';
+      } else if (visualizerState.paperId === 'washi') {
+        wrapDesc = 'wrapped in natural textured japanese washi paper';
+      }
+
+      // โบว์ริบบิ้น (เช่น โบว์สีขาว)
+      let ribbonDesc = 'tied with an exquisite pure white silky satin ribbon bow';
+      if (visualizerState.ribbonId === 'white') {
+        ribbonDesc = 'tied with an exquisite pure white silky satin ribbon bow with flowing ribbons';
+      } else if (visualizerState.ribbonId === 'pink') {
+        ribbonDesc = 'tied with a soft blush pink satin ribbon bow';
+      } else if (visualizerState.ribbonId === 'red') {
+        ribbonDesc = 'tied with a romantic crimson red satin ribbon bow';
+      } else if (visualizerState.ribbonId === 'gold') {
+        ribbonDesc = 'tied with a luxury champagne gold ribbon bow';
+      } else if (visualizerState.ribbonId === 'chiffon-white') {
+        ribbonDesc = 'tied with an airy french white raw-edge chiffon ribbon';
+      } else if (visualizerState.ribbonId === 'jute') {
+        ribbonDesc = 'tied with natural rustic jute twine';
+      }
+
+      const seed = Math.floor(Math.random() * 899999 + 100000);
+      const fullPrompt = `masterpiece professional florist studio photography of a bespoke floral bouquet featuring ${flowersString}, accented with baby's breath, ${wrapDesc}, ${ribbonDesc}, boutique flower studio backdrop, soft warm morning daylight, 8k resolution, crisp sharp macro focus, hyperrealistic commercial quality`;
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=600&height=700&nologo=true&seed=${seed}`;
+
+      const testImg = new Image();
+      testImg.onload = () => {
+        currentAIImageUrl = url;
+        const imgEl = document.getElementById('studioFlowerImage');
+        if (imgEl) imgEl.src = url;
+        if (shimmer) shimmer.style.display = 'none';
+        renderCompositeCanvas();
+      };
+      testImg.onerror = () => {
+        const imgEl = document.getElementById('studioFlowerImage');
+        if (imgEl) imgEl.src = REAL_PHOTOS['rose-red'];
+        if (shimmer) shimmer.style.display = 'none';
+        renderCompositeCanvas();
+      };
+      testImg.src = url;
+    }
+
+    // วาดภาพรวม (รูปดอกไม้จริง + การ์ดอวยพรสีทอง) ลงใน Canvas สำหรับดาวน์โหลด
+    function renderCompositeCanvas() {
+      const canvas = document.getElementById('bouquetCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // 1. พื้นหลังการ์ดหรูหรา
+      ctx.fillStyle = '#FFFDF9';
+      ctx.fillRect(0, 0, w, h);
+
+      // กรอบทองพรีเมียม
+      ctx.strokeStyle = '#D4AF37';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(10, 10, w - 20, h - 20);
+      ctx.strokeStyle = '#EBD59B';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(14, 14, w - 28, h - 28);
+
+      // 2. วาดภาพดอกไม้จริง / ภาพ AI ลงครึ่งบน
+      const currentImg = document.getElementById('studioFlowerImage');
+      if (currentImg && currentImg.complete && currentImg.naturalWidth > 0) {
+        try {
+          ctx.save();
+          // ทำขอบมนให้ภาพดอกไม้
+          roundRect(ctx, 20, 20, w - 40, 430, 12, false, false);
+          ctx.clip();
+          ctx.drawImage(currentImg, 20, 20, w - 40, 430);
+          ctx.restore();
+        } catch (e) {
+          console.warn('Canvas drawImage notice:', e);
+        }
+      }
+
+      // 3. วาดกล่องการ์ดอวยพรลงครึ่งล่าง
+      const cardY = 465;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = '#D4AF37';
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, 24, cardY, w - 48, 170, 12, true, true);
+
+      // หัวการ์ด
+      ctx.fillStyle = '#2D6A4F';
+      ctx.font = '700 13px "Prompt", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(' PIM FLOWER STUDIO · BOUQUET CARD ', w / 2, cardY + 28);
+
+      // ข้อความอวยพร
+      const msg = document.getElementById('greetingMessageInput')?.value || visualizerState.greeting;
+      ctx.fillStyle = '#1F2937';
+      ctx.font = '500 16px "Prompt", sans-serif';
+      wrapText(ctx, `"${msg}"`, w / 2, cardY + 65, w - 80, 24);
+
+      // ข้อมูลดอกไม้และราคารวม
+      const avgFlowerPrice = 130;
+      const flowersTotal = avgFlowerPrice * visualizerState.flowerCount;
+      const total = flowersTotal + visualizerState.paperPrice + visualizerState.ribbonPrice;
+      ctx.fillStyle = '#E76F51';
+      ctx.font = '700 13px "Prompt", sans-serif';
+      ctx.fillText(`${visualizerState.flowerCustomText} (${visualizerState.flowerCount} ดอก) · ยอดรวม ฿${total}.-`, w / 2, cardY + 125);
+
+      // เบอร์ติดต่อร้าน
+      ctx.fillStyle = '#9CA3AF';
+      ctx.font = '11px "Prompt", sans-serif';
+      ctx.fillText('โทร 02-123-4567 · LINE: @pimflower', w / 2, cardY + 152);
+    }
+
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split('');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n];
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n];
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    // ดาวน์โหลดรูปการ์ด
+    function downloadGreetingCard() {
+      renderCompositeCanvas();
+      const canvas = document.getElementById('bouquetCanvas');
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = `PIM-Flower-Custom-Bouquet.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // ส่งแบบช่อที่ออกแบบให้ AI ในแชทวิเคราะห์ และให้ AI เจนภาพในแชททันที
+    function sendToAIChatWithImage() {
+      const avgFlowerPrice = 130;
+      const flowersTotal = avgFlowerPrice * visualizerState.flowerCount;
+      const total = flowersTotal + visualizerState.paperPrice + visualizerState.ribbonPrice;
+      const question = `${visualizerState.flowerCustomText} ช่อดอกไม้ ${visualizerState.paperName} ${visualizerState.ribbonName} ช่วยวิเคราะห์งบและเจนภาพช่อดอกไม้จริงให้ดูหน่อยค่ะ`;
+      if (window.PimBot) {
+        window.PimBot.ask(question);
+      }
+    }
+
+    function renderCompositeCanvas() {
+      const canvas = document.getElementById('bouquetCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FAF7F2';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const img = document.getElementById('studioFlowerImage');
+      if (img && img.complete && img.naturalWidth > 0) {
+        try {
+          ctx.drawImage(img, 20, 20, 460, 460);
+        } catch(e) {}
+      }
+
+      // Card Message
+      ctx.fillStyle = '#FFFFFF';
+      roundRect(ctx, 20, 490, 460, 150, 16);
+      ctx.fill();
+      ctx.strokeStyle = '#E8E1D5';
+      ctx.stroke();
+
+      ctx.fillStyle = '#332F2A';
+      ctx.font = 'bold 18px "Anuphan", sans-serif';
+      ctx.fillText('Bloomie Florist Digital Greeting Card', 40, 525);
+
+      ctx.fillStyle = '#6E675D';
+      ctx.font = '15px "Anuphan", sans-serif';
+      const msg = document.getElementById('greetingMessageInput')?.value || visualizerState.greeting;
+      wrapText(ctx, `"${msg}"`, 40, 555, 420, 24);
+
+      ctx.fillStyle = '#7D8B6E';
+      ctx.font = 'bold 16px "Anuphan", sans-serif';
+      const costText = document.getElementById('visualizerTotalCost')?.innerText || '฿850.-';
+      ctx.fillText(`ประเมินราคาช่อ: ${costText}`, 40, 620);
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    function downloadGreetingCard() {
+      renderCompositeCanvas();
+      const canvas = document.getElementById('bouquetCanvas');
+      const a = document.createElement('a');
+      a.download = 'bloomie-greeting-card.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+
+    function sendToAIChatWithImage() {
+      const flowerNames = visualizerState.flowerCustomText;
+      const count = visualizerState.flowerCount;
+      const paper = visualizerState.paperName;
+      const ribbon = visualizerState.ribbonName;
+      const total = document.getElementById('visualizerTotalCost')?.innerText || '฿850.-';
+
+      const promptMsg = `ฉันออกแบบช่อดอกไม้: ${flowerNames} จำนวน ${count} ดอก ห่อด้วย${paper} ผูก${ribbon} ประเมินราคา ${total} ช่วยแนะนำสไตล์ช่อและความหมายให้หน่อยค่ะ`;
+
+      if (window.PimBot) {
+        window.PimBot.open();
+        window.PimBot.ask(promptMsg);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateVisualizerCost();
+      updateStudioUI();
+    });
+  </script>
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-col">
+        <h4>PIM Flower Studio</h4>
+        <p>
+          ร้านจัดดอกไม้อัจฉริยะ ผสานศิลปะการจัดช่อเข้ากับเทคโนโลยี Retrieval-Augmented Generation เพื่อการบริการที่แม่นยำ โปร่งใส และอบอุ่นในทุกโอกาสพิเศษ
+        </p>
+        <p style="margin-top:12px; font-size:12px; color:#A7F3D0;">
+          * โปรเจกต์วิชาปัญญาประดิษฐ์และการเรียนรู้ของเครื่อง (AI & Machine Learning)
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>ข้อมูลร้าน & เวลาทำการ</h4>
+        <ul>
+          <li>อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์</li>
+          <li>ถนนแจ้งวัฒนะ ต.บางตลาด อ.ปากเกร็ด จ.นนทบุรี</li>
+          <li>จันทร์ - เสาร์: 08:30 - 19:30 น. (ปิดวันอาทิตย์)</li>
+          <li>โทร: <a href="tel:021234567">02-123-4567</a> / 089-123-4567</li>
+          <li>LINE: @pimflower</li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>ลิงก์เมนูเว็บไซต์</h4>
+        <ul>
+          <li><a href="catalog.html">รายการดอกไม้และราคา (Catalog)</a></li>
+          <li><a href="budget.html">คำนวณงบประมาณ (Budget Calculator)</a></li>
+          <li><a href="occasions.html">ความหมายตามโอกาส (Occasion Matcher)</a></li>
+          <li><a href="visualizer.html">สตูดิโอจำลองช่อ & การ์ด (Visualizer Studio)</a></li>
+          <li><a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();">เปิดแชทบอท AI</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 PIM Flower Studio. All Rights Reserved. Built with Static Site + Serverless Proxy RAG Architecture.</div>
+      <div>ข้อกำหนดทางจริยธรรม: AI ตอบจากเอกสารของร้าน ไม่เก็บข้อมูลส่วนตัวของผู้ใช้</div>
+    </div>
+  </footer>
+
+  <!-- เชื่อมต่อระบบ Chatbot ตามคู่มือวิชา AI -->
+  <script src="config.js"></script>
+  <script src="chat-widget.js"></script>
+</body>
+</html>

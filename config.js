@@ -7,7 +7,7 @@
  */
 const CONFIG = {
   // URL ของ Cloudflare Worker ที่ Deploy แล้ว (ห้ามมี / ปิดท้าย)
-  WORKER_URL: "https://pim-flower-worker.workers.dev",
+  WORKER_URL: "https://flower-ai-chatbot.sirikorn-niam.workers.dev",
 
   // โหมดการค้นหา: 'local' (เทียบข้อความในเบราว์เซอร์) หรือ 'vector' (เทียบเวกเตอร์ความหมาย)
   SEARCH_MODE: "local",
@@ -32,11 +32,11 @@ const CONFIG = {
   ],
 
   // การแบ่งส่วนเอกสาร (Chunking)
-  CHUNK_SIZE: 500, // ขนาดตัวอักษรต่อ 1 ชิ้น
-  OVERLAP: 100,    // จำนวนตัวอักษรที่เหลื่อมซ้อนกัน
+  CHUNK_SIZE: 800, // ขนาดตัวอักษรต่อ 1 ชิ้น
+  OVERLAP: 150,    // จำนวนตัวอักษรที่เหลื่อมซ้อนกัน
 
   // จำนวนชิ้นเอกสารที่ดึงมาตอบ (Top K)
-  TOP_K: 3,
+  TOP_K: 5,
 
   // กุญแจ API: เว้นว่างไว้เสมอเพื่อความปลอดภัย
   KEY: ""

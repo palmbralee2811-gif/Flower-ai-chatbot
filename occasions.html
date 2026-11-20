@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ความหมายดอกไม้ตามโอกาสพิเศษ - Bloomie Florist</title>
+  
+  <!-- Google Fonts: Anuphan & Cormorant Garamond -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="images/bloomie-logo.svg" alt="Bloomie Florist Logo" width="46" height="46" style="border-radius:50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div class="logo-text">
+          <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Bloomie Florist</h1>
+          <span style="font-family: 'Anuphan', sans-serif; font-size: 11px; color: #7D8B6E; font-weight: 400; text-transform:none; letter-spacing:0.3px;">Let flowers say it for you</span>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="catalog.html">รายการดอกไม้และราคา</a></li>
+        <li><a href="budget.html">คำนวณงบประมาณ</a></li>
+        <li><a href="occasions.html" class="nav-active">ความหมายตามโอกาส</a></li>
+        <li><a href="visualizer.html">จำลองช่อ & การ์ด</a></li>
+        <li>
+          <a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();" class="nav-cta-btn">
+             แชทกับ AI
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+  <!-- Feature 2: Occasion Matcher Section -->
+  <section id="occasions" class="section-container">
+    <div class="section-header">
+      <span class="section-tag">Occasion Matcher</span>
+      <h2>เลือกดอกไม้และความหมายตามโอกาสพิเศษ</h2>
+      <p>ทุกช่อดอกไม้มีความหมายลึกซึ้ง เลือกรุ่นและสายพันธุ์ที่ตรงกับความรู้สึกของผู้รับได้อย่างมั่นใจตามคู่มือร้าน</p>
+    </div>
+
+    <div class="occasion-grid">
+      <!-- Card 1: รับปริญญา -->
+      <div class="occasion-card" onclick="if(window.PimBot) window.PimBot.ask('แนะนำดอกไม้งานรับปริญญาและความหมายหน่อยค่ะ');">
+        <div class="occasion-icon-bar">
+          <div class="occasion-emoji"></div>
+          <span style="font-size:12px; font-weight:600; color:var(--accent);">Graduation</span>
+        </div>
+        <h3>วันรับปริญญา & แสดงความยินดี</h3>
+        <div class="occasion-meaning"> สื่อถึงอนาคตสดใสรุ่งโรจน์ ความสำเร็จ และพลังบวก</div>
+        <p class="occasion-flowers">
+          <strong>ดอกไม้แนะนำ:</strong> ดอกทานตะวันสีเหลืองสด, ดอกทิวลิปสีส้ม/ชมพู, และดอกเดซี่ ห่อกระดาษคราฟท์หรือกระดาษไขสีครีม ถ่ายรูปกลางแจ้งขึ้นกล้องมาก
+        </p>
+        <button class="occasion-ask-btn">ปรึกษา AI จัดช่อรับปริญญา →</button>
+      </div>
+
+      <!-- Card 2: วาเลนไทน์ / ขอแต่งงาน -->
+      <div class="occasion-card" onclick="if(window.PimBot) window.PimBot.ask('แนะนำช่อดอกไม้วาเลนไทน์หรือขอแต่งงานสำหรับคนรัก');">
+        <div class="occasion-icon-bar">
+          <div class="occasion-emoji"></div>
+          <span style="font-size:12px; font-weight:600; color:var(--accent);">Romance & Proposal</span>
+        </div>
+        <h3>วันวาเลนไทน์ & ขอแต่งงาน</h3>
+        <div class="occasion-meaning"> สื่อถึงรักแท้ที่มั่นคง ลึกซึ้ง และคำมั่นสัญญานิรันดร์</div>
+        <p class="occasion-flowers">
+          <strong>ดอกไม้แนะนำ:</strong> กุหลาบเอกวาดอร์สีแดงการ์เนต กลีบหนาพิเศษ บานทน 7-10 วัน หรือกุหลาบขาวบริสุทธิ์ ห่อกระดาษไขเกาหลีสีดำขอบทอง
+        </p>
+        <button class="occasion-ask-btn">ปรึกษา AI จัดช่อบอกรัก →</button>
+      </div>
+
+      <!-- Card 3: วันครบรอบ -->
+      <div class="occasion-card" onclick="if(window.PimBot) window.PimBot.ask('แนะนำดอกไม้วันครบรอบความรัก Anniversary');">
+        <div class="occasion-icon-bar">
+          <div class="occasion-emoji"></div>
+          <span style="font-size:12px; font-weight:600; color:var(--accent);">Anniversary</span>
+        </div>
+        <h3>วันครบรอบความรัก (Anniversary)</h3>
+        <div class="occasion-meaning"> สื่อถึงความอบอุ่น มิตรภาพ และขอบคุณที่เข้าใจกันเสมอ</div>
+        <p class="occasion-flowers">
+          <strong>ดอกไม้แนะนำ:</strong> กุหลาบชมพูพาสเทลหรือสีโอรส ผสมดอกไฮเดรนเยียสีฟ้าพาสเทล แซมใบยูคาลิปตัสกลิ่นหอมผ่อนคลาย
+        </p>
+        <button class="occasion-ask-btn">ปรึกษา AI จัดช่อวันครบรอบ →</button>
+      </div>
+
+      <!-- Card 4: เยี่ยมไข้ -->
+      <div class="occasion-card" onclick="if(window.PimBot) window.PimBot.ask('ดอกไม้เยี่ยมผู้ป่วยในโรงพยาบาล แนะนำแบบไหนที่ปลอดภัย?');">
+        <div class="occasion-icon-bar">
+          <div class="occasion-emoji"></div>
+          <span style="font-size:12px; font-weight:600; color:var(--accent);">Get Well Soon</span>
+        </div>
+        <h3>เยี่ยมผู้ป่วย & ให้กำลังใจ</h3>
+        <div class="occasion-meaning"> สื่อถึงสุขภาพแข็งแรง การฟื้นตัว และความห่วงใย</div>
+        <p class="occasion-flowers">
+          <strong>ดอกไม้แนะนำ:</strong> คาร์เนชั่นสีชมพู, ดอกไฮเดรนเยีย, ดอกกล้วยไม้ <em>(ข้อบังคับ: ปลอดภัย ไร้กลิ่นฉุนรุนแรง และไม่มีละอองเกสรฟุ้งกระจายใน รพ.)</em>
+        </p>
+        <button class="occasion-ask-btn">ตรวจสอบเกณฑ์เยี่ยมไข้ →</button>
+      </div>
+
+      <!-- Card 5: เปิดร้านใหม่ -->
+      <div class="occasion-card" onclick="if(window.PimBot) window.PimBot.ask('ดอกไม้แสดงความยินดีเปิดกิจการใหม่หรือขึ้นบ้านใหม่');">
+        <div class="occasion-icon-bar">
+          <div class="occasion-emoji"></div>
+          <span style="font-size:12px; font-weight:600; color:var(--accent);">Grand Opening</span>
+        </div>
+        <h3>เปิดกิจการใหม่ & ขึ้นบ้านใหม่</h3>
+        <div class="occasion-meaning"> สื่อถึงความเจริญรุ่งเรือง มั่งคั่ง ร่ำรวย และโชคลาภ</div>
+        <p class="occasion-flowers">
+          <strong>ดอกไม้แนะนำ:</strong> กล้วยไม้ฟาแลนนอปซิสสีขาวพรีเมียมในแจกันเซรามิก หรือช่อทานตะวันผสมลิลลี่สีเหลืองมั่งคั่ง
+        </p>
+        <button class="occasion-ask-btn">ปรึกษา AI จัดกระเช้าเปิดร้าน →</button>
+      </div>
+
+      <!-- Card 6: ขอโทษ / คืนดี -->
+      <div class="occasion-card" onclick="if(window.PimBot) window.PimBot.ask('ดอกไม้ขอโทษหรือง้อแฟน ควรเลือกดอกไม้อะไรดี?');">
+        <div class="occasion-icon-bar">
+          <div class="occasion-emoji"></div>
+          <span style="font-size:12px; font-weight:600; color:var(--accent);">Apology</span>
+        </div>
+        <h3>ขอโทษ & ปรับความเข้าใจ</h3>
+        <div class="occasion-meaning"> สื่อถึงความจริงใจ สำนึกผิด และขอโอกาสเริ่มต้นใหม่</div>
+        <p class="occasion-flowers">
+          <strong>ดอกไม้แนะนำ:</strong> ดอกกุหลาบขาวบริสุทธิ์ผสมยิปโซขาวฟูแน่น หรือดอกทิวลิปขาว สื่อถึงหัวใจอันบริสุทธิ์ที่พร้อมปรับความเข้าใจ
+        </p>
+        <button class="occasion-ask-btn">ปรึกษา AI จัดช่อขอโทษ →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature 3: Bouquet Visualizer & Greeting Card Studio -->
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-col">
+        <h4>PIM Flower Studio</h4>
+        <p>
+          ร้านจัดดอกไม้อัจฉริยะ ผสานศิลปะการจัดช่อเข้ากับเทคโนโลยี Retrieval-Augmented Generation เพื่อการบริการที่แม่นยำ โปร่งใส และอบอุ่นในทุกโอกาสพิเศษ
+        </p>
+        <p style="margin-top:12px; font-size:12px; color:#A7F3D0;">
+          * โปรเจกต์วิชาปัญญาประดิษฐ์และการเรียนรู้ของเครื่อง (AI & Machine Learning)
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>ข้อมูลร้าน & เวลาทำการ</h4>
+        <ul>
+          <li>อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์</li>
+          <li>ถนนแจ้งวัฒนะ ต.บางตลาด อ.ปากเกร็ด จ.นนทบุรี</li>
+          <li>จันทร์ - เสาร์: 08:30 - 19:30 น. (ปิดวันอาทิตย์)</li>
+          <li>โทร: <a href="tel:021234567">02-123-4567</a> / 089-123-4567</li>
+          <li>LINE: @pimflower</li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>ลิงก์เมนูเว็บไซต์</h4>
+        <ul>
+          <li><a href="catalog.html">รายการดอกไม้และราคา (Catalog)</a></li>
+          <li><a href="budget.html">คำนวณงบประมาณ (Budget Calculator)</a></li>
+          <li><a href="occasions.html">ความหมายตามโอกาส (Occasion Matcher)</a></li>
+          <li><a href="visualizer.html">สตูดิโอจำลองช่อ & การ์ด (Visualizer Studio)</a></li>
+          <li><a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();">เปิดแชทบอท AI</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 PIM Flower Studio. All Rights Reserved. Built with Static Site + Serverless Proxy RAG Architecture.</div>
+      <div>ข้อกำหนดทางจริยธรรม: AI ตอบจากเอกสารของร้าน ไม่เก็บข้อมูลส่วนตัวของผู้ใช้</div>
+    </div>
+  </footer>
+
+  <!-- เชื่อมต่อระบบ Chatbot ตามคู่มือวิชา AI -->
+  <script src="config.js"></script>
+  <script src="chat-widget.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  <!-- Exact tulip outline logo from the target image -->
+  <g fill="none" stroke="#5A5F43" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" transform="translate(10, 8) scale(0.75)">
+    <!-- Stem -->
+    <path d="M 40,48 L 40,78" />
+    <!-- Left Leaf -->
+    <path d="M 40,70 C 22,70 10,54 12,32 C 22,42 32,56 40,70 Z" />
+    <!-- Right Leaf -->
+    <path d="M 40,70 C 58,70 70,54 68,32 C 58,42 48,56 40,70 Z" />
+    <!-- Center Tulip Petal -->
+    <path d="M 40,12 C 32,20 32,36 40,48 C 48,36 48,20 40,12 Z" />
+    <!-- Left Petal -->
+    <path d="M 36,16 C 22,18 18,32 34,46" />
+    <!-- Right Petal -->
+    <path d="M 44,16 C 58,18 62,32 46,46" />
+  </g>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Tulip flower icon with soft pink petals and green leaves -->
+  <g transform="translate(10, 10) scale(0.8)">
+    <!-- Leaves -->
+    <path d="M 50,75 C 30,75 20,55 22,40 C 30,55 42,65 50,75 Z" fill="#7F8652" opacity="0.9"/>
+    <path d="M 50,75 C 70,75 80,55 78,40 C 70,55 58,65 50,75 Z" fill="#626A43" opacity="0.9"/>
+    <!-- Stem -->
+    <path d="M 48,50 L 52,50 L 51,85 L 49,85 Z" fill="#7F8652"/>
+    <!-- Tulip Petals -->
+    <!-- Center petal -->
+    <path d="M 50,20 C 42,20 38,32 50,55 C 62,32 58,20 50,20 Z" fill="#E87A82"/>
+    <!-- Left petal -->
+    <path d="M 46,24 C 32,24 28,38 42,54 C 45,46 45,35 46,24 Z" fill="#F49CA2"/>
+    <!-- Right petal -->
+    <path d="M 54,24 C 68,24 72,38 58,54 C 55,46 55,35 54,24 Z" fill="#ED8A92"/>
+  </g>
+</svg>
