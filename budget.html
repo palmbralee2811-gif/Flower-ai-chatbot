@@ -3,149 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คำนวณงบประมาณจัดดอกไม้ - Bloomie Florist</title>
+  <title>คำนวณงบประมาณจัดดอกไม้ — Bloomie Florist</title>
   
-  <!-- Google Fonts: Anuphan & Cormorant Garamond -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Noto+Serif+Thai:wght@300;400;500;600&family=Anuphan:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Top Announcement Bar -->
+  <div class="announcement">
+    FREE DELIVERY ON ORDERS OVER ฿1,500 <span>·</span> MADE WITH LOVE, DELIVERED WITH CARE
+  </div>
+
   <!-- Header Navigation -->
-  <header>
-    <div class="nav-container">
-      <a href="index.html" class="logo">
-        <img src="images/bloomie-logo.svg" alt="Bloomie Florist Logo" width="46" height="46" style="border-radius:50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div class="logo-text">
-          <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Bloomie Florist</h1>
-          <span style="font-family: 'Anuphan', sans-serif; font-size: 11px; color: #7D8B6E; font-weight: 400; text-transform:none; letter-spacing:0.3px;">Let flowers say it for you</span>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">
+        <span class="brandmark">✿</span>
+        <div class="brand-text">
+          <span class="brand-name">Bloomie Florist</span>
+          <small>Flowers, thoughtfully arranged</small>
         </div>
       </a>
 
-      <ul class="nav-links">
+      <ul class="nav-links" id="navlinks">
+        <li><a href="index.html">หน้าแรก</a></li>
         <li><a href="catalog.html">รายการดอกไม้และราคา</a></li>
         <li><a href="budget.html" class="nav-active">คำนวณงบประมาณ</a></li>
         <li><a href="occasions.html">ความหมายตามโอกาส</a></li>
         <li><a href="visualizer.html">จำลองช่อ & การ์ด</a></li>
         <li>
           <a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();" class="nav-cta-btn">
-             แชทกับ AI
+            แชทกับ AI
           </a>
         </li>
       </ul>
+
+      <button class="iconbtn menu-toggle" id="menuBtn" title="เมนู" onclick="document.getElementById('navlinks').classList.toggle('open');">☰</button>
     </div>
   </header>
-  <!-- Feature 1: Smart Budget Calculator Section -->
-  <section id="budget" class="section-container">
-    <div class="section-header">
-      <span class="section-tag">Smart Budget Calculator</span>
-      <h2>ประเมินงบประมาณจัดดอกไม้อัตโนมัติ</h2>
-      <p>เลือกงบประมาณที่คุณต้องการ ระบบจะดึงราคาดอกไม้สดจริงและค่ากระดาษห่อจากฐานข้อมูลมาจับคู่ที่คุ้มค่าที่สุดให้ทันที</p>
-    </div>
 
-    <div class="budget-section">
-      <div class="budget-controls">
-        <div class="budget-preset-pills">
-          <button class="budget-pill" onclick="setBudget(390)">งบประหยัด ฿390</button>
-          <button class="budget-pill" onclick="setBudget(650)">งบยอดนิยม ฿650</button>
-          <button class="budget-pill active" onclick="setBudget(850)">งบมาตรฐาน ฿850</button>
-          <button class="budget-pill" onclick="setBudget(1200)">งบพรีเมียม ฿1,200</button>
-          <button class="budget-pill" onclick="setBudget(1850)">งบหรูหรา ฿1,850</button>
-        </div>
-
-        <div class="budget-slider-wrapper">
-          <div class="budget-display-amount">
-            งบประมาณ: <span id="budgetDisplayVal">฿850</span>
-          </div>
-          <input type="range" id="budgetRange" min="350" max="3000" step="50" value="850" oninput="updateBudgetSlider(this.value)">
-          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted);">
-            <span>฿350 (Mini Pack)</span>
-            <span>฿1,500 (Romance)</span>
-            <span>฿3,000+ (Luxury Grandeur)</span>
-          </div>
-        </div>
+  <!-- Smart Budget Calculator Section -->
+  <section id="budget" class="section">
+    <div class="container">
+      <div class="section-head text-center">
+        <div class="eyebrow">SMART BUDGET CALCULATOR · MADE TO FIT YOUR WISH</div>
+        <h2>ประเมินงบประมาณจัดดอกไม้อัตโนมัติ</h2>
+        <p>เลือกงบประมาณที่คุณต้องการ ระบบจะดึงราคาดอกไม้สดจริงและค่ากระดาษห่อจากฐานข้อมูลมาจับคู่ที่คุ้มค่าที่สุดให้ทันที</p>
       </div>
 
-      <div class="budget-result-cards" id="budgetCardsContainer">
-        <!-- ไดนามิกการ์ดคำนวณงบประมาณ -->
+      <div class="budget-section">
+        <div class="budget-controls">
+          <div class="budget-preset-pills">
+            <button class="budget-pill" onclick="setBudget(390)">งบประหยัด ฿390</button>
+            <button class="budget-pill" onclick="setBudget(650)">งบยอดนิยม ฿650</button>
+            <button class="budget-pill active" onclick="setBudget(850)">งบมาตรฐาน ฿850</button>
+            <button class="budget-pill" onclick="setBudget(1200)">งบพรีเมียม ฿1,200</button>
+            <button class="budget-pill" onclick="setBudget(1850)">งบหรูหรา ฿1,850</button>
+          </div>
+
+          <div class="budget-slider-wrapper">
+            <div class="budget-display-amount">
+              งบประมาณ: <span id="budgetDisplayVal">฿850</span>
+            </div>
+            <input type="range" id="budgetRange" min="350" max="3000" step="50" value="850" oninput="updateBudgetSlider(this.value)">
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:6px;">
+              <span>฿350 (Mini Pack)</span>
+              <span>฿1,500 (Romance)</span>
+              <span>฿3,000+ (Luxury Grandeur)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="budget-result-cards" id="budgetCardsContainer">
+          <!-- Populated by JS -->
+        </div>
       </div>
     </div>
   </section>
-
-  <!-- Feature 2: Occasion Matcher Section -->
-
 
   <script>
     const budgetDatabase = [
       {
         min: 350,
         max: 490,
-        title: "Mini Cute Pack ",
+        title: "Mini Cute Pack",
         badge: "งบประหยัด & ของขวัญมินิมอล",
         desc: "ช่อขนาดกะทัดรัด น่ารัก ถ่ายรูปขึ้นกล้อง เหมาะสำหรับแสดงความยินดีเพื่อนสนิทหรือวันเกิด",
         items: [
-          " ทานตะวันดอกใหญ่ 1 ดอก (หรือทิวลิป 2 ดอก)",
-          " แซมดอกสเตติสและแคสเปียคงรูปสวย",
-          " ห่อกระดาษคราฟท์รักษ์โลก ผูกเชือกปอรัสติก",
-          " การ์ดข้อความอวยพรมินิฟรี"
+          "ทานตะวันดอกใหญ่ 1 ดอก (หรือทิวลิป 2 ดอก)",
+          "แซมดอกสเตติสและแคสเปียคงรูปสวย",
+          "ห่อกระดาษคราฟท์รักษ์โลก ผูกเชือกปอรัสติก",
+          "การ์ดข้อความอวยพรมินิฟรี"
         ],
         price: 390
       },
       {
         min: 500,
         max: 800,
-        title: "Sweet Delight Pack ",
+        title: "Sweet Delight Pack",
         badge: "เซตยอดนิยมประจำร้าน",
         desc: "ช่อขนาดกลางสมบูรณ์แบบ ทรงกลมฟูหวานละมุน สำหรับวันเกิด วันรับปริญญา หรือวันครบรอบ",
         items: [
-          " กุหลาบฮอลแลนด์นำเข้า 3 ดอก หรือทานตะวัน 3 ดอก",
-          " แซมดอกยิปโซขาวฟูแน่นรอบช่อ",
-          " ห่อกระดาษไขเกาหลีสีพาสเทลกันน้ำ 100%",
-          " ริบบิ้นผ้าซาตินพรีเมียมเลือกสีได้ฟรี"
+          "กุหลาบฮอลแลนด์นำเข้า 3 ดอก หรือทานตะวัน 3 ดอก",
+          "แซมดอกยิปโซขาวฟูแน่นรอบช่อ",
+          "ห่อกระดาษไขเกาหลีสีพาสเทลกันน้ำ 100%",
+          "ริบบิ้นผ้าซาตินพรีเมียมเลือกสีได้ฟรี"
         ],
         price: 650
       },
       {
         min: 850,
         max: 1290,
-        title: "Elegance Warmth Pack ",
+        title: "Elegance Warmth Pack",
         badge: "พรีเมียม ถ่ายรูปโดดเด่น",
         desc: "ช่อขนาดใหญ่ จัดทรงพุ่มแน่น สวยสง่างามด้วยดอกไม้นำเข้าเกรดพรีเมียมจากเอกวาดอร์และเนเธอร์แลนด์",
         items: [
-          " กุหลาบเอกวาดอร์กลีบหนา 3 ดอก + ไฮเดรนเยียฟ้า 1 หัว",
-          " แซมใบยูคาลิปตัสใบกลมกลิ่นหอมผ่อนคลาย",
-          " ห่อกระดาษไขเกาหลี 2 ชั้น หรือกระดาษสาญี่ปุ่น",
-          " โบว์ผ้าชีฟองขอบรุ่ยสไตล์ฝรั่งเศส"
+          "กุหลาบเอกวาดอร์กลีบหนา 3 ดอก + ไฮเดรนเยียฟ้า 1 หัว",
+          "แซมใบยูคาลิปตัสใบกลมกลิ่นหอมผ่อนคลาย",
+          "ห่อกระดาษไขเกาหลี 2 ชั้น หรือกระดาษสาญี่ปุ่น",
+          "โบว์ผ้าชีฟองขอบรุ่ยสไตล์ฝรั่งเศส"
         ],
         price: 990
       },
       {
         min: 1300,
         max: 1990,
-        title: "Premium Romance Pack ",
+        title: "Premium Romance Pack",
         badge: "หรูหราอลังการ สำหรับคนพิเศษ",
         desc: "ช่อบอกรักขนาดใหญ่พิเศษ สำหรับวันวาเลนไทน์และวันขอแต่งงานที่น่าจดจำ",
         items: [
-          " กุหลาบเอกวาดอร์สีแดงการ์เนต 6-8 ดอก",
-          " ผสมดอกลิลลี่ขาว 2 ก้าน หรือทิวลิป 4 ดอก",
-          " ห่อกระดาษไขเกาหลีสีดำขอบทองสุดหรู",
-          " บริการส่งด้วยรถยนต์ควบคุมอุณหภูมิ"
+          "กุหลาบเอกวาดอร์สีแดงการ์เนต 6-8 ดอก",
+          "ผสมดอกลิลลี่ขาว 2 ก้าน หรือทิวลิป 4 ดอก",
+          "ห่อกระดาษไขเกาหลีสีดำขอบทองสุดหรู",
+          "บริการส่งด้วยรถยนต์ควบคุมอุณหภูมิ"
         ],
         price: 1690
       },
       {
         min: 2000,
         max: 9999,
-        title: "Luxury Grandeur Pack ",
+        title: "Luxury Grandeur Pack",
         badge: "อภิมหาพรีเมียม ระดับผู้บริหาร",
         desc: "ช่อดอกไม้อภิมหาอลังการ แน่นเต็มตา หรือจัดลงในกล่องกระบอก Round Hat Box และแจกันเซรามิกญี่ปุ่น",
         items: [
-          " กุหลาบเอกวาดอร์คัดเกรดพิเศษ 12 ดอกขึ้นไป",
-          " กล้วยไม้ฟาแลนนอปซิส และไฮเดรนเยียช่อใหญ่",
-          " บรรจุในกล่องกระบอก Round Hat Box หรูหรา",
-          " การ์ดอวยพรปั๊มฟอยล์ทองพรีเมียม"
+          "กุหลาบเอกวาดอร์คัดเกรดพิเศษ 12 ดอกขึ้นไป",
+          "กล้วยไม้ฟาแลนนอปซิส และไฮเดรนเยียช่อใหญ่",
+          "บรรจุในกล่องกระบอก Round Hat Box หรูหรา",
+          "การ์ดอวยพรปั๊มฟอยล์ทองพรีเมียม"
         ],
         price: 2500
       }
@@ -154,7 +161,6 @@
     function setBudget(val) {
       document.getElementById('budgetRange').value = val;
       updateBudgetSlider(val);
-      // ไฮไลต์ปุ่ม pill
       document.querySelectorAll('.budget-pill').forEach(btn => {
         if (btn.innerText.includes(val)) {
           btn.classList.add('active');
@@ -174,7 +180,6 @@
       const container = document.getElementById('budgetCardsContainer');
       if (!container) return;
 
-      // คัดเลือกแผนที่ใกล้เคียงกับงบประมาณ
       let matchedPlans = budgetDatabase.filter(p => budget >= p.min - 100 && budget <= p.max + 300);
       if (matchedPlans.length === 0) {
         matchedPlans = [budgetDatabase[budgetDatabase.length - 1]];
@@ -187,87 +192,78 @@
             <h3>${plan.title}</h3>
             <p>${plan.desc}</p>
             <ul class="plan-items-list">
-              ${plan.items.map(it => `<li>${it}</li>`).join('')}
+              ${plan.items.map(it => `<li><span style="color:var(--rust); margin-right:6px;">✦</span> ${it}</li>`).join('')}
             </ul>
           </div>
           <div class="plan-price-row">
             <div>
-              <div style="font-size:11.5px; color:#6B7280;">ราคาเซตประมาณ</div>
-              <div class="plan-price">฿${plan.price}.-</div>
+              <div style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">ราคาเซตประมาณ</div>
+              <div class="plan-price">฿${plan.price.toLocaleString()}.-</div>
             </div>
-            <button class="btn btn-outline" style="padding:6px 14px; font-size:12.5px;" onclick="if(window.PimBot) window.PimBot.ask('มีงบประมาณ ${budget} บาท สนใจเซต ${plan.title} แนะนำดอกไม้ในงบนี้หน่อยค่ะ');">
-              ปรึกษา AI ในงบนี้
+            <button class="btn btn-outline" style="padding:8px 16px; font-size:12px;" onclick="if(window.PimBot) window.PimBot.ask('มีงบประมาณ ${budget} บาท สนใจเซต ${plan.title} แนะนำดอกไม้ในงบนี้หน่อยค่ะ');">
+              ปรึกษา AI ในงบนี้ ↗
             </button>
           </div>
         </div>
       `).join('');
     }
 
-    function setBudget(val) {
-      document.getElementById('budgetRange').value = val;
-      updateBudgetSlider(val);
-      document.querySelectorAll('.budget-pill').forEach(btn => {
-        if (btn.innerText.includes(val)) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
-    }
-
-    function updateBudgetSlider(val) {
-      const budget = parseInt(val);
-      document.getElementById('budgetDisplayVal').innerText = `฿${budget.toLocaleString()}`;
-      renderBudgetCandidates(budget);
-    }
-
     window.addEventListener('DOMContentLoaded', () => {
       updateBudgetSlider(850);
     });
   </script>
-  <!-- Footer -->
-  <footer>
-    <div class="footer-container">
-      <div class="footer-col">
-        <h4>PIM Flower Studio</h4>
-        <p>
+
+  <!-- Editorial Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="index.html" class="brand">
+          <span class="brandmark" style="border-color:#b6c1aa; color:#b6c1aa">✿</span>
+          <div class="brand-text">
+            <span class="brand-name">Bloomie Florist</span>
+            <small style="color:#aab4a0">Flowers, thoughtfully arranged</small>
+          </div>
+        </a>
+        <p style="margin-top:14px;">
           ร้านจัดดอกไม้อัจฉริยะ ผสานศิลปะการจัดช่อเข้ากับเทคโนโลยี Retrieval-Augmented Generation เพื่อการบริการที่แม่นยำ โปร่งใส และอบอุ่นในทุกโอกาสพิเศษ
         </p>
-        <p style="margin-top:12px; font-size:12px; color:#A7F3D0;">
+        <p style="margin-top:10px; font-size:11px; color:#8fa385;">
           * โปรเจกต์วิชาปัญญาประดิษฐ์และการเรียนรู้ของเครื่อง (AI & Machine Learning)
         </p>
       </div>
 
-      <div class="footer-col">
-        <h4>ข้อมูลร้าน & เวลาทำการ</h4>
-        <ul>
-          <li>อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์</li>
-          <li>ถนนแจ้งวัฒนะ ต.บางตลาด อ.ปากเกร็ด จ.นนทบุรี</li>
-          <li>จันทร์ - เสาร์: 08:30 - 19:30 น. (ปิดวันอาทิตย์)</li>
-          <li>โทร: <a href="tel:021234567">02-123-4567</a> / 089-123-4567</li>
-          <li>LINE: @pimflower</li>
-        </ul>
+      <div>
+        <h4>EXPLORE</h4>
+        <p><a href="catalog.html">รายการดอกไม้และราคา</a></p>
+        <p><a href="budget.html">คำนวณงบประมาณ</a></p>
+        <p><a href="occasions.html">ความหมายตามโอกาส</a></p>
+        <p><a href="visualizer.html">สตูดิโอจำลองช่อ & การ์ด</a></p>
       </div>
 
-      <div class="footer-col">
-        <h4>ลิงก์เมนูเว็บไซต์</h4>
-        <ul>
-          <li><a href="catalog.html">รายการดอกไม้และราคา (Catalog)</a></li>
-          <li><a href="budget.html">คำนวณงบประมาณ (Budget Calculator)</a></li>
-          <li><a href="occasions.html">ความหมายตามโอกาส (Occasion Matcher)</a></li>
-          <li><a href="visualizer.html">สตูดิโอจำลองช่อ & การ์ด (Visualizer Studio)</a></li>
-          <li><a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();">เปิดแชทบอท AI</a></li>
-        </ul>
+      <div>
+        <h4>HELP & CARE</h4>
+        <p>เวลาทำการ: จันทร์ - เสาร์ 08:30 - 19:30 น.</p>
+        <p>อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์</p>
+        <p>ถนนแจ้งวัฒนะ ต.บางตลาด อ.ปากเกร็ด จ.นนทบุรี</p>
+        <p><a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();">เปิดแชทกับน้องบลูมมี่ AI ↗</a></p>
+      </div>
+
+      <div>
+        <h4>COME SAY HELLO</h4>
+        <p>โทร: <a href="tel:021234567">02-123-4567</a> / 089-123-4567</p>
+        <p>LINE Official: @bloomieflorist</p>
+        <p>Instagram: @bloomie.florist</p>
+        <p>Open daily with love & care</p>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <div>© 2026 PIM Flower Studio. All Rights Reserved. Built with Static Site + Serverless Proxy RAG Architecture.</div>
+      <div>© 2026 Bloomie Florist. All Rights Reserved. Built with Static Site + Serverless Proxy RAG Architecture.</div>
       <div>ข้อกำหนดทางจริยธรรม: AI ตอบจากเอกสารของร้าน ไม่เก็บข้อมูลส่วนตัวของผู้ใช้</div>
     </div>
   </footer>
 
-  <!-- เชื่อมต่อระบบ Chatbot ตามคู่มือวิชา AI -->
+  <!-- Connect AI Chatbot Scripts -->
   <script src="config.js"></script>
   <script src="chat-widget.js"></script>
 </body>

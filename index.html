@@ -3,61 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bloomie Florist - ร้านดอกไม้อัจฉริยะ & AI RAG Chatbot</title>
+  <title>Bloomie Florist — Flowers, thoughtfully arranged & AI Chatbot</title>
   
-  <!-- Google Fonts: Anuphan & Cormorant Garamond -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Noto+Serif+Thai:wght@300;400;500;600&family=Anuphan:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Top Announcement Bar -->
+  <div class="announcement">
+    FREE DELIVERY ON ORDERS OVER ฿1,500 <span>·</span> MADE WITH LOVE, DELIVERED WITH CARE
+  </div>
+
   <!-- Header Navigation -->
-  <header>
-    <div class="nav-container">
-      <a href="index.html" class="logo">
-        <img src="images/bloomie-logo.svg" alt="Bloomie Florist Logo" width="46" height="46" style="border-radius:50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div class="logo-text">
-          <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Bloomie Florist</h1>
-          <span style="font-family: 'Anuphan', sans-serif; font-size: 11px; color: #7D8B6E; font-weight: 400; text-transform:none; letter-spacing:0.3px;">Let flowers say it for you</span>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">
+        <span class="brandmark">✿</span>
+        <div class="brand-text">
+          <span class="brand-name">Bloomie Florist</span>
+          <small>Flowers, thoughtfully arranged</small>
         </div>
       </a>
 
-      <ul class="nav-links">
+      <ul class="nav-links" id="navlinks">
+        <li><a href="index.html" class="nav-active">หน้าแรก</a></li>
         <li><a href="catalog.html">รายการดอกไม้และราคา</a></li>
         <li><a href="budget.html">คำนวณงบประมาณ</a></li>
         <li><a href="occasions.html">ความหมายตามโอกาส</a></li>
         <li><a href="visualizer.html">จำลองช่อ & การ์ด</a></li>
         <li>
           <a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();" class="nav-cta-btn">
-             แชทกับ AI
+            แชทกับ AI
           </a>
         </li>
       </ul>
+
+      <button class="iconbtn menu-toggle" id="menuBtn" title="เมนู" onclick="document.getElementById('navlinks').classList.toggle('open');">☰</button>
     </div>
   </header>
+
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-container">
-      <div class="hero-content">
-        <div class="hero-badge">
-           ปัญญาประดิษฐ์ตอบจากเอกสารจริงของร้าน (RAG Architecture)
-        </div>
-        <h1 class="hero-title">
-          สร้างสรรค์ช่อดอกไม้แทนความรู้สึก <br>
-          <span class="highlight">แม่นยำ ไม่มั่วข้อมูล</span> ด้วย AI
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">A LITTLE BEAUTY, EVERY DAY · AI RAG ARCHITECTURE</div>
+        <h1 class="hero-title serif">
+          Flowers for<br>
+          <em>the moments</em><br>
+          that matter.
         </h1>
         <p class="hero-subtitle">
-          สัมผัสประสบการณ์เลือกช่อดอกไม้ยุคใหม่ พร้อมระบบ <strong>Retrieval-Augmented Generation</strong> ตอบราคาสายพันธุ์ วัสดุห่อช่อ และคำนวณงบประมาณอย่างโปร่งใส พร้อมฟีเจอร์จำลองช่อดอกไม้และการ์ดอวยพรเสมือนจริงในทันที
+          สัมผัสประสบการณ์เลือกช่อดอกไม้ยุคใหม่ พร้อมระบบ <strong>Retrieval-Augmented Generation</strong> ตอบราคาสายพันธุ์ วัสดุห่อช่อ และคำนวณงบประมาณอย่างโปร่งใส แม่นยำ ไม่มั่วข้อมูลจากเอกสารจริงของร้าน
         </p>
 
         <div class="hero-actions">
-          <button class="btn btn-accent" onclick="if(window.PimBot) window.PimBot.open();">
-             ปรึกษา PIM Flower AI ตอนนี้
+          <button class="btn btn-primary" onclick="if(window.PimBot) window.PimBot.open();">
+            ปรึกษา น้องบลูมมี่ AI <span>↗</span>
           </button>
-          <a href="#visualizer" class="btn btn-outline">
-             ออกแบบช่อ & การ์ดอวยพร
+          <a href="visualizer.html" class="btn btn-outline">
+            ออกแบบช่อ & การ์ดอวยพร
           </a>
         </div>
 
@@ -75,188 +82,151 @@
             <p>สายตรงพนักงานจริง</p>
           </div>
         </div>
+
+        <div class="hero-note">
+          <span class="note-line"></span> Seasonal blooms · Thoughtful details · Beautifully yours
+        </div>
       </div>
 
-      <!-- Hero Visual Card Preview -->
-      <div class="hero-card-preview">
-        <div class="preview-badge">Signature Bouquet</div>
-        <div class="flower-visual-box" id="heroFlowerBox">
-          <canvas id="heroCanvas" width="380" height="300"></canvas>
-        </div>
-        <div class="hero-card-details">
-          <h4>ช่อกุหลาบเอกวาดอร์ & ไฮเดรนเยียพาสเทล</h4>
-          <p>ห่อกระดาษไขเกาหลีสีเขียวเซจ พร้อมริบบิ้นผ้าซาตินพรีเมียม สื่อถึงความรักที่มั่นคงและคำขอบคุณจากใจ</p>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="price-tag">฿990.- <span style="font-size:12px; font-weight:normal; color:#6B7280;">(รวมค่าห่อและริบบิ้น)</span></div>
-            <button class="btn btn-outline" style="padding:6px 14px; font-size:13px;" onclick="if(window.PimBot) window.PimBot.ask('สนใจแพ็กเกจช่อ 990 บาท แนะนำรายละเอียดเพิ่มเติมหน่อยค่ะ');">
-              สอบถามช่อนี้
-            </button>
+      <!-- Hero Visual Showcase -->
+      <div class="hero-visual">
+        <div class="hero-mainimg">
+          <img src="https://images.unsplash.com/photo-1520763185298-1b434c919102?auto=format&fit=crop&w=1300&q=85" alt="ช่อดอกไม้โทนละมุน Bloomie Florist">
+          <div class="hero-label">
+            <small>SIGNATURE BOUQUET · ฿990</small>
+            <strong>Garden Romance</strong>
+            <p style="font-size:11.5px; color:var(--muted); margin-top:4px; max-width:280px; line-height:1.6;">
+              กุหลาบเอกวาดอร์ & ไฮเดรนเยียพาสเทล ห่อกระดาษไขเกาหลีสีเขียวเซจ พร้อมริบบิ้นซาตินพรีเมียม
+            </p>
+            <div style="margin-top:10px;">
+              <button class="btn btn-outline" style="padding:6px 14px; font-size:11.5px;" onclick="if(window.PimBot) window.PimBot.ask('สนใจแพ็กเกจช่อ 990 บาท แนะนำรายละเอียดเพิ่มเติมหน่อยค่ะ');">
+                สอบถามช่อนี้ ↗
+              </button>
+            </div>
           </div>
         </div>
+        <div class="floating-tag">Made with care <b>since 2021 ✿</b></div>
+      </div>
+    </div>
+
+    <!-- Trust Row -->
+    <div class="container">
+      <div class="trust-row">
+        <span><b>✿</b> Freshly arranged daily</span>
+        <span><b>♡</b> Thoughtful gifting</span>
+        <span><b>✧</b> Delivery with care</span>
+        <span><b>⌁</b> AI Knowledge Grounding</span>
       </div>
     </div>
   </section>
 
-  <!-- Feature 1: Smart Budget Calculator Section -->
-  
-
-
-  <!-- Feature Quick Links Grid Section -->
-  <section class="section-container" style="padding-top:20px;">
-    <div class="section-header">
-      <span class="section-tag">Explore Services</span>
-      <h2>บริการและเครื่องมือสำหรับคนรักดอกไม้</h2>
-      <p>เลือกสำรวจบริการจัดช่อดอกไม้อัจฉริยะ พร้อมฐานข้อมูลราคาและความหมายครบถ้วน</p>
-    </div>
-
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:24px; margin-top:20px;">
-      
-      <!-- Card 1 -->
-      <a href="catalog.html" style="text-decoration:none; color:inherit;">
-        <div class="occasion-card" style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
-          <div>
-            <div style="font-size:12px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px;">Flower Catalog</div>
-            <h3 style="margin-top:8px;">รายการดอกไม้และราคา</h3>
-            <p style="color:var(--text-muted); font-size:13.5px; margin-top:6px;">
-              เช็คราคาดอกไม้สดประจำวัน ดอกไม้หลัก กุหลาบ ลิลลี่ ทิวลิป ดอกไม้แซม และวัสดุห่อช่อ (พร้อมระบบแบ่งหน้า 10 รายการ)
-            </p>
-          </div>
-          <button class="btn btn-outline" style="width:100%; margin-top:16px;">ดูรายการราคา →</button>
+  <!-- Service Exploration Cards -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">EXPLORE SERVICES</div>
+          <h2>บริการและเครื่องมือสำหรับคนรักดอกไม้</h2>
+          <p>เลือกสำรวจบริการจัดช่อดอกไม้อัจฉริยะ พร้อมฐานข้อมูลราคาและความหมายครบถ้วน</p>
         </div>
-      </a>
+        <a href="catalog.html" class="text-link">ดูรายการดอกไม้ทั้งหมด ↗</a>
+      </div>
 
-      <!-- Card 2 -->
-      <a href="budget.html" style="text-decoration:none; color:inherit;">
-        <div class="occasion-card" style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
-          <div>
-            <div style="font-size:12px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px;">Budget Calculator</div>
-            <h3 style="margin-top:8px;">คำนวณงบประมาณจัดดอกไม้</h3>
-            <p style="color:var(--text-muted); font-size:13.5px; margin-top:6px;">
-              ประเมินราคาช่อตามงบที่ต้องการตั้งแต่ ฿350 ถึง ฿3,000+ ระบบจะจับคู่เซตที่คุ้มค่าและจัดตามงบประมาณได้ทันที
-            </p>
+      <div class="service-cards-grid">
+        <!-- Card 1 -->
+        <a href="catalog.html" class="service-card">
+          <div class="service-card-body">
+            <div class="service-card-num">01 · FLOWER CATALOG</div>
+            <h3>รายการดอกไม้และราคา</h3>
+            <p>เช็คราคาดอกไม้สดประจำวัน ดอกไม้หลัก กุหลาบ ลิลลี่ ทิวลิป ดอกไม้แซม และวัสดุห่อช่อ (พร้อมระบบแบ่งหน้า 10 รายการ)</p>
           </div>
-          <button class="btn btn-outline" style="width:100%; margin-top:16px;">คำนวณงบประมาณ →</button>
-        </div>
-      </a>
+          <span class="text-link">ดูรายการราคา ↗</span>
+        </a>
 
-      <!-- Card 3 -->
-      <a href="occasions.html" style="text-decoration:none; color:inherit;">
-        <div class="occasion-card" style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
-          <div>
-            <div style="font-size:12px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px;">Occasions & Meanings</div>
-            <h3 style="margin-top:8px;">ความหมายตามโอกาสพิเศษ</h3>
-            <p style="color:var(--text-muted); font-size:13.5px; margin-top:6px;">
-              คู่มือเลือกดอกไม้แทนความรู้สึก งานรับปริญญา วาเลนไทน์ วันครบรอบ ขอโทษ และข้อควรระวังสำหรับเยี่ยมผู้ป่วย
-            </p>
+        <!-- Card 2 -->
+        <a href="budget.html" class="service-card">
+          <div class="service-card-body">
+            <div class="service-card-num">02 · BUDGET CALCULATOR</div>
+            <h3>คำนวณงบประมาณจัดดอกไม้</h3>
+            <p>ประเมินราคาช่อตามงบที่ต้องการตั้งแต่ ฿350 ถึง ฿3,000+ ระบบจะจับคู่เซตที่คุ้มค่าและจัดตามงบประมาณได้ทันที</p>
           </div>
-          <button class="btn btn-outline" style="width:100%; margin-top:16px;">ดูความหมายดอกไม้ →</button>
-        </div>
-      </a>
+          <span class="text-link">คำนวณงบประมาณ ↗</span>
+        </a>
 
-      <!-- Card 4 -->
-      <a href="visualizer.html" style="text-decoration:none; color:inherit;">
-        <div class="occasion-card" style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
-          <div>
-            <div style="font-size:12px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px;">Studio & Visualizer</div>
-            <h3 style="margin-top:8px;">จำลองช่อดอกไม้ & การ์ด</h3>
-            <p style="color:var(--text-muted); font-size:13.5px; margin-top:6px;">
-              สตูดิโอผสมสายพันธุ์ดอกไม้ เลือกสีกระดาษ โบว์ริบบิ้น พิมพ์การ์ดอวยพร และดาวน์โหลดรูปภาพได้ในคลิกเดียว
-            </p>
+        <!-- Card 3 -->
+        <a href="occasions.html" class="service-card">
+          <div class="service-card-body">
+            <div class="service-card-num">03 · OCCASIONS & MEANINGS</div>
+            <h3>ความหมายตามโอกาสพิเศษ</h3>
+            <p>คู่มือเลือกดอกไม้แทนความรู้สึก งานรับปริญญา วาเลนไทน์ วันครบรอบ ขอโทษ และข้อควรระวังสำหรับเยี่ยมผู้ป่วย</p>
           </div>
-          <button class="btn btn-outline" style="width:100%; margin-top:16px;">เปิดสตูดิโอจำลอง →</button>
-        </div>
-      </a>
+          <span class="text-link">ดูความหมายดอกไม้ ↗</span>
+        </a>
 
+        <!-- Card 4 -->
+        <a href="visualizer.html" class="service-card">
+          <div class="service-card-body">
+            <div class="service-card-num">04 · STUDIO & VISUALIZER</div>
+            <h3>จำลองช่อดอกไม้ & การ์ด</h3>
+            <p>สตูดิโอผสมสายพันธุ์ดอกไม้ เลือกสีกระดาษ โบว์ริบบิ้น พิมพ์การ์ดอวยพร และดาวน์โหลดรูปภาพได้ในคลิกเดียว</p>
+          </div>
+          <span class="text-link">เปิดสตูดิโอจำลอง ↗</span>
+        </a>
+      </div>
     </div>
   </section>
 
-  <script>
-    function renderHeroCanvas() {
-      const canvas = document.getElementById('heroCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // ดอกไม้ช่อตัวอย่างใน Hero
-      ctx.fillStyle = '#84A98C';
-      ctx.beginPath();
-      ctx.moveTo(120, 80);
-      ctx.lineTo(260, 80);
-      ctx.lineTo(210, 260);
-      ctx.lineTo(170, 260);
-      ctx.closePath();
-      ctx.fill();
-
-      // ดอกกุหลาบและไฮเดรนเยีย
-      ctx.fillStyle = '#D90429';
-      ctx.beginPath();
-      ctx.arc(170, 100, 22, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#8ECAE6';
-      ctx.beginPath();
-      ctx.arc(215, 110, 26, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#FF8FA3';
-      ctx.beginPath();
-      ctx.arc(190, 75, 18, 0, Math.PI * 2);
-      ctx.fill();
-
-      // ริบบิ้น
-      ctx.fillStyle = '#D90429';
-      ctx.beginPath();
-      ctx.arc(190, 250, 8, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      renderHeroCanvas();
-    });
-  </script>
-  <!-- Footer -->
-  <footer>
-    <div class="footer-container">
-      <div class="footer-col">
-        <h4>PIM Flower Studio</h4>
-        <p>
+  <!-- Editorial Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="index.html" class="brand">
+          <span class="brandmark" style="border-color:#b6c1aa; color:#b6c1aa">✿</span>
+          <div class="brand-text">
+            <span class="brand-name">Bloomie Florist</span>
+            <small style="color:#aab4a0">Flowers, thoughtfully arranged</small>
+          </div>
+        </a>
+        <p style="margin-top:14px;">
           ร้านจัดดอกไม้อัจฉริยะ ผสานศิลปะการจัดช่อเข้ากับเทคโนโลยี Retrieval-Augmented Generation เพื่อการบริการที่แม่นยำ โปร่งใส และอบอุ่นในทุกโอกาสพิเศษ
         </p>
-        <p style="margin-top:12px; font-size:12px; color:#A7F3D0;">
+        <p style="margin-top:10px; font-size:11px; color:#8fa385;">
           * โปรเจกต์วิชาปัญญาประดิษฐ์และการเรียนรู้ของเครื่อง (AI & Machine Learning)
         </p>
       </div>
 
-      <div class="footer-col">
-        <h4>ข้อมูลร้าน & เวลาทำการ</h4>
-        <ul>
-          <li>อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์</li>
-          <li>ถนนแจ้งวัฒนะ ต.บางตลาด อ.ปากเกร็ด จ.นนทบุรี</li>
-          <li>จันทร์ - เสาร์: 08:30 - 19:30 น. (ปิดวันอาทิตย์)</li>
-          <li>โทร: <a href="tel:021234567">02-123-4567</a> / 089-123-4567</li>
-          <li>LINE: @pimflower</li>
-        </ul>
+      <div>
+        <h4>EXPLORE</h4>
+        <p><a href="catalog.html">รายการดอกไม้และราคา</a></p>
+        <p><a href="budget.html">คำนวณงบประมาณ</a></p>
+        <p><a href="occasions.html">ความหมายตามโอกาส</a></p>
+        <p><a href="visualizer.html">สตูดิโอจำลองช่อ & การ์ด</a></p>
       </div>
 
-      <div class="footer-col">
-        <h4>ลิงก์เมนูเว็บไซต์</h4>
-        <ul>
-          <li><a href="catalog.html">รายการดอกไม้และราคา (Catalog)</a></li>
-          <li><a href="budget.html">คำนวณงบประมาณ (Budget Calculator)</a></li>
-          <li><a href="occasions.html">ความหมายตามโอกาส (Occasion Matcher)</a></li>
-          <li><a href="visualizer.html">สตูดิโอจำลองช่อ & การ์ด (Visualizer Studio)</a></li>
-          <li><a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();">เปิดแชทบอท AI</a></li>
-        </ul>
+      <div>
+        <h4>HELP & CARE</h4>
+        <p>เวลาทำการ: จันทร์ - เสาร์ 08:30 - 19:30 น.</p>
+        <p>อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์</p>
+        <p>ถนนแจ้งวัฒนะ ต.บางตลาด อ.ปากเกร็ด จ.นนทบุรี</p>
+        <p><a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();">เปิดแชทกับน้องบลูมมี่ AI ↗</a></p>
+      </div>
+
+      <div>
+        <h4>COME SAY HELLO</h4>
+        <p>โทร: <a href="tel:021234567">02-123-4567</a> / 089-123-4567</p>
+        <p>LINE Official: @bloomieflorist</p>
+        <p>Instagram: @bloomie.florist</p>
+        <p>Open daily with love & care</p>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <div>© 2026 PIM Flower Studio. All Rights Reserved. Built with Static Site + Serverless Proxy RAG Architecture.</div>
+      <div>© 2026 Bloomie Florist. All Rights Reserved. Built with Static Site + Serverless Proxy RAG Architecture.</div>
       <div>ข้อกำหนดทางจริยธรรม: AI ตอบจากเอกสารของร้าน ไม่เก็บข้อมูลส่วนตัวของผู้ใช้</div>
     </div>
   </footer>
 
-  <!-- เชื่อมต่อระบบ Chatbot ตามคู่มือวิชา AI -->
+  <!-- Connect AI Chatbot Scripts -->
   <script src="config.js"></script>
   <script src="chat-widget.js"></script>
 </body>

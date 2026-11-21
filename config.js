@@ -12,8 +12,8 @@ const CONFIG = {
   // โหมดการค้นหา: 'local' (เทียบข้อความในเบราว์เซอร์) หรือ 'vector' (เทียบเวกเตอร์ความหมาย)
   SEARCH_MODE: "local",
 
-  // โมเดล AI จาก OpenRouter สำหรับเรียบเรียงคำตอบและออกแบบภาพ (ใช้ตระกูล OpenAI GPT: openai/gpt-4o-mini)
-  MODEL: "openai/gpt-4o-mini",
+  // โมเดล AI สำหรับเรียบเรียงคำตอบ (ใช้ Google Gemini 2.5 Flash ตัวท็อปสุด ฟรีและภาษาไทยสละสลวย)
+  MODEL: "gemini-2.5-flash",
 
   // โมเดล AI สำหรับแปลงข้อความเป็นเวกเตอร์ (ใช้ใน build-vectors.html และ vector search)
   EMBED_MODEL: "text-embedding-3-small",
@@ -38,7 +38,7 @@ const CONFIG = {
   // จำนวนชิ้นเอกสารที่ดึงมาตอบ (Top K)
   TOP_K: 5,
 
-  // กุญแจ API: เว้นว่างไว้เสมอเพื่อความปลอดภัย
+  // กุญแจ API: รองรับทั้ง Google Gemini API Key 
   KEY: ""
 };
 

@@ -3,75 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>รายการดอกไม้และราคา - Bloomie Florist</title>
+  <title>รายการดอกไม้และราคา — Bloomie Florist</title>
   
-  <!-- Google Fonts: Anuphan & Cormorant Garamond -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Noto+Serif+Thai:wght@300;400;500;600&family=Anuphan:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Top Announcement Bar -->
+  <div class="announcement">
+    FREE DELIVERY ON ORDERS OVER ฿1,500 <span>·</span> MADE WITH LOVE, DELIVERED WITH CARE
+  </div>
+
   <!-- Header Navigation -->
-  <header>
-    <div class="nav-container">
-      <a href="index.html" class="logo">
-        <img src="images/bloomie-logo.svg" alt="Bloomie Florist Logo" width="46" height="46" style="border-radius:50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div class="logo-text">
-          <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: 0.5px;">Bloomie Florist</h1>
-          <span style="font-family: 'Anuphan', sans-serif; font-size: 11px; color: #7D8B6E; font-weight: 400; text-transform:none; letter-spacing:0.3px;">Let flowers say it for you</span>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">
+        <span class="brandmark">✿</span>
+        <div class="brand-text">
+          <span class="brand-name">Bloomie Florist</span>
+          <small>Flowers, thoughtfully arranged</small>
         </div>
       </a>
 
-      <ul class="nav-links">
+      <ul class="nav-links" id="navlinks">
+        <li><a href="index.html">หน้าแรก</a></li>
         <li><a href="catalog.html" class="nav-active">รายการดอกไม้และราคา</a></li>
         <li><a href="budget.html">คำนวณงบประมาณ</a></li>
         <li><a href="occasions.html">ความหมายตามโอกาส</a></li>
         <li><a href="visualizer.html">จำลองช่อ & การ์ด</a></li>
         <li>
           <a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();" class="nav-cta-btn">
-             แชทกับ AI
+            แชทกับ AI
           </a>
         </li>
       </ul>
+
+      <button class="iconbtn menu-toggle" id="menuBtn" title="เมนู" onclick="document.getElementById('navlinks').classList.toggle('open');">☰</button>
     </div>
   </header>
+
   <!-- Flower Catalog & Price List Section -->
-  <section id="catalog" class="section-container">
-    <div class="section-header">
-      <span class="section-tag">Fresh Flowers & Pricing</span>
-      <h2>รายการดอกไม้สดและราคาประจำวัน</h2>
-      <p>คัดสรรพันธุ์ดอกไม้หลัก ดอกไม้แซม และใบไม้ประดับเกรดพรีเมียม สดใหม่ส่งตรงจากฟาร์มทุกวัน (แสดง 10 รายการต่อหน้า)</p>
-    </div>
+  <section id="catalog" class="section">
+    <div class="container">
+      <div class="section-head text-center">
+        <div class="eyebrow">THE BLOOMIE SELECTION · FRESH FLOWERS & PRICING</div>
+        <h2>รายการดอกไม้สดและราคาประจำวัน</h2>
+        <p>คัดสรรพันธุ์ดอกไม้หลัก ดอกไม้แซม และใบไม้ประดับเกรดพรีเมียม สดใหม่ส่งตรงจากฟาร์มทุกวัน (แสดง 10 รายการต่อหน้า)</p>
+      </div>
 
-    <!-- Filter Buttons for Catalog -->
-    <div style="display:flex; justify-content:center; gap:10px; margin-bottom:24px; flex-wrap:wrap;">
-      <button class="budget-pill active" onclick="filterCatalog('all', this)">ทั้งหมด</button>
-      <button class="budget-pill" onclick="filterCatalog('main', this)">พันธุ์ดอกไม้หลัก</button>
-      <button class="budget-pill" onclick="filterCatalog('filler', this)">ดอกไม้แซม & ใบไม้</button>
-      <button class="budget-pill" onclick="filterCatalog('paper', this)">กระดาษห่อ & ริบบิ้น</button>
-    </div>
+      <!-- Search & Filter Controls -->
+      <div class="catalog-controls-wrap">
+        <!-- Search Bar -->
+        <div class="catalog-search-bar">
+          <span class="catalog-search-icon">⌕</span>
+          <input type="text" id="catalogSearchInput" placeholder="ค้นหาชื่อดอกไม้ สายพันธุ์ หรือความหมาย เช่น กุหลาบ, ลิลลี่, รับปริญญา..." oninput="onCatalogSearch(this.value)">
+          <button class="catalog-clear-btn" id="clearSearchBtn" onclick="clearCatalogSearch()" title="ล้างการค้นหา">×</button>
+        </div>
 
-    <div class="catalog-table-container">
-      <table class="catalog-table" id="catalogTable">
-        <thead>
-          <tr>
-            <th style="width:28%;">ชนิดดอกไม้ / วัสดุ</th>
-            <th style="width:30%;">สายพันธุ์ / ลักษณะเด่น</th>
-            <th style="width:24%;">ความหมาย / โอกาสแนะนำ</th>
-            <th style="width:18%;">ราคามาตรฐาน</th>
-          </tr>
-        </thead>
-        <tbody id="catalogTableBody">
-          <!-- Populated by JS -->
-        </tbody>
-      </table>
-    </div>
+        <!-- Custom Luxury Dropdown Filter for Catalog -->
+        <div class="catalog-dropdown-filter">
+          <div class="custom-select-box" id="catalogCustomSelectBox">
+            <button type="button" class="custom-select-trigger" id="catalogSelectTrigger" onclick="toggleCustomDropdown('catalogCustomSelectBox', event)">
+              <span id="catalogSelectLabel">✿ แสดงทั้งหมด (All Blooms & Materials)</span>
+              <span class="custom-select-arrow">▾</span>
+            </button>
+            <div class="custom-select-menu" id="catalogSelectMenu">
+              <div class="custom-option active" data-value="all" onclick="selectCatalogCustomOption('all', '✿ แสดงทั้งหมด (All Blooms & Materials)', this)">
+                <span class="opt-text">✿ แสดงทั้งหมด (All Blooms & Materials)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="กุหลาบ" onclick="selectCatalogCustomOption('กุหลาบ', '🌹 กุหลาบ (Rose - 5 สายพันธุ์)', this)">
+                <span class="opt-text">🌹 กุหลาบ (Rose - 5 สายพันธุ์)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="ทิวลิป" onclick="selectCatalogCustomOption('ทิวลิป', '🌷 ทิวลิป (Tulip ฮอลแลนด์)', this)">
+                <span class="opt-text">🌷 ทิวลิป (Tulip ฮอลแลนด์)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="ทานตะวัน" onclick="selectCatalogCustomOption('ทานตะวัน', '🌻 ทานตะวัน (Sunflower)', this)">
+                <span class="opt-text">🌻 ทานตะวัน (Sunflower)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="ลิลลี่" onclick="selectCatalogCustomOption('ลิลลี่', '⚜️ ลิลลี่ & คาลล่าลิลลี่ (Lily)', this)">
+                <span class="opt-text">⚜️ ลิลลี่ & คาลล่าลิลลี่ (Lily)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="ไฮเดรนเยีย" onclick="selectCatalogCustomOption('ไฮเดรนเยีย', '💠 ไฮเดรนเยีย (Hydrangea)', this)">
+                <span class="opt-text">💠 ไฮเดรนเยีย (Hydrangea)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="คาร์เนชั่น" onclick="selectCatalogCustomOption('คาร์เนชั่น', '🌸 คาร์เนชั่น (Carnation)', this)">
+                <span class="opt-text">🌸 คาร์เนชั่น (Carnation)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="เยอบีร่า" onclick="selectCatalogCustomOption('เยอบีร่า', '🌼 เยอบีร่า (Gerbera)', this)">
+                <span class="opt-text">🌼 เยอบีร่า (Gerbera)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="กล้วยไม้" onclick="selectCatalogCustomOption('กล้วยไม้', '🌺 กล้วยไม้ (Orchid)', this)">
+                <span class="opt-text">🌺 กล้วยไม้ (Orchid)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="มัม" onclick="selectCatalogCustomOption('มัม', '💮 เบญจมาศ / มัม (Mum)', this)">
+                <span class="opt-text">💮 เบญจมาศ / มัม (Mum)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="โบตั๋น" onclick="selectCatalogCustomOption('โบตั๋น', '✨ โบตั๋น / พีโอนี (Peony)', this)">
+                <span class="opt-text">✨ โบตั๋น / พีโอนี (Peony)</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="filler" onclick="selectCatalogCustomOption('filler', '🌿 ดอกไม้แซม & ใบไม้ประดับ', this)">
+                <span class="opt-text">🌿 ดอกไม้แซม & ใบไม้ประดับ</span>
+                <span class="opt-check">✓</span>
+              </div>
+              <div class="custom-option" data-value="paper" onclick="selectCatalogCustomOption('paper', '🎁 กระดาษห่อช่อ & โบว์ริบบิ้น', this)">
+                <span class="opt-text">🎁 กระดาษห่อช่อ & โบว์ริบบิ้น</span>
+                <span class="opt-check">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Pagination Controls -->
-    <div class="pagination-container" id="paginationControls">
-      <!-- Generated by JS -->
+      <div class="catalog-table-container">
+        <table class="catalog-table" id="catalogTable">
+          <thead>
+            <tr>
+              <th style="width:28%;">ชนิดดอกไม้ / วัสดุ</th>
+              <th style="width:30%;">สายพันธุ์ / ลักษณะเด่น</th>
+              <th style="width:24%;">ความหมาย / โอกาสแนะนำ</th>
+              <th style="width:18%;">ราคามาตรฐาน</th>
+            </tr>
+          </thead>
+          <tbody id="catalogTableBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-container" id="paginationControls">
+        <!-- Generated by JS -->
+      </div>
     </div>
   </section>
 
@@ -121,16 +197,39 @@
     ];
 
     const ITEMS_PER_PAGE = 10;
-    let currentCategory = 'all';
+    let currentFilter = 'all';
+    let searchQuery = '';
     let currentPage = 1;
 
     function getFilteredData() {
-      if (currentCategory === 'all') return CATALOG_DATA;
-      return CATALOG_DATA.filter(item => item.category === currentCategory);
+      return CATALOG_DATA.filter(item => {
+        // 1. กรองตามหมวดหมู่ หรือ ชนิดดอกไม้
+        let matchFilter = true;
+        if (currentFilter === 'all') {
+          matchFilter = true;
+        } else if (currentFilter === 'main' || currentFilter === 'filler' || currentFilter === 'paper') {
+          matchFilter = item.category === currentFilter;
+        } else {
+          // กรองตามชื่อดอกไม้เฉพาะ เช่น 'กุหลาบ', 'ทิวลิป', 'ทานตะวัน', 'ลิลลี่', 'ไฮเดรนเยีย', 'คาร์เนชั่น', 'เยอบีร่า', 'กล้วยไม้', 'มัม', 'โบตั๋น'
+          const itemName = item.name.toLowerCase();
+          const target = currentFilter.toLowerCase();
+          matchFilter = itemName.includes(target);
+        }
+
+        // 2. กรองตามคำค้นหาใน Search Bar (ค้นหาได้ทั้งชื่อ สายพันธุ์ ความหมาย และราคา)
+        let matchSearch = true;
+        if (searchQuery.trim() !== '') {
+          const q = searchQuery.trim().toLowerCase();
+          const fullText = `${item.name} ${item.details} ${item.meaning} ${item.type} ${item.price}`.toLowerCase();
+          matchSearch = fullText.includes(q);
+        }
+
+        return matchFilter && matchSearch;
+      });
     }
 
-    function renderCatalogTable(category = 'all', page = 1) {
-      currentCategory = category;
+    function renderCatalogTable(filter = currentFilter, page = 1) {
+      currentFilter = filter;
       currentPage = page;
       const tbody = document.getElementById('catalogTableBody');
       const filtered = getFilteredData();
@@ -144,19 +243,59 @@
       const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
       const pageData = filtered.slice(startIndex, endIndex);
 
-      tbody.innerHTML = pageData.map(item => `
-        <tr>
-          <td>
-            <div style="font-weight:600; color:var(--primary-dark); font-size:14.5px;">${item.name}</div>
-            <span class="category-badge-pill">${item.type}</span>
-          </td>
-          <td>${item.details}</td>
-          <td><span style="color:var(--text-muted); font-size:13px;">${item.meaning}</span></td>
-          <td><span class="price-badge-pill">${item.price}</span></td>
-        </tr>
-      `).join('');
+      if (pageData.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align:center; padding:45px 20px; color:var(--muted);">
+              <div style="font-size:24px; margin-bottom:8px; color:var(--sage);">✿</div>
+              <div style="font-size:15px; font-weight:500; color:var(--deep); margin-bottom:6px;">ไม่พบรายการดอกไม้ที่ตรงกับเงื่อนไข</div>
+              <div style="font-size:12px; color:var(--muted);">ลองเปลี่ยนคำค้นหา หรือคลิกเลือกตัวกรอง "ทั้งหมด" เพื่อดูรายการดอกไม้ทั้งหมดนะคะ</div>
+            </td>
+          </tr>
+        `;
+      } else {
+        tbody.innerHTML = pageData.map(item => `
+          <tr>
+            <td>
+              <div style="font-weight:600; color:var(--deep); font-size:14.5px; margin-bottom:3px;">${item.name}</div>
+              <span class="category-badge-pill">${item.type}</span>
+            </td>
+            <td style="color:var(--ink);">${item.details}</td>
+            <td><span style="color:var(--muted); font-size:13px;">${item.meaning}</span></td>
+            <td><span class="price-badge-pill">${item.price}</span></td>
+          </tr>
+        `).join('');
+      }
 
-      renderPagination(totalPages, totalItems, startIndex + 1, endIndex);
+      renderPagination(totalPages, totalItems, totalItems > 0 ? startIndex + 1 : 0, endIndex);
+    }
+
+    function onCatalogSearch(val) {
+      searchQuery = val || '';
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) clearBtn.style.display = searchQuery ? 'inline-block' : 'none';
+      renderCatalogTable(currentFilter, 1);
+    }
+
+    function clearCatalogSearch() {
+      searchQuery = '';
+      const input = document.getElementById('catalogSearchInput');
+      if (input) input.value = '';
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) clearBtn.style.display = 'none';
+
+      // รีเซ็ตข้อความปุ่มและ active ของ Custom Dropdown
+      const labelEl = document.getElementById('catalogSelectLabel');
+      if (labelEl) labelEl.innerText = '✿ แสดงทั้งหมด (All Blooms & Materials)';
+      const box = document.getElementById('catalogCustomSelectBox');
+      if (box) {
+        box.querySelectorAll('.custom-option').forEach(opt => {
+          opt.classList.toggle('active', opt.getAttribute('data-value') === 'all');
+        });
+      }
+
+      currentFilter = 'all';
+      renderCatalogTable(currentFilter, 1);
     }
 
     function renderPagination(totalPages, totalItems, fromItem, toItem) {
@@ -164,7 +303,7 @@
       if (!container) return;
 
       if (totalItems === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">ไม่พบรายการ</div>';
+        container.innerHTML = '';
         return;
       }
 
@@ -188,63 +327,101 @@
     }
 
     function goToPage(page) {
-      renderCatalogTable(currentCategory, page);
+      renderCatalogTable(currentFilter, page);
       document.getElementById('catalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function filterCatalog(category, buttonElement) {
-      document.querySelectorAll('#catalog .budget-pill').forEach(btn => btn.classList.remove('active'));
-      if (buttonElement) buttonElement.classList.add('active');
-      renderCatalogTable(category, 1);
+    // จัดการ Custom Luxury Dropdown
+    function toggleCustomDropdown(boxId, event) {
+      if (event) event.stopPropagation();
+      const box = document.getElementById(boxId);
+      if (!box) return;
+      const isOpen = box.classList.contains('open');
+      document.querySelectorAll('.custom-select-box').forEach(b => b.classList.remove('open'));
+      if (!isOpen) {
+        box.classList.add('open');
+      }
+    }
+
+    function selectCatalogCustomOption(value, label, el) {
+      const box = document.getElementById('catalogCustomSelectBox');
+      const labelEl = document.getElementById('catalogSelectLabel');
+      if (labelEl) labelEl.innerText = label;
+
+      if (box) {
+        box.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('active'));
+        if (el) el.classList.add('active');
+        box.classList.remove('open');
+      }
+
+      filterCatalog(value);
+    }
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.custom-select-box').forEach(b => b.classList.remove('open'));
+    });
+
+    function filterCatalog(filterValue) {
+      currentFilter = filterValue;
+      renderCatalogTable(filterValue, 1);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       renderCatalogTable('all', 1);
     });
   </script>
-  <!-- Footer -->
-  <footer>
-    <div class="footer-container">
-      <div class="footer-col">
-        <h4>PIM Flower Studio</h4>
-        <p>
+
+  <!-- Editorial Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="index.html" class="brand">
+          <span class="brandmark" style="border-color:#b6c1aa; color:#b6c1aa">✿</span>
+          <div class="brand-text">
+            <span class="brand-name">Bloomie Florist</span>
+            <small style="color:#aab4a0">Flowers, thoughtfully arranged</small>
+          </div>
+        </a>
+        <p style="margin-top:14px;">
           ร้านจัดดอกไม้อัจฉริยะ ผสานศิลปะการจัดช่อเข้ากับเทคโนโลยี Retrieval-Augmented Generation เพื่อการบริการที่แม่นยำ โปร่งใส และอบอุ่นในทุกโอกาสพิเศษ
         </p>
-        <p style="margin-top:12px; font-size:12px; color:#A7F3D0;">
+        <p style="margin-top:10px; font-size:11px; color:#8fa385;">
           * โปรเจกต์วิชาปัญญาประดิษฐ์และการเรียนรู้ของเครื่อง (AI & Machine Learning)
         </p>
       </div>
 
-      <div class="footer-col">
-        <h4>ข้อมูลร้าน & เวลาทำการ</h4>
-        <ul>
-          <li>อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์</li>
-          <li>ถนนแจ้งวัฒนะ ต.บางตลาด อ.ปากเกร็ด จ.นนทบุรี</li>
-          <li>จันทร์ - เสาร์: 08:30 - 19:30 น. (ปิดวันอาทิตย์)</li>
-          <li>โทร: <a href="tel:021234567">02-123-4567</a> / 089-123-4567</li>
-          <li>LINE: @pimflower</li>
-        </ul>
+      <div>
+        <h4>EXPLORE</h4>
+        <p><a href="catalog.html">รายการดอกไม้และราคา</a></p>
+        <p><a href="budget.html">คำนวณงบประมาณ</a></p>
+        <p><a href="occasions.html">ความหมายตามโอกาส</a></p>
+        <p><a href="visualizer.html">สตูดิโอจำลองช่อ & การ์ด</a></p>
       </div>
 
-      <div class="footer-col">
-        <h4>ลิงก์เมนูเว็บไซต์</h4>
-        <ul>
-          <li><a href="catalog.html">รายการดอกไม้และราคา (Catalog)</a></li>
-          <li><a href="budget.html">คำนวณงบประมาณ (Budget Calculator)</a></li>
-          <li><a href="occasions.html">ความหมายตามโอกาส (Occasion Matcher)</a></li>
-          <li><a href="visualizer.html">สตูดิโอจำลองช่อ & การ์ด (Visualizer Studio)</a></li>
-          <li><a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();">เปิดแชทบอท AI</a></li>
-        </ul>
+      <div>
+        <h4>HELP & CARE</h4>
+        <p>เวลาทำการ: จันทร์ - เสาร์ 08:30 - 19:30 น.</p>
+        <p>อาคาร PIM Park ชั้น 1 สถาบันการจัดการปัญญาภิวัฒน์</p>
+        <p>ถนนแจ้งวัฒนะ ต.บางตลาด อ.ปากเกร็ด จ.นนทบุรี</p>
+        <p><a href="javascript:void(0)" onclick="if(window.PimBot) window.PimBot.open();">เปิดแชทกับน้องบลูมมี่ AI ↗</a></p>
+      </div>
+
+      <div>
+        <h4>COME SAY HELLO</h4>
+        <p>โทร: <a href="tel:021234567">02-123-4567</a> / 089-123-4567</p>
+        <p>LINE Official: @bloomieflorist</p>
+        <p>Instagram: @bloomie.florist</p>
+        <p>Open daily with love & care</p>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <div>© 2026 PIM Flower Studio. All Rights Reserved. Built with Static Site + Serverless Proxy RAG Architecture.</div>
+      <div>© 2026 Bloomie Florist. All Rights Reserved. Built with Static Site + Serverless Proxy RAG Architecture.</div>
       <div>ข้อกำหนดทางจริยธรรม: AI ตอบจากเอกสารของร้าน ไม่เก็บข้อมูลส่วนตัวของผู้ใช้</div>
     </div>
   </footer>
 
-  <!-- เชื่อมต่อระบบ Chatbot ตามคู่มือวิชา AI -->
+  <!-- Connect AI Chatbot Scripts -->
   <script src="config.js"></script>
   <script src="chat-widget.js"></script>
 </body>

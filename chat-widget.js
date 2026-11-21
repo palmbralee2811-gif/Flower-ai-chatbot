@@ -9,25 +9,26 @@
   // 1. กำหนดสีและธีม Bloomie Florist (โทนครีม เบจ และเขียวมะกอก)
   // -------------------------------------------------------------
   const THEME = {
-    olive: "#7D8B6E",             // สีเขียวมะกอกหลัก (Olive Green)
-    oliveHover: "#6B785D",        // เขียวมะกอกเข้มขึ้นเมื่อ Hover
-    oliveLight: "#8F9E7C",        // เขียวมะกอกสว่าง
-    oliveBg: "#EBF0E7",           // พื้นหลังสีเขียวมะกอกอ่อนละมุน
-    cream: "#FAF7F2",             // สีครีมพื้นฐาน
-    creamCard: "#FFFDFB",         // สีครีมขาวสะอาดสำหรับบับเบิล
-    creamBorder: "#EAE3D6",       // เส้นขอบสีครีมเบจ
-    warmBeige: "#F3ECE2",         // สีเบจอบอุ่น
-    textDark: "#332F2A",          // สีข้อความหลัก
-    textMuted: "#766F65",         // สีข้อความรอง
-    userBubble: "#7D8B6E",        // กล่องข้อความผู้ใช้สีเขียวมะกอก
+    olive: "#354532",             // Deep Forest Green (ตรงกับ --deep ของ bloomie-luxe)
+    oliveHover: "#485945",        // Deep Forest Green เมื่อ Hover
+    oliveLight: "#66745b",        // สี Sage (--sage)
+    oliveBg: "#f1eee7",           // พื้นหลังโทนกระดาษนวล
+    cream: "#f7f5ef",             // สีครีมพื้นฐาน (--cream)
+    creamCard: "#fffdf9",         // สีครีมกระดาษขาวสะอาด (--paper)
+    creamBorder: "#e8e4db",       // เส้นขอบสีนวล (--line)
+    warmBeige: "#f1eee7",         // สีเบจกระดาษ
+    textDark: "#262b25",          // สีข้อความหลัก (--ink)
+    textMuted: "#7f8278",         // สีข้อความรอง (--muted)
+    userBubble: "#354532",        // กล่องข้อความผู้ใช้สีเขียวเข้มหรูหรา
     userText: "#FFFFFF",
-    botBubble: "#FFFDFB",
-    botText: "#332F2A",
-    statusBg: "rgba(246, 241, 234, 0.92)",
-    statusText: "#4E483F",
-    disclaimerBg: "rgba(254, 250, 240, 0.9)",
-    disclaimerBorder: "rgba(235, 218, 178, 0.8)",
-    disclaimerText: "#856023"
+    botBubble: "#fffdf9",
+    botText: "#262b25",
+    statusBg: "rgba(247, 245, 239, 0.95)",
+    statusText: "#354532",
+    disclaimerBg: "rgba(247, 245, 239, 0.95)",
+    disclaimerBorder: "rgba(232, 228, 219, 0.9)",
+    disclaimerText: "#7f8278",
+    rust: "#c98263"
   };
 
   // เบอร์ติดต่อพนักงานจริงตามหลักจริยธรรม (ตอนที่ 5 จุดที่ 4)
@@ -57,7 +58,8 @@
     totalFiles: 0,
     totalChunks: 0,
     isOpen: false,
-    isThinking: false
+    isThinking: false,
+    history: []           // เก็บบริบทการสนทนาต่อเนื่อง [{ role: 'user'|'model', text: '...' }]
   };
 
   // คำถามตัวอย่าง 4 หมวดหลัก (ชุดไอคอนตาม Reference Design)
@@ -185,80 +187,97 @@
 
     // 1. ตรวจจับชนิดดอกไม้ (รองรับการผสมหลายชนิด เช่น กุหลาบ + ทิวลิป)
     const flowerList = [];
-    if (q.includes("กุหลาบแดง") || q.includes("สีแดง")) {
-      flowerList.push("vibrant crimson red roses with velvety petals");
-    } else if (q.includes("กุหลาบชมพู")) {
-      flowerList.push("soft pastel blush pink roses");
+    if (q.includes("กุหลาบแดง") || q.includes("สีแดง") || q.includes("เอกวาดอร์")) {
+      flowerList.push("huge velvety deep crimson red Ecuadorian roses");
+    } else if (q.includes("กุหลาบชมพู") || q.includes("พาสเทล")) {
+      flowerList.push("soft pastel blush pink garden roses");
     } else if (q.includes("กุหลาบขาว")) {
-      flowerList.push("pure immaculate white roses");
+      flowerList.push("pristine elegant white Avalanche roses");
     } else if (q.includes("กุหลาบ") || q.includes("rose")) {
-      flowerList.push("fresh premium blooming roses");
+      flowerList.push("fresh premium blooming long-stem roses");
     }
 
     if (q.includes("ทิวลิป") || q.includes("tulip")) {
-      flowerList.push("graceful blooming dutch tulips in pastel coral and ivory white");
+      flowerList.push("graceful blooming Dutch tulips in soft pastel coral and cream");
     }
     if (q.includes("ทานตะวัน") || q.includes("sunflower")) {
-      flowerList.push("radiant sunny golden sunflowers with rich green foliage");
+      flowerList.push("radiant golden sunny sunflowers with lush petals");
     }
     if (q.includes("ไฮเดรนเยีย") || q.includes("hydrangea")) {
-      flowerList.push("cloud-like pastel blue and lilac hydrangea clusters");
+      flowerList.push("plump cloud-like pastel blue and lilac hydrangea blossoms");
     }
     if (q.includes("ลิลลี่") || q.includes("lily")) {
-      flowerList.push("majestic fragrant white oriental lilies");
+      flowerList.push("luxurious fragrant white Asiatic lilies");
+    }
+    if (q.includes("พีโอนี") || q.includes("โบตั๋น") || q.includes("peony")) {
+      flowerList.push("fluffy layered soft pink Sarah Bernhardt peonies");
+    }
+    if (q.includes("เยอบีร่า") || q.includes("gerbera")) {
+      flowerList.push("cheerful vivid daisy-like gerberas");
+    }
+    if (q.includes("คาร์เนชั่น") || q.includes("carnation")) {
+      flowerList.push("delicate ruffled carnations in peach and cream");
     }
     if (q.includes("เดซี่") || q.includes("daisy")) {
-      flowerList.push("cheerful petite white daisies");
+      flowerList.push("cheerful petite white chamomile daisies");
     }
 
     let flowerDesc = flowerList.length > 0 
-      ? flowerList.join(" and ") 
-      : "luxurious velvety roses and graceful dutch tulips";
+      ? flowerList.join(" combined with ") 
+      : "luxurious velvety roses and graceful Dutch tulips";
 
     // ดอกไม้แซม
-    let foliageDesc = "accented with delicate airy white baby's breath";
+    let foliageDesc = "delicately accented with airy white baby's breath (gypsophila)";
     if (q.includes("ยูคาลิปตัส") || q.includes("eucalyptus")) {
       foliageDesc = "accented with aromatic silver-dollar eucalyptus leaves";
     } else if (q.includes("แคสเปีย") || q.includes("caspia")) {
-      foliageDesc = "accented with dreamy purple caspia sprigs";
+      foliageDesc = "accented with dreamy misty purple caspia sprigs";
+    } else if (q.includes("สแตติส") || q.includes("statice")) {
+      foliageDesc = "accented with vintage purple statice flowers";
     }
 
     // 2. ตรวจจับกระดาษห่อช่อ (Wrapping Paper)
-    let wrapDesc = "expertly wrapped in aesthetic cream-brown and warm beige korean matte waterproof paper with layered accordion folds";
+    let wrapDesc = "artistically wrapped in stylish Korean matte waterproof paper with dimensional layered accordion pleats";
     if (q.includes("น้ำตาลครีม") || q.includes("ครีมน้ำตาล") || (q.includes("น้ำตาล") && q.includes("ครีม")) || q.includes("ชานม")) {
-      wrapDesc = "artistically wrapped in luxurious cream-brown and warm beige korean matte paper with soft dimensional pleats";
+      wrapDesc = "artistically wrapped in luxurious cream-brown and warm milk tea beige Korean matte paper with soft dimensional pleats";
     } else if (q.includes("เขียวเซจ") || q.includes("เซจ") || (q.includes("เขียว") && q.includes("เกาหลี"))) {
-      wrapDesc = "wrapped in matte sage green korean waterproof paper";
-    } else if (q.includes("ชมพู") || q.includes("พาสเทล")) {
-      wrapDesc = "wrapped in blush pink korean matte paper with delicate folds";
+      wrapDesc = "wrapped in matte sage green Korean waterproof paper";
+    } else if (q.includes("ชมพู")) {
+      wrapDesc = "wrapped in romantic blush pink Korean matte paper with delicate layered folds";
     } else if (q.includes("คราฟท์") || q.includes("kraft") || q.includes("รักษ์โลก")) {
-      wrapDesc = "wrapped in vintage rustic eco brown kraft paper";
+      wrapDesc = "wrapped in vintage rustic eco brown craft paper";
     } else if (q.includes("ดำ") || q.includes("ทอง")) {
-      wrapDesc = "wrapped in luxury matte black paper with subtle gold trim";
+      wrapDesc = "wrapped in luxury matte black paper with fine gold trim";
+    } else if (q.includes("ใส") || q.includes("opp") || q.includes("ฟิล์มใส")) {
+      wrapDesc = "wrapped in crystal clear glossy OPP cellophane film showcasing flower stems";
+    } else if (q.includes("ไข") || q.includes("tracing")) {
+      wrapDesc = "wrapped in semi-translucent aesthetic vellum tracing paper";
     } else if (q.includes("สา") || q.includes("washi")) {
-      wrapDesc = "wrapped in natural textured japanese washi paper";
+      wrapDesc = "wrapped in natural textured Japanese mulberry washi paper";
     } else if (q.includes("เกาหลี")) {
-      wrapDesc = "wrapped in stylish korean matte paper with modern origami-style folds";
+      wrapDesc = "wrapped in premium Korean matte pastel paper with elegant pleats";
     }
 
     // 3. ตรวจจับโบว์ริบบิ้น (Ribbon & Bow)
-    let ribbonDesc = "tied with an elegant pure white silky satin ribbon bow with flowing ribbons";
+    let ribbonDesc = "tied with an exquisite silky satin ribbon bow with flowing ends";
     if (q.includes("โบว์สีขาว") || q.includes("โบว์ขาว") || q.includes("ริบบิ้นสีขาว") || q.includes("ริบบิ้นขาว") || q.includes("ขาว")) {
-      ribbonDesc = "tied with an exquisite pure white silky satin ribbon bow with flowing ribbons";
+      ribbonDesc = "tied with an immaculate pure white silky satin ribbon bow with flowing ribbons";
     } else if (q.includes("โบว์ชมพู") || q.includes("ริบบิ้นชมพู")) {
       ribbonDesc = "tied with a soft blush pink satin ribbon bow";
     } else if (q.includes("โบว์แดง") || q.includes("ริบบิ้นแดง")) {
-      ribbonDesc = "tied with a romantic crimson red satin ribbon bow";
+      ribbonDesc = "tied with a rich crimson red satin ribbon bow";
     } else if (q.includes("โบว์ทอง") || q.includes("ริบบิ้นทอง")) {
-      ribbonDesc = "tied with a luxury champagne gold ribbon bow";
+      ribbonDesc = "tied with a luxury champagne gold satin ribbon bow";
     } else if (q.includes("ชีฟอง")) {
-      ribbonDesc = "tied with a delicate french white raw-edge chiffon ribbon";
+      ribbonDesc = "tied with a delicate ethereal frayed-edge chiffon silk ribbon";
+    } else if (q.includes("กำมะหยี่")) {
+      ribbonDesc = "tied with a plush royal velvet ribbon bow";
     } else if (q.includes("ปอ") || q.includes("เชือก")) {
       ribbonDesc = "tied with natural rustic jute twine";
     }
 
     const seed = Math.floor(Math.random() * 899999 + 100000);
-    const finalPrompt = `masterpiece professional florist studio photography of a bespoke floral bouquet featuring ${flowerDesc}, ${foliageDesc}, ${wrapDesc}, ${ribbonDesc}, elegant boutique flower shop backdrop with soft pink roses and warm bokeh, natural morning daylight, 8k resolution, crisp sharp macro focus, hyperrealistic commercial quality`;
+    const finalPrompt = `award-winning commercial florist catalog photography, an exquisite hand-tied bouquet featuring ${flowerDesc}, ${foliageDesc}, ${wrapDesc}, ${ribbonDesc}, boutique flower studio background, warm soft natural window lighting, shallow depth of field, creamy bokeh, clean composition, 8k resolution, ultra-detailed textures, realistic photographic masterpiece`;
 
     return {
       prompt: finalPrompt,
@@ -322,15 +341,15 @@
         right: -4px;
         width: 14px;
         height: 14px;
-        background: #F4A261;
+        background: #c98263;
         border: 2.5px solid #ffffff;
         border-radius: 50%;
         animation: bloomiePulse 2s infinite;
       }
       @keyframes bloomiePulse {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(244, 162, 97, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(244, 162, 97, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(244, 162, 97, 0); }
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(201, 130, 99, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(201, 130, 99, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(201, 130, 99, 0); }
       }
 
       /* Main Chat Window */
@@ -342,16 +361,15 @@
         max-width: calc(100vw - 32px);
         height: 660px;
         max-height: calc(100vh - 110px);
-        background: linear-gradient(180deg, rgba(250, 247, 242, 0.86) 0%, rgba(246, 241, 233, 0.92) 100%),
-                    url('images/bloomie-bg.jpg') center/cover no-repeat;
-        backdrop-filter: blur(14px) saturate(140%);
-        -webkit-backdrop-filter: blur(14px) saturate(140%);
+        background: radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.85) 0%, rgba(248, 245, 238, 0.95) 45%, rgba(238, 232, 222, 0.92) 100%);
+        backdrop-filter: blur(20px) saturate(150%);
+        -webkit-backdrop-filter: blur(20px) saturate(150%);
         border-radius: 30px;
-        box-shadow: 0 24px 60px rgba(50, 42, 32, 0.22), 0 4px 16px rgba(0,0,0,0.06);
+        box-shadow: 0 24px 60px rgba(50, 42, 32, 0.16), 0 4px 20px rgba(0, 0, 0, 0.05);
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        border: 1.5px solid rgba(255, 255, 255, 0.75);
+        border: 1.5px solid rgba(255, 255, 255, 0.9);
         transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         transform: translateY(20px) scale(0.95);
         opacity: 0;
@@ -404,9 +422,9 @@
         line-height: 1.25;
       }
       .bloomie-header-name {
-        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-family: 'Playfair Display', Georgia, serif;
         font-size: 20px;
-        font-weight: 600;
+        font-weight: 500;
         color: #ffffff;
         letter-spacing: 0.5px;
         display: flex;
@@ -600,6 +618,14 @@
         font-weight: 400;
         color: #4A443D;
         line-height: 1.6;
+      }
+      .bloomie-bubble.bot {
+        background: #ffffff;
+        color: ${THEME.botText};
+        border-bottom-left-radius: 4px;
+        border: 1px solid rgba(226, 218, 204, 0.9);
+        box-shadow: 0 3px 12px rgba(70, 60, 48, 0.05);
+        font-weight: 400;
       }
       .bloomie-ribbon-divider {
         display: flex;
@@ -806,7 +832,7 @@
       .bloomie-input-wrapper {
         margin: 0 14px 14px 14px;
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         gap: 8px;
         flex-shrink: 0;
       }
@@ -814,14 +840,16 @@
         flex: 1;
         background: #ffffff;
         border: 1.2px solid rgba(220, 210, 196, 0.95);
-        border-radius: 28px;
-        padding: 0 14px 0 14px;
-        height: 48px;
+        border-radius: 24px;
+        padding: 8px 14px 8px 14px;
+        min-height: 48px;
+        max-height: 120px;
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         gap: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        transition: border-color 0.2s;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
       }
       .bloomie-input-field-pill:focus-within {
         border-color: ${THEME.olive};
@@ -833,6 +861,7 @@
         flex-shrink: 0;
         opacity: 0.7;
         transition: opacity 0.2s;
+        margin-bottom: 5px;
       }
       .bloomie-input-field-pill:focus-within .bloomie-smiley-icon {
         opacity: 1;
@@ -846,6 +875,20 @@
         font-weight: 400; /* Anuphan Regular */
         color: ${THEME.textDark};
         background: transparent;
+        resize: none;
+        max-height: 96px;
+        line-height: 1.5;
+        padding: 4px 0;
+        margin: 0;
+        overflow-y: auto;
+        box-sizing: border-box;
+      }
+      #pimbot-input::-webkit-scrollbar {
+        width: 4px;
+      }
+      #pimbot-input::-webkit-scrollbar-thumb {
+        background: rgba(125, 139, 110, 0.3);
+        border-radius: 4px;
       }
       #pimbot-input::placeholder {
         color: #9E968B;
@@ -866,6 +909,7 @@
         transition: transform 0.2s, background-color 0.2s;
         flex-shrink: 0;
         outline: none;
+        margin-bottom: 0;
       }
       #pimbot-send-btn img {
         width: 20px;
@@ -984,7 +1028,7 @@
         <div class="bloomie-input-wrapper">
           <div class="bloomie-input-field-pill">
             <img src="images/icon-smiley.svg" alt="smiley" class="bloomie-smiley-icon">
-            <input type="text" id="pimbot-input" placeholder="พิมพ์ข้อความที่นี่..." autocomplete="off">
+            <textarea id="pimbot-input" rows="1" placeholder="พิมพ์ข้อความที่นี่... (Enter ส่ง, Shift+Enter ขึ้นบรรทัดใหม่)" autocomplete="off"></textarea>
           </div>
           <button id="pimbot-send-btn" title="ส่งข้อความ">
             <img src="images/icon-plane.svg" alt="ส่ง">
@@ -1050,7 +1094,17 @@
     }
     sendBtn.onclick = handleSendMessage;
     input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleSendMessage();
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    });
+
+    // ปรับความสูง textarea อัตโนมัติเมื่อข้อความยาวเกินบรรทัด
+    input.addEventListener("input", () => {
+      input.style.height = "auto";
+      const newHeight = Math.min(input.scrollHeight, 96);
+      input.style.height = (newHeight > 24 ? newHeight : 24) + "px";
     });
   }
 
@@ -1068,7 +1122,54 @@
     }
   }
 
+  // คีย์สำหรับเก็บประวัติใน LocalStorage พร้อมอายุ 1 ชั่วโมง (Grab Style)
+  const STORAGE_KEY = "bloomie_chat_session_v1";
+  const CHAT_TTL_MS = 60 * 60 * 1000; // 1 ชั่วโมง (3,600,000 มิลลิวินาที)
+
+  function loadSavedChatHistory() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
+      const parsed = JSON.parse(saved);
+      const now = Date.now();
+      // ตรวจสอบว่าเกิน 1 ชั่วโมงหรือยัง
+      if (now - (parsed.lastUpdated || 0) > CHAT_TTL_MS) {
+        localStorage.removeItem(STORAGE_KEY);
+        return;
+      }
+      if (Array.isArray(parsed.history)) {
+        systemState.history = parsed.history;
+      }
+      if (parsed.html) {
+        const msgs = document.getElementById("pimbot-messages");
+        if (msgs) {
+          msgs.innerHTML = parsed.html;
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+      }
+    } catch (e) {
+      console.warn("โหลดประวัติแชทไม่สำเร็จ:", e);
+    }
+  }
+
+  function saveChatSession() {
+    try {
+      const msgs = document.getElementById("pimbot-messages");
+      if (!msgs) return;
+      const data = {
+        lastUpdated: Date.now(),
+        history: systemState.history || [],
+        html: msgs.innerHTML
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn("บันทึกประวัติแชทไม่สำเร็จ:", e);
+    }
+  }
+
   function clearChatHistory() {
+    systemState.history = [];
+    localStorage.removeItem(STORAGE_KEY);
     const msgs = document.getElementById("pimbot-messages");
     msgs.innerHTML = `
       <div class="bloomie-msg-row bot-row">
@@ -1090,6 +1191,7 @@
     row.innerHTML = `<div class="bloomie-bubble user">${escapeHtml(text)}</div>`;
     msgs.appendChild(row);
     msgs.scrollTop = msgs.scrollHeight;
+    saveChatSession();
   }
 
   function addBotMessage(text, citation = null, imageInfo = null) {
@@ -1144,6 +1246,7 @@
     row.innerHTML = html;
     msgs.appendChild(row);
     msgs.scrollTop = msgs.scrollHeight;
+    saveChatSession();
   }
 
   function showTypingIndicator() {
@@ -1250,6 +1353,7 @@
 
       systemState.isReady = true;
       updateStatusBar("พร้อมให้บริการ");
+      loadSavedChatHistory(); // โหลดประวัติแชทเก่าที่ยังไม่หมดอายุ 1 ชม. (Grab Style)
 
     } catch (err) {
       console.error("เกิดข้อผิดพลาดในการเริ่มระบบ RAG:", err);
@@ -1381,43 +1485,105 @@
     let fullKnowledgeText = "";
     if (systemState.rawDocs && Object.keys(systemState.rawDocs).length > 0) {
       fullKnowledgeText = Object.entries(systemState.rawDocs)
-        .map(([fname, text]) => `=== เอกสาร ${fname} ===\n${text}`)
+        .map(([fname, text]) => `=== ข้อมูลส่วน: ${fname} ===\n${text}`)
         .join("\n\n");
     } else {
       fullKnowledgeText = topChunks.map(c => 
-        `[ชิ้นที่ ${c.chunkIndex} จากไฟล์ ${c.file}]\n${c.text}`
+        `[ส่วนที่ ${c.chunkIndex} จาก ${c.file}]\n${c.text}`
       ).join("\n\n");
     }
 
-    return `คุณคือผู้ช่วยจัดดอกไม้ประจำร้าน Bloomie Florist
-ให้ตอบคำถามของลูกค้าโดยใช้ข้อมูลจากคลังเอกสารของร้านด้านล่างนี้
-ถ้าในเอกสารไม่มีข้อมูลใดๆ ที่เกี่ยวข้องกับสิ่งที่ลูกค้าถามเลย จึงค่อยตอบว่า "ไม่พบข้อมูลนี้ในเอกสารของร้านค่ะ" และแนะนำให้ติดต่อพนักงานจริงที่เบอร์ ${SHOP_PHONE} หรือ LINE: ${SHOP_LINE}
-ห้ามเดา ห้ามตอบสิ่งที่ไม่มีอยู่จริง
+    return `คุณคือ "น้องบลูมมี่" ฟลอริสต์และผู้เชี่ยวชาญด้านการจัดดอกไม้ตัวจริงของร้าน Bloomie Florist
+ให้พูดคุยและตอบลูกค้าด้วยน้ำเสียงที่เป็นมิตร อบอุ่น นุ่มนวล ใส่ใจ เหมือนคนจัดดอกไม้ตัวจริงกำลังดูแลลูกค้าหน้าร้านอย่างน่ารักและเป็นกันเอง
 
-คำแนะนำสำหรับการบริการและการคำนวณราคา:
-1. หากลูกค้าถามราคาดอกไม้เฉพาะชนิด (เช่น "ดอกกุหลาบราคาเท่าไหร่" หรือถามราคาดอกไม้ชนิดใดๆ) ให้ตอบเฉพาะราคาของดอกไม้ชนิดนั้นแยกตามสายพันธุ์ (ราคาต่อดอก/ต่อก้าน/ต่อกำ) ตามที่เอกสารระบุไว้ อย่าเพิ่งตอบเป็นแพ็กเกจจัดช่อสำเร็จรูป เว้นแต่ลูกค้าจะถามถึงแพ็กเกจ
-2. หากลูกค้าต้องการสั่งจัดช่อแบบผสม หรือถามราคาดอกไม้รวมกับค่ากระดาษห่อและริบบิ้น (เช่น "เอาดอกลิลลี่เอเชียติกห่อด้วยกระดาษเกาหลีใช้ริบบิ้นผ้าซาตินพรีเมียม ราคาเท่าไหร่") ให้ช่วยคำนวณและแจกแจงราคาแต่ละรายการให้ชัดเจน (จำนวนดอกไม้ x ราคาต่อดอก + ค่ากระดาษห่อ + ค่าริบบิ้น) แล้วสรุปรวมยอดเงินให้ลูกค้าอย่างชัดเจนและถูกต้อง
-3. หากลูกค้าถามเรื่องวัสดุห่อ เช่น กระดาษเกาหลี กระดาษคราฟท์ หรือริบบิ้น ให้ตอบเฉพาะราคาและค่าบริการของวัสดุนั้นๆ โดยตรง
-4. หากลูกค้าถามเรื่องสั่งล่วงหน้าหรือจัดส่ง ให้อธิบายระยะเวลาล่วงหน้าและรูปแบบการจัดส่งให้ครบถ้วน
-5. ตอบด้วยน้ำเสียงสุภาพ นุ่มนวล ละมุน สไตล์ Bloomie Florist
+กฎสำคัญในการสื่อสารแบบมืออาชีพ:
+1. การสนทนาต่อเนื่อง (Multi-turn Context): จดจำบทสนทนาก่อนหน้าเสมอ! หากลูกค้าถามคำถามต่อเนื่อง (เช่น "มีดอกไม้แบบอื่นแนะนำไหม", "แล้วถ้าเปลี่ยนสีกระดาษล่ะ", "ราคาเท่าไหร่") ให้ตอบเชื่อมโยงกับเรื่องที่เพิ่งคุยค้างไว้ ไม่ต้องทักทายสวัสดีใหม่เหมือนเริ่มคุยครั้งแรก และห้ามแนะนำดอกไม้เดิมซ้ำ
+2. ห้ามพูดคำว่า "จากคลังเอกสารของร้าน", "ตามเอกสาร", "จากข้อมูลในเอกสาร", "ตามไฟล์" หรือคำแนวระบบคอมพิวเตอร์เด็ดขาด! ให้พูดแนะนำอย่างเป็นธรรมชาติ เช่น "สำหรับวันรับปริญญา ทางร้านขอแนะนำเป็น...", "ดอกไม้ยอดนิยมของที่ร้านจะมี...", "ตัวนี้ที่ร้านมีพร้อมจัดเลยค่ะ"
+3. บุคลิกและการใช้คำ: ใช้คำลงท้าย "ค่ะ/นะคะ" อย่างสุภาพอ่อนหวาน ไม่ใช้คำว่า "ค่ะ/ครับ" ปนกัน ไม่พูดทางการแข็งทื่อเหมือนอ่านรายงานวิชาการ
+4. ยึดข้อมูลจริงของร้านเท่านั้น (Grounding): แนะนำเฉพาะดอกไม้ วัสดุห่อ ราคา และนโยบายที่มีอยู่ในร้านเท่านั้น ห้ามแต่งเรื่องหรือมั่วราคา
+5. การแจกแจงราคา: ถ้าลูกค้าถามราคาหรือสั่งจัดช่อหลายอย่าง ให้แจกแจงสั้นๆ อ่านง่าย สรุปยอดรวมชัดเจน พร้อมแนะนำโทนสีหรือกระดาษห่อที่เข้ากันอย่างน่ารัก
+6. กรณีไม่มีข้อมูล: หากลูกค้าถามเรื่องนอกร้าน (เช่น หอพัก, บิตคอยน์) ให้บอกปัดอย่างน่ารักและสุภาพ เช่น "ขออภัยด้วยนะคะ พอดีทางร้าน Bloomie Florist ดูแลเฉพาะเรื่องดอกไม้สดและของขวัญเป็นหลักค่ะ หากมีเรื่องดอกไม้ช่อไหนให้หนูช่วยดูแล สอบถามได้เลยนะคะ หรือโทรสอบถามพี่ๆ พนักงานได้ที่เบอร์ ${SHOP_PHONE} ค่ะ"
 
-คลังเอกสารความรู้ทั้งหมดของร้าน Bloomie Florist:
-${fullKnowledgeText}
-
-คำถามจากลูกค้า:
-${userQuestion}`;
+ข้อมูลดอกไม้และบริการของร้าน Bloomie Florist:
+${fullKnowledgeText}`;
   }
 
   // -------------------------------------------------------------
   // 7. การส่งคำสั่งไปให้ AI เรียบเรียงคำตอบ (Generation)
   // -------------------------------------------------------------
-  async function callAI(prompt, userQuestion, topChunks) {
+  async function callAI(systemPrompt, userQuestion, topChunks) {
     const workerUrl = systemState.workerUrl;
     const directKey = (typeof CONFIG !== "undefined" && CONFIG.KEY) ? CONFIG.KEY.trim() : "";
 
-    // 1. ถ้าระบุ Key โดยตรงใน config.js ให้ยิงตรงหา OpenRouter API
+    // 1. ถ้าระบุ Google Gemini API Key โดยตรง (ขึ้นต้นด้วย AIzaSy หรือ AQ...)
+    if (directKey && (directKey.startsWith("AIzaSy") || directKey.startsWith("AQ."))) {
+      try {
+        const geminiModel = (systemState.model && !systemState.model.includes("/")) 
+          ? systemState.model 
+          : "gemini-2.5-flash";
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${directKey}`;
+
+        // จัดเตรียมประวัติการสนทนาส่งให้ Gemini (Multi-turn History)
+        const contents = [];
+        const recentHistory = (systemState.history || []).slice(-6); // เอา 3 คู่ล่าสุด
+        for (const h of recentHistory) {
+          contents.push({
+            role: h.role === "user" ? "user" : "model",
+            parts: [{ text: h.text }]
+          });
+        }
+        contents.push({
+          role: "user",
+          parts: [{ text: userQuestion }]
+        });
+
+        const response = await fetch(geminiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemPrompt }]
+            },
+            contents: contents,
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 1000
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (reply) {
+            // บันทึกประวัติ
+            systemState.history.push({ role: "user", text: userQuestion });
+            systemState.history.push({ role: "model", text: reply });
+            return reply;
+          }
+        } else {
+          console.warn("ยิงตรง Google Gemini ล้มเหลว:", response.status, await response.text());
+        }
+      } catch (geminiErr) {
+        console.warn("Direct Google Gemini Error:", geminiErr.message);
+      }
+    }
+
+    // 2. ถ้าระบุ OpenRouter Key โดยตรงใน config.js
     if (directKey && directKey.startsWith("sk-or-v1-")) {
       try {
+        const messages = [
+          { role: "system", content: systemPrompt }
+        ];
+        const recentHistory = (systemState.history || []).slice(-6);
+        for (const h of recentHistory) {
+          messages.push({
+            role: h.role === "user" ? "user" : "assistant",
+            content: h.text
+          });
+        }
+        messages.push({ role: "user", content: userQuestion });
+
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -1428,11 +1594,8 @@ ${userQuestion}`;
           },
           body: JSON.stringify({
             model: systemState.model || "openai/gpt-4o-mini",
-            messages: [
-              { role: "system", content: "คุณคือนักจัดดอกไม้และผู้ช่วยตอบคำถามของร้าน Bloomie Florist" },
-              { role: "user", content: prompt }
-            ],
-            temperature: 0.2,
+            messages: messages,
+            temperature: 0.3,
             max_tokens: 800
           })
         });
@@ -1440,7 +1603,11 @@ ${userQuestion}`;
         if (response.ok) {
           const data = await response.json();
           const reply = data.choices?.[0]?.message?.content;
-          if (reply) return reply;
+          if (reply) {
+            systemState.history.push({ role: "user", text: userQuestion });
+            systemState.history.push({ role: "model", text: reply });
+            return reply;
+          }
         } else {
           console.warn("ยิงตรง OpenRouter ล้มเหลว:", response.status, await response.text());
         }
@@ -1644,6 +1811,7 @@ ${userQuestion}`;
     if (!question || systemState.isThinking) return;
 
     input.value = "";
+    input.style.height = "24px"; // รีเซ็ตความสูงกลับมาเริ่มต้น
     addUserMessage(question);
 
     systemState.isThinking = true;
