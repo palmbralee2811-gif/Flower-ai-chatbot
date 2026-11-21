@@ -1,13 +1,13 @@
 /**
- * Cloudflare Worker for PIM Flower Studio RAG Chatbot
- * ทำหน้าที่เป็น Serverless Proxy ถือกุญแจ OPENROUTER_KEY ไว้ฝั่งเซิร์ฟเวอร์
- * เพื่อความปลอดภัยสูงสุด ป้องกัน API Key รั่วไหล
+ * Cloudflare Worker for Bloomie Florist RAG Chatbot
+ * ทำหน้าที่เป็น Serverless Proxy เชื่อมต่อกับ Google Gemini API โดยตรง
+ * รองรับกุญแจ GEMINI_KEY หรือ OPENROUTER_KEY เพื่อความปลอดภัยสูงสุด
  */
 
 // โดเมนที่อนุญาตให้เรียกใช้งาน Worker (CORS)
-// แก้ไขเพิ่ม URL ของ GitHub Pages ของตนเอง เช่น "https://username.github.io"
 const ALLOWED = [
   "https://pimflower.github.io",
+  "https://palmbralee2811-gif.github.io",
   "https://github.io",
   "http://localhost:8000",
   "http://localhost:5500",
@@ -16,14 +16,13 @@ const ALLOWED = [
   "http://127.0.0.1:5500"
 ];
 
-// OpenRouter API Base URL
-const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
 
 export default {
   async fetch(request, env, ctx) {
     const origin = request.headers.get("Origin") || "";
 
-    // ตรวจสอบ CORS Origin (อนุญาต localhost, 127.0.0.1, โดเมนที่อยู่ใน ALLOWED, GitHub Pages หรือ Cloudflare Pages)
+    // ตรวจสอบ CORS Origin (อนุญาต localhost, 127.0.0.1, GitHub Pages หรือ Cloudflare Pages)
     const isAllowedOrigin = ALLOWED.some(allowed => 
       origin.toLowerCase().startsWith(allowed.toLowerCase()) || 
       origin.toLowerCase().endsWith(".github.io") ||
@@ -49,17 +48,20 @@ export default {
 
     const url = new URL(request.url);
 
-    // 1. หน้าทดสอบสถานะ Worker (ตามคู่มือ ตอนที่ 4 ขั้นที่ 2.4)
-    // เมื่อเปิดลิงก์ Worker ตรงๆ ในเบราว์เซอร์ จะตอบกลับ {"status":"ok","hasKey":true}
+    // ตรวจสอบ API Key ใน Cloudflare Worker Environment Variables / Secrets
+    const apiKey = (env.GEMINI_KEY || env.OPENROUTER_KEY || "").trim();
+
+    // 1. หน้าทดสอบสถานะ Worker (เปิดลิงก์ Worker ตรงๆ ในเบราว์เซอร์)
     if (request.method === "GET" && (url.pathname === "/" || url.pathname === "")) {
-      const hasKey = Boolean(env.OPENROUTER_KEY && env.OPENROUTER_KEY.trim() !== "");
+      const hasKey = Boolean(apiKey !== "");
       return new Response(
         JSON.stringify({
           status: "ok",
+          provider: "Google Gemini API",
           hasKey: hasKey,
           message: hasKey 
-            ? "PIM Flower Studio Worker is ready! (Key is configured)" 
-            : "Worker is running, but OPENROUTER_KEY secret is not set yet in Cloudflare Settings."
+            ? "Bloomie Florist Gemini Worker is ready! (Key is configured)" 
+            : "Worker is running, but GEMINI_KEY secret is not set yet in Cloudflare Settings."
         }),
         {
           status: 200,
@@ -71,12 +73,10 @@ export default {
       );
     }
 
-    // ตรวจสอบว่ามี OPENROUTER_KEY หรือ GEMINI_KEY หรือไม่
-    const apiKey = env.OPENROUTER_KEY || env.GEMINI_KEY;
     if (!apiKey) {
       return new Response(
         JSON.stringify({
-          error: "API Key secret is missing. Please set OPENROUTER_KEY (or GEMINI_KEY) in Cloudflare Worker Settings > Bindings."
+          error: "GEMINI_KEY secret is missing. Please set GEMINI_KEY (or OPENROUTER_KEY) in Cloudflare Worker Settings > Bindings."
         }),
         {
           status: 500,
@@ -88,58 +88,92 @@ export default {
       );
     }
 
-    // 2. ส่งต่อคำขอไปยัง AI Provider (OpenRouter หรือ Google Gemini)
+    // 2. จัดการคำขอ POST (Chat Completions & Embeddings)
     if (request.method === "POST") {
       try {
         const bodyText = await request.text();
-        let parsedBody = {};
-        try { parsedBody = JSON.parse(bodyText); } catch(e) {}
+        let parsed = {};
+        try { parsed = JSON.parse(bodyText); } catch(e) {}
 
-        // กรณีเป็น Google Gemini API Key (ขึ้นต้นด้วย AIzaSy)
-        if (apiKey.startsWith("AIzaSy")) {
-          const messages = parsedBody.messages || [];
-          let systemInstruction = "คุณคือนักจัดดอกไม้และผู้ช่วยตอบคำถามของร้าน Bloomie Florist";
-          const contents = [];
-
-          for (const m of messages) {
-            if (m.role === "system") {
-              systemInstruction = m.content;
-            } else {
-              contents.push({
-                role: m.role === "user" ? "user" : "model",
-                parts: [{ text: m.content }]
-              });
-            }
-          }
-
-          if (contents.length === 0) {
-            contents.push({ role: "user", parts: [{ text: "สวัสดี" }] });
-          }
-
-          const geminiModel = "gemini-2.5-flash";
-          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
-
-          const geminiRes = await fetch(geminiUrl, {
+        // กรณีเป็น Embedding Request
+        if (url.pathname.includes("/embeddings")) {
+          const inputText = parsed.input || parsed.text || "";
+          const embedUrl = `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${apiKey}`;
+          
+          const embedRes = await fetch(embedUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              systemInstruction: { parts: [{ text: systemInstruction }] },
-              contents: contents,
-              generationConfig: { temperature: 0.3, maxOutputTokens: 1000 }
+              model: "models/text-embedding-004",
+              content: { parts: [{ text: inputText }] }
             })
           });
 
-          const geminiData = await geminiRes.json();
-          const replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยค่ะ ระบบไม่สามารถประมวลผลคำตอบได้";
+          const embedData = await embedRes.json();
+          const vector = embedData.embedding?.values || [];
 
-          // ส่งกลับในฟอร์แมตมาตรฐาน OpenAI choices
-          const responsePayload = {
-            choices: [{
-              message: { role: "assistant", content: replyText }
-            }]
-          };
+          return new Response(
+            JSON.stringify({
+              data: [{ embedding: vector, index: 0 }]
+            }),
+            {
+              status: embedRes.status,
+              headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                ...corsHeaders,
+              },
+            }
+          );
+        }
 
-          return new Response(JSON.stringify(responsePayload), {
+        // กรณีเป็น Chat Completions Request
+        const messages = parsed.messages || [];
+        let systemInstruction = "คุณคือนักจัดดอกไม้และผู้ช่วยตอบคำถามของร้าน Bloomie Florist ตอบด้วยความอบอุ่น สุภาพ และอ้างอิงข้อมูลของร้านอย่างถูกต้อง";
+        const contents = [];
+
+        for (const m of messages) {
+          if (m.role === "system") {
+            systemInstruction = m.content;
+          } else {
+            contents.push({
+              role: m.role === "user" ? "user" : "model",
+              parts: [{ text: m.content || "" }]
+            });
+          }
+        }
+
+        if (contents.length === 0) {
+          contents.push({ role: "user", parts: [{ text: "สวัสดี" }] });
+        }
+
+        // กำหนดโมเดล Gemini
+        let model = DEFAULT_GEMINI_MODEL;
+        if (parsed.model && parsed.model.includes("gemini")) {
+          model = parsed.model.replace("google/", "");
+        }
+
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+        const geminiRes = await fetch(geminiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemInstruction }]
+            },
+            contents: contents,
+            generationConfig: {
+              temperature: parsed.temperature ?? 0.3,
+              maxOutputTokens: parsed.max_tokens ?? 1000
+            }
+          })
+        });
+
+        const geminiData = await geminiRes.json();
+
+        // ตรวจสอบข้อผิดพลาดจาก Google
+        if (!geminiRes.ok) {
+          return new Response(JSON.stringify(geminiData), {
             status: geminiRes.status,
             headers: {
               "Content-Type": "application/json; charset=utf-8",
@@ -148,35 +182,33 @@ export default {
           });
         }
 
-        // กรณีเป็น OpenRouter Key (sk-or-v1-...)
-        let targetEndpoint = `${OPENROUTER_BASE_URL}/chat/completions`;
-        if (url.pathname.includes("/embeddings") || url.pathname.endsWith("/embeddings")) {
-          targetEndpoint = `${OPENROUTER_BASE_URL}/embeddings`;
-        }
+        const replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยค่ะ ระบบไม่สามารถประมวลผลคำตอบได้";
 
-        const openRouterResponse = await fetch(targetEndpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
-            "HTTP-Referer": origin || "https://pimflower.github.io",
-            "X-Title": "Bloomie Florist RAG Chatbot",
-          },
-          body: bodyText,
-        });
+        // แปลงผลลัพธ์เป็นฟอร์แมตมาตรฐาน OpenAI choices เพื่อให้ chat-widget.js อ่านได้ทันที
+        const responsePayload = {
+          id: "chatcmpl-" + Date.now(),
+          choices: [
+            {
+              message: {
+                role: "assistant",
+                content: replyText
+              },
+              finish_reason: "stop"
+            }
+          ]
+        };
 
-        const responseData = await openRouterResponse.text();
-
-        return new Response(responseData, {
-          status: openRouterResponse.status,
+        return new Response(JSON.stringify(responsePayload), {
+          status: 200,
           headers: {
             "Content-Type": "application/json; charset=utf-8",
             ...corsHeaders,
           },
         });
+
       } catch (err) {
         return new Response(
-          JSON.stringify({ error: "Worker Proxy Error", details: err.message }),
+          JSON.stringify({ error: "Gemini Worker Proxy Error", details: err.message }),
           {
             status: 502,
             headers: {
@@ -192,5 +224,5 @@ export default {
       status: 405,
       headers: corsHeaders,
     });
-  },
+  }
 };
