@@ -12,8 +12,8 @@ const CONFIG = {
   // โหมดการค้นหา: 'local' (เทียบข้อความในเบราว์เซอร์) หรือ 'vector' (เทียบเวกเตอร์ความหมาย)
   SEARCH_MODE: "local",
 
-  // โมเดล AI สำหรับเรียบเรียงคำตอบ (ใช้ Google Gemini 2.5 Flash ตัวท็อปสุด ฟรีและภาษาไทยสละสลวย)
-  MODEL: "gemini-2.5-flash",
+  // โมเดล AI จาก OpenRouter สำหรับเรียบเรียงคำตอบ (ใช้ Google Gemini 2.5 Flash ตัวท็อปสุด ภาษาไทยสละสลวย)
+  MODEL: "google/gemini-2.5-flash",
 
   // โมเดล AI สำหรับแปลงข้อความเป็นเวกเตอร์ (ใช้ใน build-vectors.html และ vector search)
   EMBED_MODEL: "text-embedding-3-small",

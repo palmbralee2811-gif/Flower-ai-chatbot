@@ -23,10 +23,11 @@ export default {
   async fetch(request, env, ctx) {
     const origin = request.headers.get("Origin") || "";
 
-    // ตรวจสอบ CORS Origin (อนุญาต localhost, 127.0.0.1, โดเมนที่อยู่ใน ALLOWED หรือ GitHub Pages)
+    // ตรวจสอบ CORS Origin (อนุญาต localhost, 127.0.0.1, โดเมนที่อยู่ใน ALLOWED, GitHub Pages หรือ Cloudflare Pages)
     const isAllowedOrigin = ALLOWED.some(allowed => 
       origin.toLowerCase().startsWith(allowed.toLowerCase()) || 
       origin.toLowerCase().endsWith(".github.io") ||
+      origin.toLowerCase().endsWith(".pages.dev") ||
       origin.includes("localhost") || 
       origin.includes("127.0.0.1")
     );
@@ -70,11 +71,12 @@ export default {
       );
     }
 
-    // ตรวจสอบว่ามี OPENROUTER_KEY ใน Environment Variables / Secrets หรือไม่
-    if (!env.OPENROUTER_KEY) {
+    // ตรวจสอบว่ามี OPENROUTER_KEY หรือ GEMINI_KEY หรือไม่
+    const apiKey = env.OPENROUTER_KEY || env.GEMINI_KEY;
+    if (!apiKey) {
       return new Response(
         JSON.stringify({
-          error: "OPENROUTER_KEY secret is missing. Please set it in Cloudflare Worker Settings > Variables and Secrets."
+          error: "API Key secret is missing. Please set OPENROUTER_KEY (or GEMINI_KEY) in Cloudflare Worker Settings > Bindings."
         }),
         {
           status: 500,
@@ -86,28 +88,81 @@ export default {
       );
     }
 
-    // 2. ส่งต่อคำขอไปยัง OpenRouter (Proxy POST requests)
+    // 2. ส่งต่อคำขอไปยัง AI Provider (OpenRouter หรือ Google Gemini)
     if (request.method === "POST") {
       try {
-        const body = await request.text();
+        const bodyText = await request.text();
+        let parsedBody = {};
+        try { parsedBody = JSON.parse(bodyText); } catch(e) {}
 
-        // ระบุปลายทาง: chat/completions หรือ embeddings
+        // กรณีเป็น Google Gemini API Key (ขึ้นต้นด้วย AIzaSy)
+        if (apiKey.startsWith("AIzaSy")) {
+          const messages = parsedBody.messages || [];
+          let systemInstruction = "คุณคือนักจัดดอกไม้และผู้ช่วยตอบคำถามของร้าน Bloomie Florist";
+          const contents = [];
+
+          for (const m of messages) {
+            if (m.role === "system") {
+              systemInstruction = m.content;
+            } else {
+              contents.push({
+                role: m.role === "user" ? "user" : "model",
+                parts: [{ text: m.content }]
+              });
+            }
+          }
+
+          if (contents.length === 0) {
+            contents.push({ role: "user", parts: [{ text: "สวัสดี" }] });
+          }
+
+          const geminiModel = "gemini-2.5-flash";
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
+
+          const geminiRes = await fetch(geminiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: systemInstruction }] },
+              contents: contents,
+              generationConfig: { temperature: 0.3, maxOutputTokens: 1000 }
+            })
+          });
+
+          const geminiData = await geminiRes.json();
+          const replyText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยค่ะ ระบบไม่สามารถประมวลผลคำตอบได้";
+
+          // ส่งกลับในฟอร์แมตมาตรฐาน OpenAI choices
+          const responsePayload = {
+            choices: [{
+              message: { role: "assistant", content: replyText }
+            }]
+          };
+
+          return new Response(JSON.stringify(responsePayload), {
+            status: geminiRes.status,
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              ...corsHeaders,
+            },
+          });
+        }
+
+        // กรณีเป็น OpenRouter Key (sk-or-v1-...)
         let targetEndpoint = `${OPENROUTER_BASE_URL}/chat/completions`;
         if (url.pathname.includes("/embeddings") || url.pathname.endsWith("/embeddings")) {
           targetEndpoint = `${OPENROUTER_BASE_URL}/embeddings`;
-        } else if (url.pathname.includes("/chat/completions")) {
-          targetEndpoint = `${OPENROUTER_BASE_URL}/chat/completions`;
         }
 
         const openRouterResponse = await fetch(targetEndpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${env.OPENROUTER_KEY}`,
+            "Authorization": `Bearer ${apiKey}`,
             "HTTP-Referer": origin || "https://pimflower.github.io",
-            "X-Title": "PIM Flower Studio RAG Chatbot",
+            "X-Title": "Bloomie Florist RAG Chatbot",
           },
-          body: body,
+          body: bodyText,
         });
 
         const responseData = await openRouterResponse.text();
